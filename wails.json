@@ -1,0 +1,41 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "CV Manager Pro",
+  "outputfilename": "cv-manager-pro",
+  "frontend:install": "echo 'Frontend is already built'",
+  "frontend:build": "echo 'Frontend is already built'",
+  "frontend:dev:watcher": "echo 'Frontend is already built'",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "CV Manager Pro Team",
+    "email": "info@cvmanager.pro"
+  },
+  "info": {
+    "companyName": "CV Manager Pro",
+    "productName": "CV Manager Pro",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright © 2025 CV Manager Pro",
+    "comments": "Encrypted & GDPR Compliant CV Management System"
+  },
+  "wailsjsdir": "./frontend/dist",
+  "assetdir": "./frontend/dist",
+  "reloaddirs": "frontend/dist",
+  "build:dir": "build",
+  "nsisType": "multiple",
+  "obfuscated": false,
+  "garbleargs": "",
+  "runNonNativeBuildScript": false,
+  "windowsInfo": {
+    "icon": "",
+    "dark-mode": "auto",
+    "suspended-on-creation": false
+  },
+  "macInfo": {
+    "icon": "",
+    "dark-mode": "auto"
+  },
+  "bindings": {
+    "outputType": "hybrid",
+    "packageName": "main"
+  }
+}

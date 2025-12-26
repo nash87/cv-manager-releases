@@ -1,0 +1,295 @@
+{
+  "app": {
+    "title": "CV Manager Pro",
+    "subtitle": "Encrypted & GDPR Compliant"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "statistics": "Statistics",
+    "visualEditor": "Visual Editor",
+    "privacy": "Privacy & Security",
+    "settings": "Settings",
+    "exit": "Exit"
+  },
+  "buttons": {
+    "newCV": "New CV",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "export": "Export",
+    "duplicate": "Duplicate",
+    "back": "Back",
+    "close": "Close",
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "dashboard": {
+    "title": "My CVs",
+    "search": "Search CVs...",
+    "filters": {
+      "allStatus": "All Status",
+      "draft": "Draft",
+      "ready": "Ready",
+      "submitted": "Submitted",
+      "archived": "Archived",
+      "allCategories": "All Categories"
+    },
+    "empty": {
+      "title": "No CVs Yet",
+      "description": "Create your first CV to get started"
+    },
+    "stats": {
+      "jobs": "Jobs",
+      "education": "Education",
+      "skills": "Skills"
+    }
+  },
+  "editor": {
+    "backToDashboard": "Back to Dashboard",
+    "exportPDF": "Export PDF",
+    "personalInfo": "Personal Information",
+    "professionalSummary": "Professional Summary",
+    "cvSettings": "CV Settings",
+    "fields": {
+      "firstname": "First Name",
+      "lastname": "Last Name",
+      "jobTitle": "Job Title",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "linkedin": "LinkedIn",
+      "website": "Website",
+      "summary": "Summary",
+      "targetJob": "Target Job",
+      "targetCompany": "Target Company",
+      "status": "Status",
+      "category": "Category",
+      "template": "Template",
+      "colorScheme": "Color Scheme",
+      "tags": "Tags (comma separated)",
+      "notes": "Notes"
+    },
+    "placeholders": {
+      "firstname": "John",
+      "lastname": "Doe",
+      "jobTitle": "Software Developer",
+      "email": "john.doe@example.com",
+      "phone": "+1 234 567890",
+      "address": "Street, City, Country",
+      "summary": "Brief professional summary...",
+      "targetJob": "Senior Software Developer",
+      "targetCompany": "Google",
+      "tags": "Remote, Senior, Full-time",
+      "notes": "Internal notes..."
+    },
+    "templates": {
+      "modern": "Modern (2-Column)",
+      "classic": "Classic (Single Column)",
+      "creative": "Creative (Colorful)"
+    },
+    "colorSchemes": {
+      "blue": "Professional Blue",
+      "green": "Fresh Green",
+      "purple": "Creative Purple",
+      "red": "Bold Red",
+      "orange": "Warm Orange",
+      "dark": "Elegant Dark"
+    }
+  },
+  "visualEditor": {
+    "title": "Visual PDF Editor",
+    "layoutEditor": "Layout Editor",
+    "livePreview": "Live Preview",
+    "description": "Drag and drop elements to customize your CV layout",
+    "availableElements": "Available Elements",
+    "elements": {
+      "header": "Header",
+      "contact": "Contact Information",
+      "summary": "Summary",
+      "experience": "Work Experience",
+      "education": "Education",
+      "skills": "Skills"
+    },
+    "dropPlaceholder": "Drag elements here to build your CV layout",
+    "styleSettings": "Style Settings",
+    "template": "Template:",
+    "colorScheme": "Color Scheme:",
+    "fontSize": "Font Size:",
+    "spacing": "Spacing:",
+    "resetLayout": "Reset Layout",
+    "applyPreview": "Apply & Preview",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "previewPlaceholder": "Select a CV and customize the layout to see preview"
+  },
+  "privacy": {
+    "title": "Privacy & Security",
+    "securityStatus": "Encrypted & Secure",
+    "securitySubtitle": "All your data is encrypted with AES-256",
+    "details": {
+      "encryption": "Encryption",
+      "keySize": "Key Size",
+      "database": "Database",
+      "dataLocation": "Data Location"
+    },
+    "gdprCompliance": "GDPR Compliance",
+    "yourRights": "Your Data Rights",
+    "buttons": {
+      "exportAll": "Export All My Data (Art. 20 GDPR)",
+      "viewLog": "View Compliance Log (Art. 15 GDPR)",
+      "deleteAll": "Delete All My Data (Art. 17 GDPR)"
+    }
+  },
+  "statistics": {
+    "title": "Statistics",
+    "subtitle": "Overview of your CVs and applications",
+    "totalCVs": "Total CVs",
+    "totalWork": "Total Work Experience",
+    "totalEducation": "Total Education",
+    "totalSkills": "Total Skills",
+    "avgWork": "Avg Work Experience",
+    "avgSkills": "Avg Skills per CV"
+  },
+  "applications": {
+    "title": "Application Management",
+    "subtitle": "Track your job applications and feedback",
+    "newApplication": "New Application",
+    "modal": {
+      "title": "New Application",
+      "subtitle": "Fill in all relevant information"
+    }
+  },
+  "nav": {
+    "applications": "Applications"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "toggleTheme": "Toggle Light/Dark Mode",
+    "consent": {
+      "title": "Data Processing Consent",
+      "status": "Status:",
+      "version": "Version:",
+      "granted": "Granted:",
+      "withdrawn": "Withdrawn:",
+      "active": "Active",
+      "inactive": "Withdrawn",
+      "withdraw": "Withdraw Consent (Art. 7(3) GDPR)"
+    }
+  },
+  "consent": {
+    "title": "Welcome to CV Manager Pro",
+    "subtitle": "Your Privacy is Our Priority",
+    "features": {
+      "encryption": {
+        "title": "AES-256 Encryption",
+        "description": "All your CV data is protected with military-grade encryption"
+      },
+      "gdpr": {
+        "title": "GDPR Compliant",
+        "description": "Full compliance with EU data protection regulations"
+      },
+      "transparency": {
+        "title": "Full Transparency",
+        "description": "View all data operations in the compliance log"
+      },
+      "control": {
+        "title": "Your Data, Your Control",
+        "description": "Export or delete all your data anytime"
+      }
+    },
+    "agreement": {
+      "title": "Data Processing Consent (Art. 6 Para. 1 lit. a GDPR):",
+      "intro": "By clicking \"I Agree\", you consent to:",
+      "items": {
+        "storage": "Local storage of your CV data in encrypted BadgerDB format",
+        "processing": "Processing of your personal data for CV management purposes",
+        "logging": "Logging of data operations for compliance transparency"
+      },
+      "disclaimer": "You can withdraw your consent at any time in Settings. All your data is stored locally on your device and never transmitted to external servers."
+    },
+    "button": "I Agree - Start CV Manager Pro",
+    "footer": "By using this application, you confirm that you have read and understood our data processing practices."
+  },
+  "complianceLog": {
+    "title": "Compliance Log",
+    "empty": "No compliance log entries yet.",
+    "operation": "Operation",
+    "timestamp": "Timestamp",
+    "legalBasis": "Legal Basis",
+    "description": "Description"
+  },
+  "notifications": {
+    "consentGranted": "Consent granted. Your data will be encrypted and stored securely.",
+    "cvSaved": "CV saved successfully!",
+    "cvDeleted": "CV deleted successfully!",
+    "pdfExported": "PDF exported:",
+    "layoutApplied": "Layout applied! (Preview updated)",
+    "dataExported": "All data exported to:",
+    "dataDeleted": "All data has been deleted",
+    "consentWithdrawn": "Consent withdrawn. Please restart the application.",
+    "duplicateComingSoon": "Duplicate feature coming soon",
+    "deletionCancelled": "Deletion cancelled",
+    "error": {
+      "consentRequired": "Consent required to create CV",
+      "failedToLoad": "Failed to load",
+      "failedToSave": "Failed to save",
+      "failedToDelete": "Failed to delete",
+      "failedToExport": "Failed to export"
+    }
+  },
+  "confirmations": {
+    "deleteCV": "Are you sure you want to delete this CV? This action cannot be undone.",
+    "deleteAllData": "WARNING: This will permanently delete ALL your data.\\n\\nType \"DELETE ALL MY DATA\" to confirm:",
+    "deleteAllDataConfirm": "DELETE ALL MY DATA",
+    "exportAllData": "This will export all your data as JSON. Continue?",
+    "withdrawConsent": "Warning: Withdrawing consent will disable all data operations.\\n\\nYou will need to consent again to use the application.\\n\\nContinue?",
+    "exit": "Do you really want to exit CV Manager Pro?"
+  },
+  "quickCreate": {
+    "title": "Create New CV",
+    "subtitle": "Fill in the essential information and get started immediately"
+  },
+  "keyboard": {
+    "shortcuts": "Keyboard Shortcuts",
+    "newCV": "New CV",
+    "save": "Save",
+    "search": "Search",
+    "help": "Help",
+    "quit": "Quit"
+  },
+  "onboarding": {
+    "welcome": "Welcome to CV Manager Pro!",
+    "skip": "Skip Tutorial",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Get Started",
+    "steps": {
+      "step1": {
+        "title": "Create Your First CV",
+        "description": "Let's walk you through creating your professional CV in just a few steps."
+      },
+      "step2": {
+        "title": "Personal Information",
+        "description": "Enter your name, contact details, and professional summary. All data is encrypted and stored locally."
+      },
+      "step3": {
+        "title": "Customize & Export",
+        "description": "Choose from 3 templates and 6 color schemes. Export to PDF when ready!"
+      },
+      "step4": {
+        "title": "You're All Set!",
+        "description": "Start creating your CVs. Your data is encrypted with AES-256 and GDPR compliant."
+      }
+    },
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email"
+    }
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "app": {
+    "title": "CV Manager Pro",
+    "subtitle": "Verschlüsselt & DSGVO-Konform"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "statistics": "Statistiken",
+    "visualEditor": "Visueller Editor",
+    "privacy": "Datenschutz & Sicherheit",
+    "settings": "Einstellungen",
+    "exit": "Beenden"
+  },
+  "buttons": {
+    "newCV": "Neuer Lebenslauf",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "export": "Exportieren",
+    "duplicate": "Duplizieren",
+    "back": "Zurück",
+    "close": "Schließen",
+    "apply": "Anwenden",
+    "reset": "Zurücksetzen"
+  },
+  "dashboard": {
+    "title": "Meine Lebensläufe",
+    "search": "Lebensläufe durchsuchen...",
+    "filters": {
+      "allStatus": "Alle Status",
+      "draft": "Entwurf",
+      "ready": "Bereit",
+      "submitted": "Eingereicht",
+      "archived": "Archiviert",
+      "allCategories": "Alle Kategorien"
+    },
+    "empty": {
+      "title": "Noch keine Lebensläufe",
+      "description": "Erstelle deinen ersten Lebenslauf um loszulegen"
+    },
+    "stats": {
+      "jobs": "Jobs",
+      "education": "Bildung",
+      "skills": "Fähigkeiten"
+    }
+  },
+  "editor": {
+    "backToDashboard": "Zurück zum Dashboard",
+    "exportPDF": "PDF Exportieren",
+    "personalInfo": "Persönliche Informationen",
+    "professionalSummary": "Berufszusammenfassung",
+    "cvSettings": "Lebenslauf-Einstellungen",
+    "fields": {
+      "firstname": "Vorname",
+      "lastname": "Nachname",
+      "jobTitle": "Berufsbezeichnung",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "address": "Adresse",
+      "linkedin": "LinkedIn",
+      "website": "Webseite",
+      "summary": "Zusammenfassung",
+      "targetJob": "Zielposition",
+      "targetCompany": "Zielunternehmen",
+      "status": "Status",
+      "category": "Kategorie",
+      "template": "Vorlage",
+      "colorScheme": "Farbschema",
+      "tags": "Tags (durch Komma getrennt)",
+      "notes": "Notizen"
+    },
+    "placeholders": {
+      "firstname": "Max",
+      "lastname": "Mustermann",
+      "jobTitle": "Software Entwickler",
+      "email": "max.mustermann@beispiel.de",
+      "phone": "+49 123 456789",
+      "address": "Straße, Stadt, Land",
+      "summary": "Kurze berufliche Zusammenfassung...",
+      "targetJob": "Senior Software Entwickler",
+      "targetCompany": "Google",
+      "tags": "Remote, Senior, Vollzeit",
+      "notes": "Interne Notizen..."
+    },
+    "templates": {
+      "modern": "Modern (2-Spaltig)",
+      "classic": "Klassisch (Einspaltig)",
+      "creative": "Kreativ (Farbenfroh)"
+    },
+    "colorSchemes": {
+      "blue": "Professionelles Blau",
+      "green": "Frisches Grün",
+      "purple": "Kreatives Lila",
+      "red": "Mutiges Rot",
+      "orange": "Warmes Orange",
+      "dark": "Elegantes Dunkel"
+    }
+  },
+  "visualEditor": {
+    "title": "Visueller PDF Editor",
+    "layoutEditor": "Layout Editor",
+    "livePreview": "Live-Vorschau",
+    "description": "Ziehe Elemente per Drag & Drop um dein Lebenslauf-Layout anzupassen",
+    "availableElements": "Verfügbare Elemente",
+    "elements": {
+      "header": "Kopfzeile",
+      "contact": "Kontaktinformationen",
+      "summary": "Zusammenfassung",
+      "experience": "Berufserfahrung",
+      "education": "Bildung",
+      "skills": "Fähigkeiten"
+    },
+    "dropPlaceholder": "Ziehe Elemente hier hin um dein Lebenslauf-Layout zu erstellen",
+    "styleSettings": "Stil-Einstellungen",
+    "template": "Vorlage:",
+    "colorScheme": "Farbschema:",
+    "fontSize": "Schriftgröße:",
+    "spacing": "Abstand:",
+    "resetLayout": "Layout Zurücksetzen",
+    "applyPreview": "Anwenden & Vorschau",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "previewPlaceholder": "Wähle einen Lebenslauf und passe das Layout an um die Vorschau zu sehen"
+  },
+  "privacy": {
+    "title": "Datenschutz & Sicherheit",
+    "securityStatus": "Verschlüsselt & Sicher",
+    "securitySubtitle": "Alle deine Daten sind mit AES-256 verschlüsselt",
+    "details": {
+      "encryption": "Verschlüsselung",
+      "keySize": "Schlüsselgröße",
+      "database": "Datenbank",
+      "dataLocation": "Datenspeicherort"
+    },
+    "gdprCompliance": "DSGVO-Konformität",
+    "yourRights": "Deine Datenrechte",
+    "buttons": {
+      "exportAll": "Alle Meine Daten Exportieren (Art. 20 DSGVO)",
+      "viewLog": "Compliance-Protokoll Anzeigen (Art. 15 DSGVO)",
+      "deleteAll": "Alle Meine Daten Löschen (Art. 17 DSGVO)"
+    }
+  },
+  "statistics": {
+    "title": "Statistiken",
+    "subtitle": "Übersicht über deine CVs und Bewerbungen",
+    "totalCVs": "Lebensläufe Gesamt",
+    "totalWork": "Berufserfahrung Gesamt",
+    "totalEducation": "Bildung Gesamt",
+    "totalSkills": "Fähigkeiten Gesamt",
+    "avgWork": "Ø Berufserfahrung",
+    "avgSkills": "Ø Fähigkeiten pro Lebenslauf"
+  },
+  "applications": {
+    "title": "Bewerbungsmanagement",
+    "subtitle": "Verfolge deine Bewerbungen und Rückmeldungen",
+    "newApplication": "Neue Bewerbung",
+    "modal": {
+      "title": "Neue Bewerbung",
+      "subtitle": "Fülle alle relevanten Informationen aus"
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "theme": "Design",
+    "darkMode": "Dunkler Modus",
+    "lightMode": "Heller Modus",
+    "toggleTheme": "Hell/Dunkel Modus Wechseln",
+    "consent": {
+      "title": "Datenverarbeitungs-Einwilligung",
+      "status": "Status:",
+      "version": "Version:",
+      "granted": "Erteilt:",
+      "withdrawn": "Widerrufen:",
+      "active": "Aktiv",
+      "inactive": "Widerrufen",
+      "withdraw": "Einwilligung Widerrufen (Art. 7(3) DSGVO)"
+    }
+  },
+  "consent": {
+    "title": "Willkommen bei CV Manager Pro",
+    "subtitle": "Deine Privatsphäre ist uns wichtig",
+    "features": {
+      "encryption": {
+        "title": "AES-256 Verschlüsselung",
+        "description": "Alle deine CV-Daten werden mit militärischer Verschlüsselung gesichert"
+      },
+      "gdpr": {
+        "title": "DSGVO-konform",
+        "description": "Volle Einhaltung der EU-Datenschutzbestimmungen"
+      },
+      "transparency": {
+        "title": "Volle Transparenz",
+        "description": "Alle Datenoperationen im Compliance-Log einsehbar"
+      },
+      "control": {
+        "title": "Deine Daten, deine Kontrolle",
+        "description": "Exportiere oder lösche alle deine Daten jederzeit"
+      }
+    },
+    "agreement": {
+      "title": "Einwilligung zur Datenverarbeitung (Art. 6 Abs. 1 lit. a DSGVO):",
+      "intro": "Mit Klick auf \"Ich stimme zu\" willigst du ein in:",
+      "items": {
+        "storage": "Lokale Speicherung deiner CV-Daten im verschlüsselten BadgerDB-Format",
+        "processing": "Verarbeitung deiner persönlichen Daten für CV-Verwaltungszwecke",
+        "logging": "Protokollierung von Datenoperationen für Compliance-Transparenz"
+      },
+      "disclaimer": "Du kannst deine Einwilligung jederzeit in den Einstellungen widerrufen. Alle deine Daten werden lokal auf deinem Gerät gespeichert und nie an externe Server übermittelt."
+    },
+    "button": "Ich stimme zu - CV Manager Pro starten",
+    "footer": "Durch die Nutzung dieser Anwendung bestätigst du, dass du unsere Datenverarbeitungspraktiken gelesen und verstanden hast."
+  },
+  "complianceLog": {
+    "title": "Compliance-Protokoll",
+    "empty": "Noch keine Compliance-Protokoll-Einträge.",
+    "operation": "Operation",
+    "timestamp": "Zeitstempel",
+    "legalBasis": "Rechtsgrundlage",
+    "description": "Beschreibung"
+  },
+  "notifications": {
+    "consentGranted": "Einwilligung erteilt. Deine Daten werden verschlüsselt und sicher gespeichert.",
+    "cvSaved": "Lebenslauf erfolgreich gespeichert!",
+    "cvDeleted": "Lebenslauf erfolgreich gelöscht!",
+    "pdfExported": "PDF exportiert:",
+    "layoutApplied": "Layout angewendet! (Vorschau aktualisiert)",
+    "dataExported": "Alle Daten exportiert nach:",
+    "dataDeleted": "Alle Daten wurden gelöscht",
+    "consentWithdrawn": "Einwilligung widerrufen. Bitte starte die Anwendung neu.",
+    "duplicateComingSoon": "Duplikat-Funktion kommt bald",
+    "deletionCancelled": "Löschung abgebrochen",
+    "error": {
+      "consentRequired": "Einwilligung erforderlich um Lebenslauf zu erstellen",
+      "failedToLoad": "Laden fehlgeschlagen",
+      "failedToSave": "Speichern fehlgeschlagen",
+      "failedToDelete": "Löschen fehlgeschlagen",
+      "failedToExport": "Export fehlgeschlagen"
+    }
+  },
+  "confirmations": {
+    "deleteCV": "Bist du sicher, dass du diesen Lebenslauf löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteAllData": "WARNUNG: Dies löscht ALLE deine Daten permanent.\\n\\nGib \"ALLE MEINE DATEN LÖSCHEN\" ein um zu bestätigen:",
+    "deleteAllDataConfirm": "ALLE MEINE DATEN LÖSCHEN",
+    "exportAllData": "Dies exportiert alle deine Daten als JSON. Fortfahren?",
+    "withdrawConsent": "Warnung: Widerruf der Einwilligung deaktiviert alle Datenoperationen.\\n\\nDu musst erneut zustimmen um die Anwendung zu nutzen.\\n\\nFortfahren?",
+    "exit": "Möchtest du CV Manager Pro wirklich beenden?"
+  },
+  "onboarding": {
+    "skip": "Tutorial überspringen",
+    "welcome": "Willkommen bei CV Manager Pro!",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "finish": "Los geht's",
+    "steps": {
+      "step1": {
+        "title": "Willkommen bei CV Manager Pro!",
+        "description": "Lass uns gemeinsam in nur wenigen Schritten deinen professionellen Lebenslauf erstellen."
+      },
+      "step2": {
+        "title": "Persönliche Informationen",
+        "description": "Gib deine persönlichen Daten ein. Alle Daten werden verschlüsselt und lokal gespeichert."
+      },
+      "step3": {
+        "title": "Anpassen & Exportieren",
+        "description": "Wähle aus 3 Vorlagen und 6 Farbschemata. Exportiere als PDF wenn du fertig bist!"
+      },
+      "step4": {
+        "title": "Alles bereit!",
+        "description": "Beginne mit der Erstellung deiner Lebensläufe. Deine Daten sind mit AES-256 verschlüsselt und DSGVO-konform."
+      }
+    },
+    "form": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail"
+    }
+  },
+  "quickCreate": {
+    "title": "Neuen Lebenslauf erstellen",
+    "subtitle": "Fülle die wichtigsten Informationen aus und beginne sofort"
+  },
+  "keyboard": {
+    "shortcuts": "Tastenkombinationen",
+    "newCV": "Neuer Lebenslauf",
+    "save": "Speichern",
+    "search": "Suchen",
+    "help": "Hilfe",
+    "quit": "Beenden"
+  }
+}

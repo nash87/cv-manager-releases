@@ -57,19 +57,19 @@ func GetBuildInfo() BuildInfo {
 func GetChangeLog() []ChangeLogEntry {
 	return []ChangeLogEntry{
 		{
-	{
-		Version:     "1.1.3",
-		Date:        "2025-12-26",
-		Description: "Window controls, footer, and UI polish",
-		Changes: []string{
-			"Added custom titlebar with minimize/maximize/close buttons",
-			"Added footer with version and copyright",
-			"Improved exit button styling",
-			"Fixed onboarding error handling",
-			"Applied Obsidian-style UI (compact, smaller fonts)",
-			"Fixed version loading in Updates view",
+			Version:     "1.1.3",
+			Date:        "2025-12-26",
+			Description: "Window controls, footer, and UI polish",
+			Changes: []string{
+				"Added custom titlebar with minimize/maximize/close buttons",
+				"Added footer with version and copyright",
+				"Improved exit button styling",
+				"Fixed onboarding error handling",
+				"Applied Obsidian-style UI (compact, smaller fonts)",
+				"Fixed version loading in Updates view",
+			},
 		},
-	},
+		{
 			Version:     "1.1.0",
 			Date:        "2025-12-26",
 			Description: "Automatic repair and migration system",
@@ -79,8 +79,6 @@ func GetChangeLog() []ChangeLogEntry {
 				"Added splash screen with version information",
 				"Implemented update history module",
 				"Added Git integration for automatic versioning",
-				"Implemented Gitea backup integration",
-				"Fixed Visual Editor PDF loading issue",
 				"Fixed BadgerDB encryption configuration",
 				"Improved portable data storage (all data next to EXE)",
 			},

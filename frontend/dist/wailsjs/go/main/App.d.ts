@@ -32,7 +32,11 @@ export function GetApplicationsByCV(arg1:string):Promise<Array<main.JobApplicati
 
 export function GetApplicationsStatistics():Promise<main.ApplicationsStatistics>;
 
+export function GetBuildInfo():Promise<main.BuildInfo>;
+
 export function GetCV(arg1:string):Promise<main.CV>;
+
+export function GetChangeLog():Promise<Array<main.ChangeLogEntry>>;
 
 export function GetComplianceLog():Promise<Array<main.ComplianceEntry>>;
 
@@ -45,6 +49,8 @@ export function GetSealStatus():Promise<main.StorageSealConfig>;
 export function GetSecurityInfo():Promise<main.SecurityInfo>;
 
 export function GetStatistics():Promise<main.Statistics>;
+
+export function GetVersion():Promise<string>;
 
 export function GrantConsent():Promise<void>;
 

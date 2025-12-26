@@ -2003,7 +2003,8 @@ async function handleQuickCreateSubmit(e) {
 
     } catch (error) {
         console.error('[Quick Create] Failed to create CV:', error);
-        await showError('Fehler beim Erstellen: ' + error.message);
+        const errorMsg = error?.message || error?.toString() || 'Unbekannter Fehler';
+        await showError('Fehler beim Erstellen: ' + errorMsg);
     }
 }
 

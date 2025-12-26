@@ -62,8 +62,16 @@ export function GetApplicationsStatistics() {
   return window['go']['main']['App']['GetApplicationsStatistics']();
 }
 
+export function GetBuildInfo() {
+  return window['go']['main']['App']['GetBuildInfo']();
+}
+
 export function GetCV(arg1) {
   return window['go']['main']['App']['GetCV'](arg1);
+}
+
+export function GetChangeLog() {
+  return window['go']['main']['App']['GetChangeLog']();
 }
 
 export function GetComplianceLog() {
@@ -88,6 +96,10 @@ export function GetSecurityInfo() {
 
 export function GetStatistics() {
   return window['go']['main']['App']['GetStatistics']();
+}
+
+export function GetVersion() {
+  return window['go']['main']['App']['GetVersion']();
 }
 
 export function GrantConsent() {

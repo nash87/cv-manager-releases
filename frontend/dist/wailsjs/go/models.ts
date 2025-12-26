@@ -111,6 +111,26 @@ export namespace main {
 	        this.total_offers = source["total_offers"];
 	    }
 	}
+	export class BuildInfo {
+	    version: string;
+	    build_time: string;
+	    build_number: number;
+	    git_commit: string;
+	    git_branch: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new BuildInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.version = source["version"];
+	        this.build_time = source["build_time"];
+	        this.build_number = source["build_number"];
+	        this.git_commit = source["git_commit"];
+	        this.git_branch = source["git_branch"];
+	    }
+	}
 	export class Language {
 	    id: string;
 	    name: string;
@@ -370,6 +390,45 @@ export namespace main {
 	        this.work_count = source["work_count"];
 	        this.education_count = source["education_count"];
 	        this.skills_count = source["skills_count"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class ChangeLogEntry {
+	    version: string;
+	    date: string;
+	    description: string;
+	    changes: string[];
+	    // Go type: time
+	    timestamp?: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeLogEntry(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.version = source["version"];
+	        this.date = source["date"];
+	        this.description = source["description"];
+	        this.changes = source["changes"];
+	        this.timestamp = this.convertValues(source["timestamp"], null);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

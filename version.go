@@ -9,7 +9,7 @@ import (
 const (
 	MajorVersion = 1
 	MinorVersion = 1
-	PatchVersion = 0
+	PatchVersion = 3
 )
 
 // BuildInfo contains build-time information
@@ -57,6 +57,19 @@ func GetBuildInfo() BuildInfo {
 func GetChangeLog() []ChangeLogEntry {
 	return []ChangeLogEntry{
 		{
+	{
+		Version:     "1.1.3",
+		Date:        "2025-12-26",
+		Description: "Window controls, footer, and UI polish",
+		Changes: []string{
+			"Added custom titlebar with minimize/maximize/close buttons",
+			"Added footer with version and copyright",
+			"Improved exit button styling",
+			"Fixed onboarding error handling",
+			"Applied Obsidian-style UI (compact, smaller fonts)",
+			"Fixed version loading in Updates view",
+		},
+	},
 			Version:     "1.1.0",
 			Date:        "2025-12-26",
 			Description: "Automatic repair and migration system",

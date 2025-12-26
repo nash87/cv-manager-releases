@@ -4757,3 +4757,115 @@ td {
     font-size: 12px;
 }
 
+
+/* ========== Custom Titlebar ========== */
+.titlebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    z-index: 10000;
+    user-select: none;
+}
+
+.titlebar-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.titlebar-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.titlebar-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.titlebar-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.titlebar-btn.titlebar-close:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Adjust body for titlebar */
+body {
+    padding-top: 32px;
+}
+
+.splash-screen,
+.consent-screen {
+    top: 32px;
+}
+
+/* ========== Footer ========== */
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 280px;
+    right: 0;
+    height: 28px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 10px;
+    color: var(--text-muted);
+    z-index: 100;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-version {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.footer-separator {
+    color: var(--border-color);
+}
+
+/* Adjust main content for footer */
+.main-content {
+    padding-bottom: 38px;
+}
+
+/* Better exit button */
+#exitBtn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+#exitBtn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #ef4444 !important;
+}

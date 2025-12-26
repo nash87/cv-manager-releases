@@ -2898,3 +2898,52 @@ if (document.readyState === 'loading') {
     updateSplashVersion();
 }
 
+
+// ==================== Window Controls ====================
+function setupWindowControls() {
+    const minimizeBtn = document.getElementById('minimizeBtn');
+    const maximizeBtn = document.getElementById('maximizeBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    if (minimizeBtn) {
+        minimizeBtn.addEventListener('click', () => {
+            window.runtime.WindowMinimise();
+        });
+    }
+
+    if (maximizeBtn) {
+        maximizeBtn.addEventListener('click', () => {
+            window.runtime.WindowToggleMaximise();
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            window.runtime.Quit();
+        });
+    }
+}
+
+// Update footer version
+async function updateFooterVersion() {
+    try {
+        const buildInfo = await window.go.main.App.GetBuildInfo();
+        const footerVersion = document.getElementById('footerVersion');
+        if (footerVersion) {
+            footerVersion.textContent = `v${buildInfo.version}`;
+        }
+    } catch (error) {
+        console.error('[Footer] Error loading version:', error);
+    }
+}
+
+// Initialize window controls and footer
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setupWindowControls();
+        updateFooterVersion();
+    });
+} else {
+    setupWindowControls();
+    updateFooterVersion();
+}

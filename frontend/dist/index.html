@@ -8,6 +8,22 @@
     <script src="i18n/i18n.js"></script>
 </head>
 <body>
+    <!-- Custom Titlebar with Window Controls -->
+    <div class="titlebar" data-wails-drag>
+        <div class="titlebar-title">CV Manager Pro</div>
+        <div class="titlebar-controls">
+            <button class="titlebar-btn" id="minimizeBtn" title="Minimieren">
+                <svg width="12" height="12" viewBox="0 0 12 12"><line x1="0" y1="6" x2="12" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button class="titlebar-btn" id="maximizeBtn" title="Maximieren">
+                <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            </button>
+            <button class="titlebar-btn titlebar-close" id="closeBtn" title="Schließen">
+                <svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+        </div>
+    </div>
+
     <!-- Splash Screen with Loading Animation -->
     <div id="splashScreen" class="splash-screen">
         <div class="splash-content">
@@ -1477,5 +1493,15 @@
     <script src="./wailsjs/runtime/runtime.js"></script>
     <script src="./wailsjs/go/main/App.js"></script>
     <script src="app.js"></script>
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <span class="footer-version" id="footerVersion">v1.1.2</span>
+            <span class="footer-separator">•</span>
+            <span>© 2025 CV Manager Pro</span>
+            <span class="footer-separator">•</span>
+            <span>Encrypted & GDPR Compliant</span>
+        </div>
+    </footer>
 </body>
 </html>

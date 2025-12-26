@@ -4492,3 +4492,268 @@ body {
     color: rgba(255, 255, 255, 0.7);
     margin: 0;
 }
+
+
+/* ========== OBSIDIAN-STYLE OVERRIDES ========== */
+/* Compact, smaller fonts, cleaner design */
+
+body {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* Updates View - Ultra Compact */
+.version-banner {
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.version-banner-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.version-label {
+    font-size: 11px;
+}
+
+.version-number {
+    font-size: 20px;
+}
+
+.version-build-info {
+    font-size: 11px;
+}
+
+.update-entry {
+    padding: 16px 20px;
+}
+
+.update-version-badge {
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+.badge-latest {
+    padding: 1px 6px;
+    font-size: 9px;
+}
+
+.update-date {
+    font-size: 11px;
+}
+
+.update-title {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.update-changes li {
+    padding: 6px 0 6px 20px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.update-changes li:before {
+    width: 4px;
+    height: 4px;
+    top: 11px;
+}
+
+/* Sidebar Compact */
+.sidebar-nav {
+    padding: 12px 8px;
+}
+
+.nav-item {
+    padding: 8px 12px;
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.nav-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Cards Compact */
+.cv-card {
+    padding: 14px;
+}
+
+.cv-card-header h3 {
+    font-size: 14px;
+}
+
+.cv-card-meta {
+    font-size: 11px;
+}
+
+.cv-tag {
+    padding: 3px 8px;
+    font-size: 10px;
+}
+
+/* Stats Compact */
+.stat-card {
+    padding: 14px;
+}
+
+.stat-value {
+    font-size: 24px;
+}
+
+.stat-label {
+    font-size: 11px;
+}
+
+/* Buttons Compact */
+.btn-primary,
+.btn-secondary {
+    padding: 8px 14px;
+    font-size: 12px;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 11px;
+}
+
+/* Forms Compact */
+.form-group label {
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    font-size: 12px;
+    padding: 8px 10px;
+}
+
+/* Modals Compact */
+.modal-content {
+    padding: 20px;
+}
+
+.modal-header h3 {
+    font-size: 16px;
+}
+
+/* Timeline Compact */
+.timeline-item {
+    padding: 12px;
+}
+
+.timeline-title {
+    font-size: 13px;
+}
+
+.timeline-company {
+    font-size: 11px;
+}
+
+.timeline-meta {
+    font-size: 11px;
+}
+
+.timeline-badge {
+    padding: 3px 8px;
+    font-size: 10px;
+}
+
+/* Tables Compact */
+table {
+    font-size: 12px;
+}
+
+th {
+    font-size: 11px;
+    padding: 8px;
+}
+
+td {
+    padding: 8px;
+}
+
+/* Consent Screen Compact */
+.consent-header h1 {
+    font-size: 20px;
+}
+
+.consent-tagline {
+    font-size: 13px;
+}
+
+.tech-item {
+    font-size: 11px;
+}
+
+.consent-checkbox-item {
+    font-size: 12px;
+}
+
+/* Dashboard Compact */
+.toolbar {
+    padding: 12px 16px;
+}
+
+.search-bar input {
+    font-size: 12px;
+    padding: 8px 36px;
+}
+
+.filter-select {
+    font-size: 12px;
+    padding: 8px 12px;
+}
+
+/* Splash Screen Compact */
+.splash-title {
+    font-size: 24px;
+}
+
+.splash-subtitle {
+    font-size: 13px;
+}
+
+.splash-version {
+    font-size: 11px;
+}
+
+.loading-status p {
+    font-size: 12px;
+}
+
+/* Reduce all margins and paddings slightly */
+.view {
+    padding: 16px 20px;
+}
+
+.view-header {
+    margin-bottom: 16px;
+}
+
+.view-subtitle {
+    font-size: 12px;
+}
+

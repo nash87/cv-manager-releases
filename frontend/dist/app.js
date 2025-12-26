@@ -180,18 +180,24 @@ function showConsentScreen() {
             document.getElementById('consentScreen').style.display = 'none';
 
             // Create default CV AFTER consent is given
-            await ensureDefaultCV();
+            try {
+                await ensureDefaultCV();
+            } catch (cvError) {
+                console.error('[Consent] Error creating default CV:', cvError);
+                // Continue even if default CV fails - user can create manually
+            }
 
             // Load dashboard
             await loadDashboard();
 
-            showSuccess(window.i18n ? window.i18n.t('notifications.consentGranted') : 'Willkommen! Deine Daten sind jetzt sicher verschlüsselt.');
+            await showSuccess(window.i18n ? window.i18n.t('notifications.consentGranted') : 'Willkommen! Deine Daten sind jetzt sicher verschlüsselt.');
 
             // Mark that onboarding should be shown after splash
             window.shouldShowOnboarding = true;
         } catch (error) {
             console.error('[Consent] Error granting consent:', error);
-            showError('Fehler beim Akzeptieren: ' + (error.message || 'Unbekannter Fehler'));
+            const errorMsg = error?.message || error?.toString() || 'Unbekannter Fehler';
+            await showError('Fehler beim Akzeptieren: ' + errorMsg);
         }
     });
 }

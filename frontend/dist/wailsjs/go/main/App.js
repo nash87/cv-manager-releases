@@ -10,6 +10,18 @@ export function AddApplicationTimelineEvent(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['AddApplicationTimelineEvent'](arg1, arg2, arg3, arg4);
 }
 
+export function ApplyUpdate() {
+  return window['go']['main']['App']['ApplyUpdate']();
+}
+
+export function BulkDeleteCVs(arg1) {
+  return window['go']['main']['App']['BulkDeleteCVs'](arg1);
+}
+
+export function CheckForUpdates() {
+  return window['go']['main']['App']['CheckForUpdates']();
+}
+
 export function CreateApplication() {
   return window['go']['main']['App']['CreateApplication']();
 }
@@ -28,6 +40,10 @@ export function DeleteApplication(arg1) {
 
 export function DeleteCV(arg1) {
   return window['go']['main']['App']['DeleteCV'](arg1);
+}
+
+export function DownloadUpdate(arg1, arg2) {
+  return window['go']['main']['App']['DownloadUpdate'](arg1, arg2);
 }
 
 export function ExportAllDataGDPR() {
@@ -82,6 +98,10 @@ export function GetConsent() {
   return window['go']['main']['App']['GetConsent']();
 }
 
+export function GetFavoriteCVs() {
+  return window['go']['main']['App']['GetFavoriteCVs']();
+}
+
 export function GetJobPortals() {
   return window['go']['main']['App']['GetJobPortals']();
 }
@@ -96,6 +116,10 @@ export function GetSecurityInfo() {
 
 export function GetStatistics() {
   return window['go']['main']['App']['GetStatistics']();
+}
+
+export function GetUpdateDownloadPath() {
+  return window['go']['main']['App']['GetUpdateDownloadPath']();
 }
 
 export function GetVersion() {
@@ -128,6 +152,10 @@ export function SealStorage(arg1) {
 
 export function SearchCVs(arg1) {
   return window['go']['main']['App']['SearchCVs'](arg1);
+}
+
+export function ToggleFavorite(arg1) {
+  return window['go']['main']['App']['ToggleFavorite'](arg1);
 }
 
 export function UnsealStorage(arg1) {

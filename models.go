@@ -96,6 +96,9 @@ type CV struct {
 	LastViewed   *time.Time `json:"last_viewed"`
 	LastExported *time.Time `json:"last_exported"`
 	ExportCount  int        `json:"export_count"`
+
+	// User Preferences
+	IsFavorite bool `json:"is_favorite"` // Mark CV as favorite for quick access
 }
 
 // NewCV creates a new CV with default values
@@ -132,18 +135,19 @@ func (cv *CV) GetDisplayName() string {
 
 // CVSummary for dashboard cards
 type CVSummary struct {
-	ID            string    `json:"id"`
-	Name          string    `json:"name"`
-	JobTitle      string    `json:"job_title"`
-	Status        string    `json:"status"`
-	Category      string    `json:"category"`
-	Tags          []string  `json:"tags"`
-	TargetJob     string    `json:"target_job"`
-	TargetCompany string    `json:"target_company"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	WorkCount     int       `json:"work_count"`
-	EducationCount int      `json:"education_count"`
-	SkillsCount   int       `json:"skills_count"`
+	ID             string    `json:"id"`
+	Name           string    `json:"name"`
+	JobTitle       string    `json:"job_title"`
+	Status         string    `json:"status"`
+	Category       string    `json:"category"`
+	Tags           []string  `json:"tags"`
+	TargetJob      string    `json:"target_job"`
+	TargetCompany  string    `json:"target_company"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	WorkCount      int       `json:"work_count"`
+	EducationCount int       `json:"education_count"`
+	SkillsCount    int       `json:"skills_count"`
+	IsFavorite     bool      `json:"is_favorite"` // Favorite status
 }
 
 // ToSummary converts CV to CVSummary for dashboard
@@ -161,6 +165,7 @@ func (cv *CV) ToSummary() CVSummary {
 		WorkCount:      len(cv.WorkExperience),
 		EducationCount: len(cv.Education),
 		SkillsCount:    len(cv.Skills),
+		IsFavorite:     cv.IsFavorite,
 	}
 }
 

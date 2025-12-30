@@ -8,8 +8,8 @@ import (
 // Version information - automatically incremented on build
 const (
 	MajorVersion = 1
-	MinorVersion = 1
-	PatchVersion = 3
+	MinorVersion = 2
+	PatchVersion = 0
 )
 
 // BuildInfo contains build-time information
@@ -56,6 +56,61 @@ func GetBuildInfo() BuildInfo {
 // GetChangeLog returns the changelog entries
 func GetChangeLog() []ChangeLogEntry {
 	return []ChangeLogEntry{
+		{
+			Version:     "1.2.0",
+			Date:        "2025-12-30",
+			Description: "Comprehensive Audit System & UI Enhancements",
+			Changes: []string{
+				"🔍 NEW: Complete Audit Log system for tracking all user activities",
+				"📊 NEW: Audit statistics dashboard with real-time metrics",
+				"🎨 NEW: UnoCSS framework integration with Obsidian-inspired design",
+				"🎯 NEW: Phosphor SVG icon system (30+ icons)",
+				"🌍 NEW: Extended i18n support (German/English)",
+				"📝 NEW: Advanced audit filtering (date range, event type, category, status)",
+				"💾 NEW: Encrypted audit log storage in BadgerDB",
+				"📈 NEW: Change tracking for CV updates (before/after values)",
+				"🔄 NEW: Audit event export functionality",
+				"⚡ IMPROVED: Robust error handling with utils.js",
+				"🐛 FIX: Critical 'undefined' error in frontend error handling",
+				"✨ ENHANCED: All CV operations now logged with detailed metadata",
+			},
+		},
+		{
+			Version:     "1.1.6",
+			Date:        "2025-12-26",
+			Description: "New productivity features",
+			Changes: []string{
+				"Added bulk delete functionality for multiple CVs",
+				"Implemented favorites system to mark important CVs",
+				"Added get favorites function to filter favorite CVs",
+				"Improved CV management workflow",
+				"Performance optimizations for large datasets",
+			},
+		},
+		{
+			Version:     "1.1.5",
+			Date:        "2025-12-26",
+			Description: "Auto-update system stabilization",
+			Changes: []string{
+				"Fixed auto-update check reliability",
+				"Improved startup sequence",
+				"Enhanced error handling during updates",
+				"Better logging for update process",
+			},
+		},
+		{
+			Version:     "1.1.4",
+			Date:        "2025-12-26",
+			Description: "Automatic silent updates (Discord-style)",
+			Changes: []string{
+				"Implemented automatic update check on startup",
+				"Silent background download of updates",
+				"Automatic installation on next app start",
+				"Fixed nil pointer crashes during startup",
+				"Update check now runs during splash screen",
+				"Added green dot indicator when update is ready",
+			},
+		},
 		{
 			Version:     "1.1.3",
 			Date:        "2025-12-26",

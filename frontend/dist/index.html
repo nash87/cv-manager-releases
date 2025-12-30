@@ -80,6 +80,45 @@
                     <p class="migration-message" id="migrationMessage">Migriere von v<span id="oldVersion">1.0.0</span> auf v<span id="newVersion">1.1.0</span>...</p>
                 </div>
             </div>
+
+            <!-- Update Notification (Discord-style) -->
+            <div id="updateNotification" class="update-notification" style="display: none;">
+                <div class="update-notification-content">
+                    <div class="update-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </div>
+                    <div class="update-text">
+                        <h3 class="update-title">Update verfügbar!</h3>
+                        <p class="update-message">
+                            <span id="updateVersionInfo">v1.1.3 ist verfügbar</span>
+                            <span id="updateSize" style="opacity: 0.7; margin-left: 8px;">(16 MB)</span>
+                        </p>
+                        <p class="update-notes" id="updateReleaseNotes">Neue Features und Bugfixes</p>
+                    </div>
+                    <div class="update-actions">
+                        <button id="updateNowBtn" class="update-btn update-btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Jetzt updaten
+                        </button>
+                        <button id="updateLaterBtn" class="update-btn update-btn-secondary">Später</button>
+                    </div>
+                </div>
+                <!-- Download Progress -->
+                <div id="updateProgress" class="update-progress" style="display: none;">
+                    <div class="update-progress-bar">
+                        <div class="update-progress-fill" id="updateProgressFill"></div>
+                    </div>
+                    <p class="update-progress-text" id="updateProgressText">Download läuft...</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -510,6 +549,15 @@
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 </svg>
                 <span>Privacy & Security</span>
+            </button>
+
+            <button class="nav-item" data-view="audit">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    <path d="M9 12h6"></path>
+                    <path d="M9 16h6"></path>
+                </svg>
+                <span data-i18n="nav.audit">Audit Log</span>
             </button>
 
             <button class="nav-item" data-view="settings">
@@ -1042,6 +1090,196 @@
             </div>
         </div>
 
+        <!-- Audit Log View -->
+        <div id="auditView" class="view">
+            <div class="view-header">
+                <h1>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        <path d="M9 12h6"></path>
+                        <path d="M9 16h6"></path>
+                    </svg>
+                    <span data-i18n="audit.title">Audit Log</span>
+                </h1>
+                <p data-i18n="audit.subtitle">Track all user activities and system events</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid" id="auditStatsGrid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 data-i18n="audit.stats.total_events">Total Events</h3>
+                        <p class="stat-value" id="totalEvents">-</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 data-i18n="audit.stats.today">Today</h3>
+                        <p class="stat-value" id="todayEvents">-</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 data-i18n="audit.stats.success_rate">Success Rate</h3>
+                        <p class="stat-value" id="successRate">-</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 data-i18n="audit.stats.last_hour">Last Hour</h3>
+                        <p class="stat-value" id="lastHourEvents">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Search -->
+            <div class="audit-filters-card">
+                <div class="filter-header">
+                    <h2 data-i18n="audit.filters.title">Filters</h2>
+                    <button class="btn-secondary btn-sm" id="auditResetFiltersBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                        </svg>
+                        <span data-i18n="audit.filters.reset">Reset</span>
+                    </button>
+                </div>
+
+                <div class="filters-grid">
+                    <!-- Date Range -->
+                    <div class="filter-group">
+                        <label data-i18n="audit.filters.date_range">Date Range</label>
+                        <div class="date-range-inputs">
+                            <input type="date" id="auditStartDate" class="input">
+                            <span style="color: var(--text-secondary); padding: 0 8px;">-</span>
+                            <input type="date" id="auditEndDate" class="input">
+                        </div>
+                    </div>
+
+                    <!-- Event Type -->
+                    <div class="filter-group">
+                        <label data-i18n="audit.filters.event_type">Event Type</label>
+                        <select id="auditEventTypeFilter" class="input">
+                            <option value="" data-i18n="audit.filters.all">All</option>
+                            <option value="cv_created">CV Created</option>
+                            <option value="cv_updated">CV Updated</option>
+                            <option value="cv_deleted">CV Deleted</option>
+                            <option value="cv_exported">CV Exported</option>
+                        </select>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="filter-group">
+                        <label data-i18n="audit.filters.category">Category</label>
+                        <select id="auditCategoryFilter" class="input">
+                            <option value="" data-i18n="audit.filters.all">All</option>
+                            <option value="cv_management">CV Management</option>
+                            <option value="auth">Authentication</option>
+                            <option value="settings">Settings</option>
+                            <option value="data_export">Data Export</option>
+                            <option value="error">Errors</option>
+                        </select>
+                    </div>
+
+                    <!-- Success/Failure -->
+                    <div class="filter-group">
+                        <label data-i18n="audit.filters.status">Status</label>
+                        <select id="auditStatusFilter" class="input">
+                            <option value="" data-i18n="audit.filters.all">All</option>
+                            <option value="success" data-i18n="audit.filters.success">Success</option>
+                            <option value="failure" data-i18n="audit.filters.failure">Failure</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn-primary" id="auditApplyFiltersBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <span data-i18n="audit.filters.apply">Apply Filters</span>
+                    </button>
+                    <button class="btn-secondary" id="auditExportBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span data-i18n="audit.filters.export">Export</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Events List -->
+            <div class="audit-events-card">
+                <div class="card-header">
+                    <h2 data-i18n="audit.events.title">Activity Events</h2>
+                    <div class="audit-event-count">
+                        <span id="auditEventCount">0</span>
+                        <span data-i18n="audit.events.events">events</span>
+                    </div>
+                </div>
+
+                <div class="audit-events-list" id="auditEventsList">
+                    <!-- Events will be dynamically loaded -->
+                    <div class="empty-state" id="auditEmptyState">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
+                            <path d="M9 12h6"></path>
+                            <path d="M9 16h6"></path>
+                        </svg>
+                        <p data-i18n="audit.events.empty">No audit events found</p>
+                    </div>
+                </div>
+
+                <div class="audit-pagination" id="auditPagination" style="display: none;">
+                    <button class="btn-secondary btn-sm" id="auditPrevBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        <span data-i18n="audit.pagination.prev">Previous</span>
+                    </button>
+                    <span class="pagination-info">
+                        <span data-i18n="audit.pagination.page">Page</span>
+                        <span id="auditCurrentPage">1</span>
+                        <span data-i18n="audit.pagination.of">of</span>
+                        <span id="auditTotalPages">1</span>
+                    </span>
+                    <button class="btn-secondary btn-sm" id="auditNextBtn">
+                        <span data-i18n="audit.pagination.next">Next</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Update History View -->
         <div id="updatesView" class="view">
             <div class="view-header">
@@ -1070,6 +1308,19 @@
                     </div>
                     <div class="version-build-info" id="buildInfoText">Build wird geladen...</div>
                 </div>
+            </div>
+
+            <!-- Check for Updates Button -->
+            <div class="update-check-section">
+                <button id="checkForUpdatesBtn" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Nach Updates suchen
+                </button>
+                <p class="update-check-status" id="updateCheckStatus" style="margin-top: 12px; font-size: 13px; color: var(--text-secondary);"></p>
             </div>
 
             <!-- Update History Table -->
@@ -1492,6 +1743,8 @@
     <script src="chart.min.js"></script>
     <script src="./wailsjs/runtime/runtime.js"></script>
     <script src="./wailsjs/go/main/App.js"></script>
+    <script src="utils.js"></script>
+    <script src="audit.js"></script>
     <script src="app.js"></script>
     <!-- Footer -->
     <footer class="app-footer">

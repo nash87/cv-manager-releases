@@ -8,8 +8,43 @@
     "statistics": "Statistics",
     "visualEditor": "Visual Editor",
     "privacy": "Privacy & Security",
+    "audit": "Audit Log",
     "settings": "Settings",
     "exit": "Exit"
+  },
+  "audit": {
+    "title": "Audit Log",
+    "subtitle": "Track all user activities and system events",
+    "stats": {
+      "total_events": "Total Events",
+      "today": "Today",
+      "success_rate": "Success Rate",
+      "last_hour": "Last Hour"
+    },
+    "filters": {
+      "title": "Filters",
+      "reset": "Reset",
+      "apply": "Apply",
+      "export": "Export",
+      "all": "All",
+      "date_range": "Date Range",
+      "event_type": "Event Type",
+      "category": "Category",
+      "status": "Status",
+      "success": "Success",
+      "failure": "Failed"
+    },
+    "events": {
+      "title": "Activity Events",
+      "events": "events",
+      "empty": "No audit events found"
+    },
+    "pagination": {
+      "prev": "Previous",
+      "next": "Next",
+      "page": "Page",
+      "of": "of"
+    }
   },
   "buttons": {
     "newCV": "New CV",

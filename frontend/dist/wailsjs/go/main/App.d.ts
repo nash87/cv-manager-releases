@@ -6,6 +6,12 @@ export function AddApplicationFeedback(arg1:string,arg2:string,arg3:string,arg4:
 
 export function AddApplicationTimelineEvent(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
+export function ApplyUpdate():Promise<void>;
+
+export function BulkDeleteCVs(arg1:Array<string>):Promise<void>;
+
+export function CheckForUpdates():Promise<main.UpdateStatus>;
+
 export function CreateApplication():Promise<main.JobApplication>;
 
 export function CreateCV():Promise<main.CV>;
@@ -15,6 +21,8 @@ export function DeleteAllDataGDPR():Promise<void>;
 export function DeleteApplication(arg1:string):Promise<void>;
 
 export function DeleteCV(arg1:string):Promise<void>;
+
+export function DownloadUpdate(arg1:string,arg2:string):Promise<main.DownloadProgress>;
 
 export function ExportAllDataGDPR():Promise<string>;
 
@@ -42,6 +50,8 @@ export function GetComplianceLog():Promise<Array<main.ComplianceEntry>>;
 
 export function GetConsent():Promise<main.UserConsent>;
 
+export function GetFavoriteCVs():Promise<Array<main.CVSummary>>;
+
 export function GetJobPortals():Promise<Array<main.JobPortal>>;
 
 export function GetSealStatus():Promise<main.StorageSealConfig>;
@@ -49,6 +59,8 @@ export function GetSealStatus():Promise<main.StorageSealConfig>;
 export function GetSecurityInfo():Promise<main.SecurityInfo>;
 
 export function GetStatistics():Promise<main.Statistics>;
+
+export function GetUpdateDownloadPath():Promise<string>;
 
 export function GetVersion():Promise<string>;
 
@@ -65,6 +77,8 @@ export function SaveCV(arg1:main.CV):Promise<void>;
 export function SealStorage(arg1:string):Promise<void>;
 
 export function SearchCVs(arg1:string):Promise<Array<main.CVSummary>>;
+
+export function ToggleFavorite(arg1:string):Promise<void>;
 
 export function UnsealStorage(arg1:string):Promise<void>;
 

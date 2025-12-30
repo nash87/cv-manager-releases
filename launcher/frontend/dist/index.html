@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Manager Pro - Launcher</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Phosphor Icons Sprite (inline für Performance) -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="ph-shield-check" viewBox="0 0 256 256">
+            <path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.27,47,25.53a8,8,0,0,0,4.2,0c1-.26,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a129.3,129.3,0,0,1-39.4-22.2C61.66,179.16,48,149.07,48,112V56H208v56Zm-50.34-18.34a8,8,0,0,1,0,11.31l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L96,143.31,146.34,93.66A8,8,0,0,1,173.66,93.66Z"/>
+        </symbol>
+        <symbol id="ph-download" viewBox="0 0 256 256">
+            <path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V24a8,8,0,0,0-16,0V124.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/>
+        </symbol>
+        <symbol id="ph-check-circle" viewBox="0 0 256 256">
+            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm37.66-101.66a8,8,0,0,1,0,11.32l-40,40a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L120,148.69l34.34-34.35A8,8,0,0,1,165.66,114.34Z"/>
+        </symbol>
+        <symbol id="ph-folder" viewBox="0 0 256 256">
+            <path d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"/>
+        </symbol>
+        <symbol id="ph-warning-circle" viewBox="0 0 256 256">
+            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"/>
+        </symbol>
+        <symbol id="ph-rocket" viewBox="0 0 256 256">
+            <path d="M152,224a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h32A8,8,0,0,1,152,224Zm70.16-138.36C214,73.33,204.53,62.9,192,55.32A71.45,71.45,0,0,0,152,48a72.07,72.07,0,0,0-72,72c0,28.77-8.9,49.58-21.16,62.36A31.82,31.82,0,0,1,36.08,192H21.73A11.73,11.73,0,0,1,10,180.27V171.3A11.73,11.73,0,0,1,21.73,159.6H24.08a79.94,79.94,0,0,0,56.4-23.32C93.18,123.63,96,108.11,96,96.62c0-40.32,12.41-70.07,36.7-88.18A71.47,71.47,0,0,1,152,2h0c20.37,0,37.25,7.55,48,21.32,13,16.66,20,39.33,20,64.43V96c0,28.77,8.91,49.58,21.16,62.36A31.82,31.82,0,0,1,219.92,192h14.35A11.73,11.73,0,0,1,246,180.27V171.3A11.73,11.73,0,0,1,234.27,159.6H231.92A79.94,79.94,0,0,1,175.52,136.28ZM152,16a55.72,55.72,0,0,0-27.5,7.2C104.18,37.08,94,62.89,94,96.62c0,13.43-3.23,30.88-17.75,47.85A96,96,0,0,1,26,175.6v4.67H36.08a16,16,0,0,0,11.31-4.69C69.65,153.32,80,129.05,80,96a56.06,56.06,0,0,1,56-56h16a55.85,55.85,0,0,1,23.48,5.2C191.82,59.08,202,84.89,202,118.62c0,13.43,3.23,30.88,17.75,47.85A96,96,0,0,0,270,175.6v4.67H259.92a16,16,0,0,1-11.31-4.69C226.35,153.32,216,129.05,216,96V87.75C216,54.69,196.67,16,152,16ZM176,120a16,16,0,1,1-16-16A16,16,0,0,1,176,120Z"/>
+        </symbol>
+        <symbol id="ph-info" viewBox="0 0 256 256">
+            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"/>
+        </symbol>
+    </svg>
+
+    <!-- Launcher Container -->
+    <div class="launcher-container">
+        <!-- Header -->
+        <div class="launcher-header">
+            <div class="logo">
+                <svg width="48" height="48" viewBox="0 0 256 256" fill="none" stroke="url(#logoGradient)" stroke-width="12">
+                    <use xlink:href="#ph-shield-check"></use>
+                </svg>
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </div>
+            <div class="header-text">
+                <h1>CV Manager Pro</h1>
+                <p class="subtitle">Launcher & Updater</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content">
+
+            <!-- View 1: Data Location Setup (shown first time only) -->
+            <div id="viewDataLocation" class="view" style="display: none;">
+                <div class="icon-large">
+                    <svg width="64" height="64" viewBox="0 0 256 256" fill="currentColor" class="text-primary">
+                        <use xlink:href="#ph-folder"></use>
+                    </svg>
+                </div>
+                <h2>Wo sollen deine Daten gespeichert werden?</h2>
+                <p class="description">
+                    Wähle einen Speicherort für deine verschlüsselten CV-Daten.<br>
+                    Du kannst dies später in den Einstellungen ändern.
+                </p>
+
+                <div class="options-grid">
+                    <button class="option-card" onclick="useDefaultLocation()">
+                        <svg width="32" height="32" viewBox="0 0 256 256" fill="currentColor">
+                            <use xlink:href="#ph-folder"></use>
+                        </svg>
+                        <h3>Hier im Programmordner</h3>
+                        <p>Empfohlen für portable Installation</p>
+                        <span class="path-preview" id="defaultPath">./cv-data/</span>
+                    </button>
+
+                    <button class="option-card" onclick="selectCustomLocation()">
+                        <svg width="32" height="32" viewBox="0 0 256 256" fill="currentColor">
+                            <use xlink:href="#ph-folder"></use>
+                        </svg>
+                        <h3>Anderen Ort wählen</h3>
+                        <p>Z.B. Dokumente, Dropbox, etc.</p>
+                        <span class="path-preview">Ordner wählen...</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- View 2: Update Check -->
+            <div id="viewUpdateCheck" class="view">
+                <div class="status-section">
+                    <div class="status-icon">
+                        <svg width="48" height="48" viewBox="0 0 256 256" fill="currentColor" class="text-primary rotating">
+                            <use xlink:href="#ph-download"></use>
+                        </svg>
+                    </div>
+                    <h2>Suche nach Updates...</h2>
+                    <p id="statusText">Prüfe Launcher und Hauptanwendung</p>
+                </div>
+
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- View 3: Updates Available -->
+            <div id="viewUpdatesAvailable" class="view" style="display: none;">
+                <div class="icon-large">
+                    <svg width="64" height="64" viewBox="0 0 256 256" fill="currentColor" class="text-accent">
+                        <use xlink:href="#ph-download"></use>
+                    </svg>
+                </div>
+                <h2>Updates verfügbar!</h2>
+                <p class="description">Es wurden neue Versionen gefunden</p>
+
+                <!-- Update Cards -->
+                <div id="updateCards" class="update-cards">
+                    <!-- Will be filled dynamically -->
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary btn-large" onclick="downloadAllUpdates()">
+                        <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor">
+                            <use xlink:href="#ph-download"></use>
+                        </svg>
+                        Alle Updates installieren
+                    </button>
+                    <button class="btn btn-ghost" onclick="skipUpdates()">
+                        Später aktualisieren
+                    </button>
+                </div>
+            </div>
+
+            <!-- View 4: Downloading Updates -->
+            <div id="viewDownloading" class="view" style="display: none;">
+                <div class="status-section">
+                    <div class="status-icon">
+                        <svg width="48" height="48" viewBox="0 0 256 256" fill="currentColor" class="text-accent pulse">
+                            <use xlink:href="#ph-download"></use>
+                        </svg>
+                    </div>
+                    <h2 id="downloadTitle">Lade Updates herunter...</h2>
+                    <p id="downloadStatus">Bitte warten</p>
+                </div>
+
+                <div class="download-progress">
+                    <div class="progress-stats">
+                        <span id="downloadPercent">0%</span>
+                        <span id="downloadSpeed"></span>
+                        <span id="downloadETA"></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="downloadProgressFill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-details">
+                        <span id="downloadBytes">0 MB / 0 MB</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 5: Ready to Launch -->
+            <div id="viewReady" class="view" style="display: none;">
+                <div class="icon-large success-pulse">
+                    <svg width="64" height="64" viewBox="0 0 256 256" fill="currentColor" class="text-success">
+                        <use xlink:href="#ph-check-circle"></use>
+                    </svg>
+                </div>
+                <h2>Bereit zum Starten!</h2>
+                <p class="description" id="readyMessage">Alle Updates wurden installiert</p>
+
+                <button class="btn btn-primary btn-large btn-launch" onclick="launchApp()">
+                    <svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor">
+                        <use xlink:href="#ph-rocket"></use>
+                    </svg>
+                    CV Manager Pro starten
+                </button>
+
+                <div class="version-info">
+                    <div class="version-row">
+                        <span>Launcher:</span>
+                        <span id="launcherVersion">v1.0.0</span>
+                    </div>
+                    <div class="version-row">
+                        <span>Hauptanwendung:</span>
+                        <span id="appVersion">v1.1.7</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 6: Error -->
+            <div id="viewError" class="view" style="display: none;">
+                <div class="icon-large">
+                    <svg width="64" height="64" viewBox="0 0 256 256" fill="currentColor" class="text-error">
+                        <use xlink:href="#ph-warning-circle"></use>
+                    </svg>
+                </div>
+                <h2>Fehler aufgetreten</h2>
+                <p class="description error-message" id="errorMessage"></p>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="retryOperation()">
+                        Erneut versuchen
+                    </button>
+                    <button class="btn btn-ghost" onclick="skipUpdates()">
+                        Ohne Updates fortfahren
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="launcher-footer">
+            <p>© 2025 CV Manager Pro Team · <span id="footerVersion">Launcher v1.0.0</span></p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

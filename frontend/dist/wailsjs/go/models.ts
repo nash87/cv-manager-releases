@@ -490,6 +490,26 @@ export namespace main {
 		    return a;
 		}
 	}
+	export class DownloadProgress {
+	    downloading: boolean;
+	    bytes_downloaded: number;
+	    total_bytes: number;
+	    percent_complete: number;
+	    error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DownloadProgress(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.downloading = source["downloading"];
+	        this.bytes_downloaded = source["bytes_downloaded"];
+	        this.total_bytes = source["total_bytes"];
+	        this.percent_complete = source["percent_complete"];
+	        this.error = source["error"];
+	    }
+	}
 	
 	export class GDPRArticle {
 	    article: string;
@@ -766,6 +786,36 @@ export namespace main {
 		}
 	}
 	
+	export class UpdateStatus {
+	    checking: boolean;
+	    update_available: boolean;
+	    current_version: string;
+	    latest_version: string;
+	    release_notes: string;
+	    download_url: string;
+	    changelog_url: string;
+	    sha256: string;
+	    error: string;
+	    size_mb: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new UpdateStatus(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.checking = source["checking"];
+	        this.update_available = source["update_available"];
+	        this.current_version = source["current_version"];
+	        this.latest_version = source["latest_version"];
+	        this.release_notes = source["release_notes"];
+	        this.download_url = source["download_url"];
+	        this.changelog_url = source["changelog_url"];
+	        this.sha256 = source["sha256"];
+	        this.error = source["error"];
+	        this.size_mb = source["size_mb"];
+	    }
+	}
 	export class UserConsent {
 	    consent_given: boolean;
 	    // Go type: time

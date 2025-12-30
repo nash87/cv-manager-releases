@@ -8,8 +8,43 @@
     "statistics": "Statistiken",
     "visualEditor": "Visueller Editor",
     "privacy": "Datenschutz & Sicherheit",
+    "audit": "Audit-Log",
     "settings": "Einstellungen",
     "exit": "Beenden"
+  },
+  "audit": {
+    "title": "Audit-Log",
+    "subtitle": "Alle Benutzeraktivitäten und Systemereignisse verfolgen",
+    "stats": {
+      "total_events": "Ereignisse insgesamt",
+      "today": "Heute",
+      "success_rate": "Erfolgsquote",
+      "last_hour": "Letzte Stunde"
+    },
+    "filters": {
+      "title": "Filter",
+      "reset": "Zurücksetzen",
+      "apply": "Anwenden",
+      "export": "Exportieren",
+      "all": "Alle",
+      "date_range": "Zeitraum",
+      "event_type": "Ereignistyp",
+      "category": "Kategorie",
+      "status": "Status",
+      "success": "Erfolgreich",
+      "failure": "Fehlgeschlagen"
+    },
+    "events": {
+      "title": "Aktivitätsereignisse",
+      "events": "Ereignisse",
+      "empty": "Keine Audit-Ereignisse gefunden"
+    },
+    "pagination": {
+      "prev": "Zurück",
+      "next": "Weiter",
+      "page": "Seite",
+      "of": "von"
+    }
   },
   "buttons": {
     "newCV": "Neuer Lebenslauf",

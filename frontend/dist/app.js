@@ -276,6 +276,10 @@ function switchView(viewName) {
             loadApplicationsView();
         } else if (viewName === 'privacy') {
             loadPrivacyView();
+        } else if (viewName === 'audit') {
+            if (window.AuditManager) {
+                window.AuditManager.init();
+            }
         } else if (viewName === 'visualEditor') {
             loadVisualEditor();
         } else if (viewName === 'settings') {
@@ -2947,3 +2951,81 @@ if (document.readyState === 'loading') {
     setupWindowControls();
     updateFooterVersion();
 }
+
+
+// ==================== Silent Auto-Update (Discord-style) ====================
+let pendingUpdate = null;
+
+async function checkForUpdates() {
+    console.log('[Update] Silent update check starting...');
+    
+    try {
+        const updateStatus = await window.go.main.App.CheckForUpdates();
+        console.log('[Update] Status:', updateStatus);
+        
+        if (updateStatus.update_available) {
+            console.log(`[Update] Found update: ${updateStatus.current_version} -> ${updateStatus.latest_version}`);
+            
+            // Automatically download in background
+            await downloadUpdateSilently(updateStatus);
+        } else {
+            console.log('[Update] Already on latest version');
+        }
+    } catch (error) {
+        console.error('[Update] Silent check failed:', error);
+    }
+}
+
+async function downloadUpdateSilently(updateInfo) {
+    console.log('[Update] Starting silent download...');
+    
+    try {
+        const downloadResult = await window.go.main.App.DownloadUpdate(
+            updateInfo.download_url,
+            updateInfo.sha256 || ''
+        );
+        
+        if (downloadResult.error) {
+            console.error('[Update] Download failed:', downloadResult.error);
+            return;
+        }
+        
+        console.log('[Update] Download complete! Update will be installed on next start.');
+        pendingUpdate = updateInfo;
+        
+        // Show small notification in footer
+        showUpdateReadyNotification(updateInfo.latest_version);
+        
+    } catch (error) {
+        console.error('[Update] Silent download error:', error);
+    }
+}
+
+function showUpdateReadyNotification(version) {
+    const footerVersion = document.getElementById('footerVersion');
+    if (footerVersion) {
+        footerVersion.innerHTML = `v${version} <span style="color: #10b981;">●</span>`;
+        footerVersion.title = `Update auf v${version} bereit - wird beim nächsten Start installiert`;
+    }
+}
+
+// Check on startup during splash screen
+setTimeout(() => {
+    console.log('[Update] Starting automatic update check during splash screen...');
+    checkForUpdates();
+}, 1000);
+
+// Also allow manual check
+document.addEventListener('DOMContentLoaded', () => {
+    const checkBtn = document.getElementById('checkForUpdatesBtn');
+    if (checkBtn) {
+        checkBtn.addEventListener('click', async () => {
+            checkBtn.disabled = true;
+            checkBtn.textContent = 'Prüfe...';
+            await checkForUpdates();
+            checkBtn.disabled = false;
+            checkBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Nach Updates suchen';
+        });
+    }
+});
+

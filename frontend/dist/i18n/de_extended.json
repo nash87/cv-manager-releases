@@ -1,0 +1,64 @@
+{
+  "favorites": {
+    "title": "Favoriten",
+    "addToFavorites": "Zu Favoriten hinzufügen",
+    "removeFromFavorites": "Aus Favoriten entfernen",
+    "showOnlyFavorites": "Nur Favoriten anzeigen",
+    "noFavorites": "Noch keine Favoriten",
+    "markedAsFavorite": "Als Favorit markiert",
+    "unmarkedAsFavorite": "Favorit entfernt"
+  },
+  "bulk": {
+    "selectAll": "Alle auswählen",
+    "deselectAll": "Auswahl aufheben",
+    "selected": "ausgewählt",
+    "deleteSelected": "Ausgewählte löschen",
+    "exportSelected": "Ausgewählte exportieren",
+    "confirmDelete": "Sind Sie sicher, dass Sie {count} CVs löschen möchten?",
+    "deletedSuccessfully": "{count} CVs erfolgreich gelöscht"
+  },
+  "errors": {
+    "undefined": "Ein unbekannter Fehler ist aufgetreten",
+    "network": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
+    "timeout": "Zeitüberschreitung. Bitte versuchen Sie es erneut.",
+    "invalidInput": "Ungültige Eingabe",
+    "requiredField": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Ungültige E-Mail-Adresse",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "loadFailed": "Laden fehlgeschlagen",
+    "exportFailed": "Export fehlgeschlagen",
+    "deleteFailed": "Löschen fehlgeschlagen",
+    "createFailed": "Erstellen fehlgeschlagen"
+  },
+  "loading": {
+    "pleaseWait": "Bitte warten...",
+    "loading": "Lade...",
+    "saving": "Speichere...",
+    "deleting": "Lösche...",
+    "exporting": "Exportiere...",
+    "processing": "Verarbeite..."
+  },
+  "actions": {
+    "retry": "Erneut versuchen",
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "refresh": "Aktualisieren",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "view": "Ansehen",
+    "download": "Herunterladen"
+  },
+  "sortBy": {
+    "title": "Sortieren nach",
+    "name": "Name",
+    "dateCreated": "Erstellungsdatum",
+    "dateModified": "Änderungsdatum",
+    "status": "Status",
+    "favorite": "Favoriten zuerst"
+  },
+  "viewMode": {
+    "grid": "Rasteransicht",
+    "list": "Listenansicht",
+    "compact": "Kompaktansicht"
+  }
+}

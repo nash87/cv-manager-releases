@@ -25,6 +25,7 @@ type EncryptedStorage struct {
 	dataPath       string
 	complianceLog  *ComplianceLog
 	userConsent    *UserConsent
+	auditManager   *AuditManager
 }
 
 // ComplianceLog tracks all data operations for GDPR compliance
@@ -123,11 +124,15 @@ func NewEncryptedStorage(dataPath string, masterPassword string) (*EncryptedStor
 		return nil, fmt.Errorf("failed to open encrypted database: %w", err)
 	}
 
+	// Initialize audit manager
+	auditManager := NewAuditManager(dataPath, "1.1.7")
+
 	storage := &EncryptedStorage{
 		db:            db,
 		encryptionKey: encryptionKey,
 		dataPath:      dataPath,
 		complianceLog: &ComplianceLog{Entries: []ComplianceEntry{}},
+		auditManager:  auditManager,
 	}
 
 	// Load or create user consent
@@ -350,6 +355,7 @@ func (s *EncryptedStorage) CreateCV() (*CV, error) {
 	}
 
 	if err := s.SaveCV(cv); err != nil {
+		s.auditManager.LogError("cv_create", "create", cv.ID, err)
 		return nil, err
 	}
 
@@ -362,6 +368,14 @@ func (s *EncryptedStorage) CreateCV() (*CV, error) {
 		Description: fmt.Sprintf("Created CV: %s %s", cv.Firstname, cv.Lastname),
 	})
 
+	// Log audit event
+	s.auditManager.LogCVCreated(cv.ID, map[string]interface{}{
+		"firstname": cv.Firstname,
+		"lastname":  cv.Lastname,
+		"status":    cv.Status,
+		"template":  cv.Template,
+	})
+
 	return cv, nil
 }
 
@@ -370,10 +384,18 @@ func (s *EncryptedStorage) SaveCV(cv *CV) error {
 		return fmt.Errorf("consent required for saving CV")
 	}
 
+	// Get old version for change tracking
+	var oldCV *CV
+	existingCV, err := s.GetCV(cv.ID)
+	if err == nil {
+		oldCV = existingCV
+	}
+
 	cv.UpdatedAt = time.Now()
 
 	data, err := json.Marshal(cv)
 	if err != nil {
+		s.auditManager.LogError("cv_save", "update", cv.ID, err)
 		return err
 	}
 
@@ -390,6 +412,20 @@ func (s *EncryptedStorage) SaveCV(cv *CV) error {
 			LegalBasis:  "Art. 6(1)(a) GDPR - User Consent",
 			Description: fmt.Sprintf("Updated CV: %s %s", cv.Firstname, cv.Lastname),
 		})
+
+		// Log audit event with changes
+		var changes *AuditChanges
+		if oldCV != nil {
+			changes = s.detectCVChanges(oldCV, cv)
+		}
+
+		s.auditManager.LogCVUpdated(cv.ID, changes, map[string]interface{}{
+			"firstname": cv.Firstname,
+			"lastname":  cv.Lastname,
+			"status":    cv.Status,
+		})
+	} else {
+		s.auditManager.LogError("cv_save", "update", cv.ID, err)
 	}
 
 	return err
@@ -485,6 +521,15 @@ func (s *EncryptedStorage) DeleteCV(id string) error {
 			LegalBasis:  "Art. 17 GDPR - Right to erasure",
 			Description: fmt.Sprintf("Deleted CV: %s %s", cv.Firstname, cv.Lastname),
 		})
+
+		// Log audit event
+		s.auditManager.LogCVDeleted(id, map[string]interface{}{
+			"firstname": cv.Firstname,
+			"lastname":  cv.Lastname,
+			"status":    cv.Status,
+		})
+	} else if err != nil {
+		s.auditManager.LogError("cv_delete", "delete", id, err)
 	}
 
 	return err
@@ -1181,4 +1226,121 @@ func (s *EncryptedStorage) GetApplicationsStatistics() (*ApplicationsStatistics,
 	}
 
 	return stats, nil
+}
+
+// ==================== Audit Integration ====================
+
+// GetAuditEvents retrieves audit events with optional filtering
+func (s *EncryptedStorage) GetAuditEvents(filter *AuditFilter) ([]*AuditEvent, error) {
+	if !s.userConsent.ConsentGiven {
+		return nil, fmt.Errorf("consent required for accessing audit events")
+	}
+	return s.auditManager.GetAllEvents(filter)
+}
+
+// GetAuditStats retrieves audit statistics
+func (s *EncryptedStorage) GetAuditStats() (*AuditStats, error) {
+	if !s.userConsent.ConsentGiven {
+		return nil, fmt.Errorf("consent required for accessing audit stats")
+	}
+	return s.auditManager.GetStats()
+}
+
+// GetAuditEventsByResource retrieves audit events for a specific resource
+func (s *EncryptedStorage) GetAuditEventsByResource(resourceType, resourceID string) ([]*AuditEvent, error) {
+	if !s.userConsent.ConsentGiven {
+		return nil, fmt.Errorf("consent required for accessing audit events")
+	}
+	return s.auditManager.GetEventsByResource(resourceType, resourceID)
+}
+
+// ExportAuditEvents exports audit events to JSON file
+func (s *EncryptedStorage) ExportAuditEvents(filter *AuditFilter, outputPath string) error {
+	if !s.userConsent.ConsentGiven {
+		return fmt.Errorf("consent required for exporting audit events")
+	}
+	return s.auditManager.ExportEvents(filter, outputPath)
+}
+
+// DeleteOldAuditLogs deletes audit logs older than the specified days
+func (s *EncryptedStorage) DeleteOldAuditLogs(days int) (int, error) {
+	if !s.userConsent.ConsentGiven {
+		return 0, fmt.Errorf("consent required for deleting audit logs")
+	}
+	return s.auditManager.DeleteOldLogs(days)
+}
+
+// detectCVChanges detects what changed between two CV versions
+func (s *EncryptedStorage) detectCVChanges(oldCV, newCV *CV) *AuditChanges {
+	changes := &AuditChanges{
+		Before: make(map[string]interface{}),
+		After:  make(map[string]interface{}),
+		Fields: []string{},
+	}
+
+	// Check basic fields
+	if oldCV.Firstname != newCV.Firstname {
+		changes.Before["firstname"] = oldCV.Firstname
+		changes.After["firstname"] = newCV.Firstname
+		changes.Fields = append(changes.Fields, "firstname")
+	}
+	if oldCV.Lastname != newCV.Lastname {
+		changes.Before["lastname"] = oldCV.Lastname
+		changes.After["lastname"] = newCV.Lastname
+		changes.Fields = append(changes.Fields, "lastname")
+	}
+	if oldCV.Email != newCV.Email {
+		changes.Before["email"] = oldCV.Email
+		changes.After["email"] = newCV.Email
+		changes.Fields = append(changes.Fields, "email")
+	}
+	if oldCV.Phone != newCV.Phone {
+		changes.Before["phone"] = oldCV.Phone
+		changes.After["phone"] = newCV.Phone
+		changes.Fields = append(changes.Fields, "phone")
+	}
+	if oldCV.JobTitle != newCV.JobTitle {
+		changes.Before["job_title"] = oldCV.JobTitle
+		changes.After["job_title"] = newCV.JobTitle
+		changes.Fields = append(changes.Fields, "job_title")
+	}
+	if oldCV.Status != newCV.Status {
+		changes.Before["status"] = oldCV.Status
+		changes.After["status"] = newCV.Status
+		changes.Fields = append(changes.Fields, "status")
+	}
+	if oldCV.Category != newCV.Category {
+		changes.Before["category"] = oldCV.Category
+		changes.After["category"] = newCV.Category
+		changes.Fields = append(changes.Fields, "category")
+	}
+	if oldCV.Template != newCV.Template {
+		changes.Before["template"] = oldCV.Template
+		changes.After["template"] = newCV.Template
+		changes.Fields = append(changes.Fields, "template")
+	}
+	if oldCV.IsFavorite != newCV.IsFavorite {
+		changes.Before["is_favorite"] = oldCV.IsFavorite
+		changes.After["is_favorite"] = newCV.IsFavorite
+		changes.Fields = append(changes.Fields, "is_favorite")
+	}
+
+	// Check array lengths
+	if len(oldCV.WorkExperience) != len(newCV.WorkExperience) {
+		changes.Before["work_experience_count"] = len(oldCV.WorkExperience)
+		changes.After["work_experience_count"] = len(newCV.WorkExperience)
+		changes.Fields = append(changes.Fields, "work_experience")
+	}
+	if len(oldCV.Education) != len(newCV.Education) {
+		changes.Before["education_count"] = len(oldCV.Education)
+		changes.After["education_count"] = len(newCV.Education)
+		changes.Fields = append(changes.Fields, "education")
+	}
+	if len(oldCV.Skills) != len(newCV.Skills) {
+		changes.Before["skills_count"] = len(oldCV.Skills)
+		changes.After["skills_count"] = len(newCV.Skills)
+		changes.Fields = append(changes.Fields, "skills")
+	}
+
+	return changes
 }

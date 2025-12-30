@@ -24,6 +24,9 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
+	// Check for pending update and install it
+	a.checkAndInstallPendingUpdate()
+
 	// Get executable directory
 	exePath, err := os.Executable()
 	if err != nil {
@@ -48,32 +51,99 @@ func (a *App) startup(ctx context.Context) {
 	}
 
 	a.encryptedStore = storage
+
+	// Start automatic update check in background after 1 second
+	go func() {
+		time.Sleep(1 * time.Second)
+		fmt.Println("[AutoUpdate] Starting automatic update check...")
+
+		status, err := a.CheckForUpdates()
+		if err != nil {
+			fmt.Printf("[AutoUpdate] Check failed: %v\n", err)
+			return
+		}
+
+		if status.UpdateAvailable {
+			fmt.Printf("[AutoUpdate] Update available: %s -> %s\n", status.CurrentVersion, status.LatestVersion)
+			fmt.Println("[AutoUpdate] Starting silent download...")
+
+			// Download silently in background
+			result, err := a.DownloadUpdate(status.DownloadURL, status.SHA256)
+			if err != nil {
+				fmt.Printf("[AutoUpdate] Download failed: %v\n", err)
+				return
+			}
+
+			if result.Error != "" {
+				fmt.Printf("[AutoUpdate] Download error: %s\n", result.Error)
+				return
+			}
+
+			fmt.Println("[AutoUpdate] Download complete! Update will be installed on next start.")
+		} else {
+			fmt.Println("[AutoUpdate] Already on latest version")
+		}
+	}()
+}
+
+// checkAndInstallPendingUpdate checks if there's a downloaded update and installs it
+func (a *App) checkAndInstallPendingUpdate() {
+	updateFile := filepath.Join(os.TempDir(), "cv-manager-pro-update.exe")
+
+	// Check if update file exists
+	if _, err := os.Stat(updateFile); os.IsNotExist(err) {
+		return // No pending update
+	}
+
+	fmt.Println("[Startup] Found pending update, installing...")
+
+	// Apply the update (this will restart the app)
+	if err := a.ApplyUpdate(); err != nil {
+		fmt.Printf("[Startup] Failed to install update: %v\n", err)
+		// Clean up failed update
+		os.Remove(updateFile)
+	}
 }
 
 // ========== GDPR & Consent Methods ==========
 
 // GetConsent returns current user consent
 func (a *App) GetConsent() *UserConsent {
+	if a.encryptedStore == nil {
+		return nil
+	}
 	return a.encryptedStore.GetConsent()
 }
 
 // GrantConsent grants user consent for data processing
 func (a *App) GrantConsent() error {
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
 	return a.encryptedStore.GrantConsent()
 }
 
 // WithdrawConsent withdraws user consent
 func (a *App) WithdrawConsent() error {
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
 	return a.encryptedStore.WithdrawConsent()
 }
 
 // GetSecurityInfo returns security and compliance information
 func (a *App) GetSecurityInfo() SecurityInfo {
+	if a.encryptedStore == nil {
+		return SecurityInfo{}
+	}
 	return a.encryptedStore.GetSecurityInfo()
 }
 
 // GetComplianceLog returns compliance log
 func (a *App) GetComplianceLog() []ComplianceEntry {
+	if a.encryptedStore == nil {
+		return []ComplianceEntry{}
+	}
 	return a.encryptedStore.GetComplianceLog()
 }
 
@@ -132,6 +202,63 @@ func (a *App) SaveCV(cv *CV) error {
 // DeleteCV deletes a CV
 func (a *App) DeleteCV(id string) error {
 	return a.encryptedStore.DeleteCV(id)
+}
+
+// BulkDeleteCVs deletes multiple CVs at once
+func (a *App) BulkDeleteCVs(ids []string) error {
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
+
+	var lastErr error
+	for _, id := range ids {
+		if err := a.encryptedStore.DeleteCV(id); err != nil {
+			lastErr = err
+			fmt.Printf("[BulkDelete] Failed to delete CV %s: %v\n", id, err)
+		}
+	}
+
+	return lastErr
+}
+
+// ToggleFavorite toggles the favorite status of a CV
+func (a *App) ToggleFavorite(id string) error {
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
+
+	cv, err := a.encryptedStore.GetCV(id)
+	if err != nil {
+		return err
+	}
+
+	// Toggle favorite
+	cv.IsFavorite = !cv.IsFavorite
+	cv.UpdatedAt = time.Now()
+	return a.encryptedStore.SaveCV(cv)
+}
+
+// GetFavoriteCVs returns all favorite CVs
+func (a *App) GetFavoriteCVs() ([]CVSummary, error) {
+	if a.encryptedStore == nil {
+		return nil, fmt.Errorf("storage not initialized")
+	}
+
+	allCVs, err := a.encryptedStore.GetAllCVs()
+	if err != nil {
+		return nil, err
+	}
+
+	favorites := []CVSummary{}
+	for _, cv := range allCVs {
+		// Filter only favorites
+		if cv.IsFavorite {
+			summary := cv.ToSummary()
+			favorites = append(favorites, summary)
+		}
+	}
+
+	return favorites, nil
 }
 
 // SearchCVs searches CVs
@@ -312,4 +439,42 @@ func (a *App) GetVersion() string {
 // GetChangeLog returns the version changelog
 func (a *App) GetChangeLog() []ChangeLogEntry {
 	return GetChangeLog()
+}
+
+// ========== Audit Methods ==========
+
+// GetAuditEvents retrieves audit events with optional filtering
+func (a *App) GetAuditEvents(filter *AuditFilter) ([]*AuditEvent, error) {
+	return a.encryptedStore.GetAuditEvents(filter)
+}
+
+// GetAuditStats retrieves audit statistics
+func (a *App) GetAuditStats() (*AuditStats, error) {
+	return a.encryptedStore.GetAuditStats()
+}
+
+// GetAuditEventsByResource retrieves audit events for a specific resource
+func (a *App) GetAuditEventsByResource(resourceType, resourceID string) ([]*AuditEvent, error) {
+	return a.encryptedStore.GetAuditEventsByResource(resourceType, resourceID)
+}
+
+// ExportAuditEvents exports audit events to JSON file
+func (a *App) ExportAuditEvents(filter *AuditFilter) (string, error) {
+	outputPath := filepath.Join(a.encryptedStore.dataPath, "exports", fmt.Sprintf("audit_export_%s.json", time.Now().Format("2006-01-02_15-04-05")))
+
+	// Ensure exports directory exists
+	if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
+		return "", err
+	}
+
+	if err := a.encryptedStore.ExportAuditEvents(filter, outputPath); err != nil {
+		return "", err
+	}
+
+	return outputPath, nil
+}
+
+// DeleteOldAuditLogs deletes audit logs older than the specified days
+func (a *App) DeleteOldAuditLogs(days int) (int, error) {
+	return a.encryptedStore.DeleteOldAuditLogs(days)
 }

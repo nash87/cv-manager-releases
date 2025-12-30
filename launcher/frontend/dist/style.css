@@ -1,0 +1,594 @@
+/* ==================== CV Manager Pro Launcher - Stylesheet ==================== */
+/* Obsidian-inspired Design, Purple Gradient Theme */
+
+:root {
+    /* Primary Colors - Purple Gradient */
+    --primary-50: #f5f3ff;
+    --primary-100: #ede9fe;
+    --primary-200: #ddd6fe;
+    --primary-300: #c4b5fd;
+    --primary-400: #a78bfa;
+    --primary-500: #8b5cf6;
+    --primary-600: #7c3aed;
+    --primary-700: #6d28d9;
+    --primary-800: #5b21b6;
+    --primary-900: #4c1d95;
+
+    /* Accent Colors - Teal */
+    --accent-500: #14b8a6;
+    --accent-600: #0d9488;
+
+    /* Semantic Colors */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
+
+    /* Dark Theme (Default) */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --border-color: #475569;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.3);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
+    --gradient-accent: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==================== Reset & Base Styles ==================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==================== Launcher Container ==================== */
+
+.launcher-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+}
+
+/* ==================== Header ==================== */
+
+.launcher-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 32px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-center;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 4px 8px rgba(139, 92, 246, 0.3));
+}
+
+.header-text h1 {
+    font-size: 20px;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ==================== Main Content ==================== */
+
+.main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+.view {
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.view h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 16px 0 8px;
+}
+
+.view .description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+    line-height: 1.6;
+}
+
+/* ==================== Icons ==================== */
+
+.icon-large {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.icon-large svg {
+    width: 64px;
+    height: 64px;
+}
+
+.text-primary {
+    color: var(--primary-500);
+}
+
+.text-accent {
+    color: var(--accent-500);
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-error {
+    color: var(--error);
+}
+
+/* Animations */
+.rotating {
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.success-pulse {
+    animation: successPulse 1s ease-in-out;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* ==================== Options Grid ==================== */
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.option-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px 16px;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.option-card:hover {
+    border-color: var(--primary-500);
+    background: var(--bg-tertiary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.option-card:active {
+    transform: translateY(0);
+}
+
+.option-card svg {
+    color: var(--primary-500);
+}
+
+.option-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.option-card p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.path-preview {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    color: var(--primary-400);
+    background: var(--bg-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ==================== Progress Bar ==================== */
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 24px 0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 4px;
+    transition: width var(--transition-base);
+    box-shadow: var(--shadow-glow);
+}
+
+.download-progress {
+    margin: 24px 0;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.progress-stats span {
+    display: inline-block;
+}
+
+#downloadPercent {
+    color: var(--primary-400);
+    font-weight: 600;
+}
+
+.progress-details {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+/* ==================== Update Cards ==================== */
+
+.update-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.update-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+    transition: all var(--transition-base);
+}
+
+.update-card:hover {
+    border-color: var(--primary-500);
+    box-shadow: var(--shadow-md);
+}
+
+.update-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.update-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.update-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--primary-500);
+    color: white;
+}
+
+.update-badge.required {
+    background: var(--error);
+}
+
+.update-card-body {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.update-version {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.update-size {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* ==================== Buttons ==================== */
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover:not(:disabled) {
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--primary-500);
+}
+
+.btn-large {
+    padding: 16px 32px;
+    font-size: 15px;
+}
+
+.btn-launch {
+    background: var(--gradient-success);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.btn-launch:hover {
+    animation: none;
+}
+
+/* ==================== Status Section ==================== */
+
+.status-section {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.status-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+}
+
+.status-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+#statusText {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* ==================== Version Info ==================== */
+
+.version-info {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 24px;
+}
+
+.version-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 4px 0;
+}
+
+.version-row span:first-child {
+    color: var(--text-secondary);
+}
+
+.version-row span:last-child {
+    color: var(--primary-400);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+}
+
+/* ==================== Footer ==================== */
+
+.launcher-footer {
+    padding: 16px 32px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.launcher-footer p {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ==================== Error Message ==================== */
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--error);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #fca5a5;
+    font-size: 13px;
+    margin: 16px 0;
+    text-align: left;
+}
+
+/* ==================== Scrollbar ==================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color);
+}
+
+/* ==================== Utility Classes ==================== */
+
+.hidden {
+    display: none !important;
+}
+
+.loading {
+    pointer-events: none;
+    opacity: 0.6;
+}

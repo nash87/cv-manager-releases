@@ -1,0 +1,11 @@
+{
+  "latest_version": "1.0.0",
+  "release_date": "2025-12-30",
+  "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.0.0/cv-manager-launcher.exe",
+  "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.0.0",
+  "minimum_version": "1.0.0",
+  "release_notes": "🚀 Erster Release des Launchers\n\n✅ Auto-Update System\n✅ Data Location Selector\n✅ Dual Update Check (Launcher + App)\n✅ Stylisches UI im App-Design\n✅ Silent Background Downloads\n✅ SHA256 Verification\n✅ Backup & Rollback Support",
+  "sha256": "628e67c323c9b572b3ab4d26c05eb76e701a7e631e26813a805ffe35f6d59769",
+  "size_mb": 10,
+  "is_required": false
+}

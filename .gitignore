@@ -1,0 +1,52 @@
+# Build outputs (except github-releases/)
+build/bin/
+!build/bin/.gitkeep
+
+# CV Manager Data - NEVER commit user data or encrypted databases!
+cv-data/
+cv-data-backup-*/
+**/encrypted_db/
+**/cv-data/
+**/cv-data-backup-*/
+
+# Launcher build outputs
+launcher/build/
+
+# Wails generated files
+frontend/dist/wailsjs/
+launcher/frontend/dist/wailsjs/
+
+# Node modules
+node_modules/
+frontend/node_modules/
+launcher/frontend/node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Config files with secrets
+config.local.json
+.env
+.env.local
+
+# Only github-releases/ folder should contain binaries for distribution
+# Everything else is excluded

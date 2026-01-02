@@ -4,7 +4,7 @@
   "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.1.0/cv-manager-launcher.exe",
   "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.1.0",
   "release_notes": "Seamless launcher design with live GitHub release info - No header, modern UI, real-time version display",
-  "sha256": "36f94c41855c18d5b134d74d9ff9db93c552a2dd87cd4e90d7fb1f55cc88d9cf",
+  "sha256": "8e55e04356e26d89a24cb060ab11d4afd76eab0ed12379d9ae88a26b13063944",
   "size_mb": 12,
   "is_required": false,
   "commit_hash": ""

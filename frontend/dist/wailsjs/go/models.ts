@@ -42,6 +42,56 @@ export namespace main {
 		    return a;
 		}
 	}
+	export class AppDownloadProgress {
+	    downloading: boolean;
+	    bytes_downloaded: number;
+	    total_bytes: number;
+	    percent_complete: number;
+	    error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AppDownloadProgress(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.downloading = source["downloading"];
+	        this.bytes_downloaded = source["bytes_downloaded"];
+	        this.total_bytes = source["total_bytes"];
+	        this.percent_complete = source["percent_complete"];
+	        this.error = source["error"];
+	    }
+	}
+	export class AppUpdateStatus {
+	    checking: boolean;
+	    update_available: boolean;
+	    current_version: string;
+	    latest_version: string;
+	    release_notes: string;
+	    download_url: string;
+	    changelog_url: string;
+	    sha256: string;
+	    error: string;
+	    size_mb: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new AppUpdateStatus(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.checking = source["checking"];
+	        this.update_available = source["update_available"];
+	        this.current_version = source["current_version"];
+	        this.latest_version = source["latest_version"];
+	        this.release_notes = source["release_notes"];
+	        this.download_url = source["download_url"];
+	        this.changelog_url = source["changelog_url"];
+	        this.sha256 = source["sha256"];
+	        this.error = source["error"];
+	        this.size_mb = source["size_mb"];
+	    }
+	}
 	export class ApplicationFeedback {
 	    id: string;
 	    type: string;
@@ -110,6 +160,193 @@ export namespace main {
 	        this.total_interviews = source["total_interviews"];
 	        this.total_offers = source["total_offers"];
 	    }
+	}
+	export class AuditChanges {
+	    before?: {[key: string]: any};
+	    after?: {[key: string]: any};
+	    fields: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new AuditChanges(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.before = source["before"];
+	        this.after = source["after"];
+	        this.fields = source["fields"];
+	    }
+	}
+	export class AuditEvent {
+	    id: string;
+	    // Go type: time
+	    timestamp: any;
+	    event_type: string;
+	    category: string;
+	    action: string;
+	    resource_id: string;
+	    resource_type: string;
+	    user_id: string;
+	    session_id: string;
+	    ip_address: string;
+	    user_agent: string;
+	    success: boolean;
+	    error_message?: string;
+	    metadata?: {[key: string]: any};
+	    duration_ms?: number;
+	    changes?: AuditChanges;
+	
+	    static createFrom(source: any = {}) {
+	        return new AuditEvent(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.timestamp = this.convertValues(source["timestamp"], null);
+	        this.event_type = source["event_type"];
+	        this.category = source["category"];
+	        this.action = source["action"];
+	        this.resource_id = source["resource_id"];
+	        this.resource_type = source["resource_type"];
+	        this.user_id = source["user_id"];
+	        this.session_id = source["session_id"];
+	        this.ip_address = source["ip_address"];
+	        this.user_agent = source["user_agent"];
+	        this.success = source["success"];
+	        this.error_message = source["error_message"];
+	        this.metadata = source["metadata"];
+	        this.duration_ms = source["duration_ms"];
+	        this.changes = this.convertValues(source["changes"], AuditChanges);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class AuditFilter {
+	    // Go type: time
+	    start_date?: any;
+	    // Go type: time
+	    end_date?: any;
+	    event_types?: string[];
+	    categories?: string[];
+	    actions?: string[];
+	    resource_type?: string;
+	    resource_id?: string;
+	    success_only: boolean;
+	    failure_only: boolean;
+	    limit: number;
+	    offset: number;
+	    sort_by: string;
+	    sort_order: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AuditFilter(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.start_date = this.convertValues(source["start_date"], null);
+	        this.end_date = this.convertValues(source["end_date"], null);
+	        this.event_types = source["event_types"];
+	        this.categories = source["categories"];
+	        this.actions = source["actions"];
+	        this.resource_type = source["resource_type"];
+	        this.resource_id = source["resource_id"];
+	        this.success_only = source["success_only"];
+	        this.failure_only = source["failure_only"];
+	        this.limit = source["limit"];
+	        this.offset = source["offset"];
+	        this.sort_by = source["sort_by"];
+	        this.sort_order = source["sort_order"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class AuditStats {
+	    total_events: number;
+	    events_by_type: {[key: string]: number};
+	    events_by_category: {[key: string]: number};
+	    events_by_action: {[key: string]: number};
+	    success_rate: number;
+	    failure_count: number;
+	    // Go type: time
+	    first_event?: any;
+	    // Go type: time
+	    last_event?: any;
+	    last_hour_count: number;
+	    today_count: number;
+	    this_week_count: number;
+	    this_month_count: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new AuditStats(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.total_events = source["total_events"];
+	        this.events_by_type = source["events_by_type"];
+	        this.events_by_category = source["events_by_category"];
+	        this.events_by_action = source["events_by_action"];
+	        this.success_rate = source["success_rate"];
+	        this.failure_count = source["failure_count"];
+	        this.first_event = this.convertValues(source["first_event"], null);
+	        this.last_event = this.convertValues(source["last_event"], null);
+	        this.last_hour_count = source["last_hour_count"];
+	        this.today_count = source["today_count"];
+	        this.this_week_count = source["this_week_count"];
+	        this.this_month_count = source["this_month_count"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class BuildInfo {
 	    version: string;
@@ -295,6 +532,7 @@ export namespace main {
 	    // Go type: time
 	    last_exported?: any;
 	    export_count: number;
+	    is_favorite: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new CV(source);
@@ -337,6 +575,7 @@ export namespace main {
 	        this.last_viewed = this.convertValues(source["last_viewed"], null);
 	        this.last_exported = this.convertValues(source["last_exported"], null);
 	        this.export_count = source["export_count"];
+	        this.is_favorite = source["is_favorite"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -371,6 +610,7 @@ export namespace main {
 	    work_count: number;
 	    education_count: number;
 	    skills_count: number;
+	    is_favorite: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new CVSummary(source);
@@ -390,6 +630,7 @@ export namespace main {
 	        this.work_count = source["work_count"];
 	        this.education_count = source["education_count"];
 	        this.skills_count = source["skills_count"];
+	        this.is_favorite = source["is_favorite"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -489,26 +730,6 @@ export namespace main {
 		    }
 		    return a;
 		}
-	}
-	export class DownloadProgress {
-	    downloading: boolean;
-	    bytes_downloaded: number;
-	    total_bytes: number;
-	    percent_complete: number;
-	    error: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new DownloadProgress(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.downloading = source["downloading"];
-	        this.bytes_downloaded = source["bytes_downloaded"];
-	        this.total_bytes = source["total_bytes"];
-	        this.percent_complete = source["percent_complete"];
-	        this.error = source["error"];
-	    }
 	}
 	
 	export class GDPRArticle {
@@ -786,36 +1007,6 @@ export namespace main {
 		}
 	}
 	
-	export class UpdateStatus {
-	    checking: boolean;
-	    update_available: boolean;
-	    current_version: string;
-	    latest_version: string;
-	    release_notes: string;
-	    download_url: string;
-	    changelog_url: string;
-	    sha256: string;
-	    error: string;
-	    size_mb: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new UpdateStatus(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.checking = source["checking"];
-	        this.update_available = source["update_available"];
-	        this.current_version = source["current_version"];
-	        this.latest_version = source["latest_version"];
-	        this.release_notes = source["release_notes"];
-	        this.download_url = source["download_url"];
-	        this.changelog_url = source["changelog_url"];
-	        this.sha256 = source["sha256"];
-	        this.error = source["error"];
-	        this.size_mb = source["size_mb"];
-	    }
-	}
 	export class UserConsent {
 	    consent_given: boolean;
 	    // Go type: time

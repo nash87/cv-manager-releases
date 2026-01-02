@@ -1,10 +1,10 @@
-// UnoCSS Configuration for CV Manager Pro
+// UnoCSS Configuration for CV Manager
 // Obsidian-inspired, seamless design system
 
 export default {
   theme: {
     colors: {
-      // Primary - Purple gradient (CV Manager Pro brand)
+      // Primary - Purple gradient (CV Manager brand)
       primary: {
         50: '#f5f3ff',
         100: '#ede9fe',

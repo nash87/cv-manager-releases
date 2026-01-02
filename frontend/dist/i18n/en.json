@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "CV Manager Pro",
+    "title": "CV Manager",
     "subtitle": "Encrypted & GDPR Compliant"
   },
   "nav": {
@@ -217,7 +217,7 @@
     }
   },
   "consent": {
-    "title": "Welcome to CV Manager Pro",
+    "title": "Welcome to CV Manager",
     "subtitle": "Your Privacy is Our Priority",
     "features": {
       "encryption": {
@@ -247,7 +247,7 @@
       },
       "disclaimer": "You can withdraw your consent at any time in Settings. All your data is stored locally on your device and never transmitted to external servers."
     },
-    "button": "I Agree - Start CV Manager Pro",
+    "button": "I Agree - Start CV Manager",
     "footer": "By using this application, you confirm that you have read and understood our data processing practices."
   },
   "complianceLog": {
@@ -283,7 +283,7 @@
     "deleteAllDataConfirm": "DELETE ALL MY DATA",
     "exportAllData": "This will export all your data as JSON. Continue?",
     "withdrawConsent": "Warning: Withdrawing consent will disable all data operations.\\n\\nYou will need to consent again to use the application.\\n\\nContinue?",
-    "exit": "Do you really want to exit CV Manager Pro?"
+    "exit": "Do you really want to exit CV Manager?"
   },
   "quickCreate": {
     "title": "Create New CV",
@@ -298,7 +298,7 @@
     "quit": "Quit"
   },
   "onboarding": {
-    "welcome": "Welcome to CV Manager Pro!",
+    "welcome": "Welcome to CV Manager!",
     "skip": "Skip Tutorial",
     "next": "Next",
     "previous": "Previous",

@@ -1,4 +1,4 @@
-// i18n Translation System for CV Manager Pro
+// i18n Translation System for CV Manager
 // Supports: German (de) and English (en)
 // Default: German (de)
 
@@ -21,8 +21,8 @@ class I18n {
         } catch (error) {
             console.error('i18n init failed:', error);
             // Use minimal fallback
-            this.translations['de'] = { app: { title: 'CV Manager Pro' } };
-            this.translations['en'] = { app: { title: 'CV Manager Pro' } };
+            this.translations['de'] = { app: { title: 'CV Manager' } };
+            this.translations['en'] = { app: { title: 'CV Manager' } };
             this.currentLang = 'de';
         }
     }

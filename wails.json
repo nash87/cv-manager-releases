@@ -1,20 +1,20 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "CV Manager Pro",
-  "outputfilename": "cv-manager-pro",
+  "name": "CV Manager",
+  "outputfilename": "cv-manager",
   "frontend:install": "echo 'Frontend is already built'",
   "frontend:build": "echo 'Frontend is already built'",
   "frontend:dev:watcher": "echo 'Frontend is already built'",
   "frontend:dev:serverUrl": "auto",
   "author": {
-    "name": "CV Manager Pro Team",
-    "email": "info@cvmanager.pro"
+    "name": "CV Manager Team",
+    "email": "info@cvmanager.app"
   },
   "info": {
-    "companyName": "CV Manager Pro",
-    "productName": "CV Manager Pro",
-    "productVersion": "1.0.0",
-    "copyright": "Copyright © 2025 CV Manager Pro",
+    "companyName": "CV Manager",
+    "productName": "CV Manager",
+    "productVersion": "1.3.0",
+    "copyright": "Copyright © 2025 CV Manager",
     "comments": "Encrypted & GDPR Compliant CV Management System"
   },
   "wailsjsdir": "./frontend/dist",

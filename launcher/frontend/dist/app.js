@@ -9,34 +9,40 @@ let launcherInfo = null;
 let updateStatus = {};
 let pendingUpdates = [];
 let githubStatus = null;
+let onboardingStep = 1;
+let selectedTheme = { template: 'classic', color: 'blue' };
+let previousView = null;
 
 // ==================== Init ====================
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('[Launcher] Starting...');
+    setText('githubStatus', 'Initialisiere...');
 
     try {
         // Load launcher info
+        console.log('[Launcher] Getting launcher info...');
         launcherInfo = await window.go.main.Launcher.GetLauncherInfo();
-        console.log('[Launcher] Info:', launcherInfo);
+        console.log('[Launcher] Info:', JSON.stringify(launcherInfo));
 
         // Update UI with version info
         setText('launcherVersion', `v${launcherInfo.version}`);
-        setText('githubStatus', 'Connecting...');
 
         // Check data location
         if (!launcherInfo.data_location) {
             console.log('[Launcher] No data location - show setup');
+            setText('githubStatus', 'Setup erforderlich');
             showView('viewDataLocation');
 
             const exePath = await getExePath();
             setText('defaultPath', exePath + '/cv-data/');
         } else {
-            console.log('[Launcher] Data:', launcherInfo.data_location);
+            console.log('[Launcher] Data location:', launcherInfo.data_location);
             await startUpdateCheck();
         }
     } catch (error) {
         console.error('[Launcher] Init error:', error);
+        setText('githubStatus', 'Init-Fehler');
         showError('Initialisierungsfehler: ' + getErrorMessage(error));
     }
 });
@@ -88,7 +94,7 @@ async function startUpdateCheck() {
     showView('viewUpdateCheck');
     setProgress(0);
     setText('statusText', 'Verbinde mit GitHub...');
-    setText('githubStatus', 'Connecting...');
+    setText('githubStatus', 'Verbinde...');
 
     setItemStatus('statusLauncher', 'checking', 'prüfe...');
     setItemStatus('statusApp', '', 'warte...');
@@ -98,20 +104,22 @@ async function startUpdateCheck() {
     try {
         animateProgress(0, 25, 800);
 
-        // Timeout after 8s
+        // Timeout after 12s
         const timeout = setTimeout(() => {
             if (!handled) {
                 handled = true;
-                setText('statusText', 'Netzwerk langsam...');
+                console.log('[Launcher] Timeout reached - going offline');
+                setText('statusText', 'Netzwerk-Timeout');
                 setText('githubStatus', 'Offline');
                 setItemStatus('statusLauncher', 'error', 'timeout');
                 setItemStatus('statusApp', 'error', 'timeout');
                 animateProgress(25, 100, 400);
                 setTimeout(() => showReady('Offline-Modus'), 500);
             }
-        }, 8000);
+        }, 12000);
 
         // Check updates
+        console.log('[Launcher] Calling CheckForUpdates...');
         setText('statusText', 'Prüfe Versionen...');
         const updates = await window.go.main.Launcher.CheckForUpdates();
 
@@ -119,31 +127,36 @@ async function startUpdateCheck() {
         if (handled) return;
         handled = true;
 
-        console.log('[Launcher] Updates:', updates);
+        console.log('[Launcher] Updates response:', JSON.stringify(updates, null, 2));
         updateStatus = updates;
 
         // Update status indicators
         const launcherOk = updates.launcher && !updates.launcher.error;
         const appOk = updates.app && !updates.app.error;
 
-        setItemStatus('statusLauncher', launcherOk ? 'success' : 'error',
-            launcherOk ? updates.launcher.latest_version : 'fehler');
+        console.log('[Launcher] Status - Launcher OK:', launcherOk, ', App OK:', appOk);
+
+        if (launcherOk) {
+            setItemStatus('statusLauncher', 'success', updates.launcher.latest_version);
+        } else {
+            setItemStatus('statusLauncher', 'error', updates.launcher?.error || 'fehler');
+        }
 
         setText('statusText', 'Prüfe App...');
         setItemStatus('statusApp', 'checking', 'prüfe...');
 
         await sleep(200);
 
-        setItemStatus('statusApp', appOk ? 'success' : 'error',
-            appOk ? updates.app.latest_version : 'fehler');
-
-        // Update app version in status bar
         if (appOk) {
+            setItemStatus('statusApp', 'success', updates.app.latest_version);
             setText('appVersion', `v${updates.app.current_version}`);
+        } else {
+            setItemStatus('statusApp', 'error', updates.app?.error || 'fehler');
         }
 
         // Update GitHub status
-        setText('githubStatus', launcherOk || appOk ? 'Connected' : 'Offline');
+        const connected = launcherOk || appOk;
+        setText('githubStatus', connected ? 'Verbunden' : 'Offline');
 
         animateProgress(25, 100, 400);
         await sleep(500);
@@ -152,6 +165,8 @@ async function startUpdateCheck() {
         const hasUpdates =
             (updates.launcher?.update_available) ||
             (updates.app?.update_available);
+
+        console.log('[Launcher] Updates available:', hasUpdates);
 
         if (hasUpdates) {
             showUpdatesAvailable(updates);
@@ -164,7 +179,7 @@ async function startUpdateCheck() {
         handled = true;
 
         console.error('[Launcher] Check failed:', error);
-        setText('githubStatus', 'Error');
+        setText('githubStatus', 'Fehler');
         setItemStatus('statusLauncher', 'error', 'fehler');
         setItemStatus('statusApp', 'error', 'fehler');
         showReady('Verbindungsfehler - Offline-Modus');
@@ -269,7 +284,7 @@ async function downloadAllUpdates() {
             setDownloadProgress(100, progress.bytes_downloaded, progress.total_bytes);
 
             setText('downloadStatus', 'Installiere...');
-            await window.go.main.Launcher.ApplyUpdate(component);
+            await window.go.main.Launcher.ApplyUpdateWithVersion(component, info.latest_version);
         }
 
         showReady('Updates installiert!');
@@ -298,7 +313,13 @@ async function launchApp() {
 
 // ==================== Ready ====================
 
-function showReady(message = 'Bereit') {
+async function showReady(message = 'Bereit') {
+    // Check if onboarding is needed first (skip if message indicates setup just completed)
+    if (!message.includes('abgeschlossen') && !message.includes('Starten')) {
+        const needsOnboarding = await checkAndShowOnboarding();
+        if (needsOnboarding) return;
+    }
+
     setText('readyMessage', message);
 
     if (updateStatus.app) {
@@ -364,6 +385,167 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// ==================== Onboarding ====================
+
+function showOnboarding() {
+    console.log('[Launcher] Showing onboarding');
+    onboardingStep = 1;
+    updateOnboardingUI();
+    showView('viewOnboarding');
+    setupThemeSelection();
+}
+
+function setupThemeSelection() {
+    document.querySelectorAll('.theme-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedTheme = {
+                template: card.dataset.template,
+                color: card.dataset.color
+            };
+            console.log('[Launcher] Theme selected:', selectedTheme);
+        });
+    });
+}
+
+function updateOnboardingUI() {
+    // Update progress dots
+    document.querySelectorAll('.progress-dot').forEach(dot => {
+        const step = parseInt(dot.dataset.step);
+        dot.classList.toggle('active', step <= onboardingStep);
+        dot.classList.toggle('current', step === onboardingStep);
+    });
+
+    // Show current step
+    for (let i = 1; i <= 3; i++) {
+        const stepEl = document.getElementById(`onboardingStep${i}`);
+        if (stepEl) {
+            stepEl.classList.toggle('active', i === onboardingStep);
+        }
+    }
+}
+
+function nextOnboardingStep() {
+    if (onboardingStep < 3) {
+        onboardingStep++;
+        updateOnboardingUI();
+    }
+}
+
+function prevOnboardingStep() {
+    if (onboardingStep > 1) {
+        onboardingStep--;
+        updateOnboardingUI();
+    }
+}
+
+async function skipOnboarding() {
+    console.log('[Launcher] Skipping onboarding');
+    try {
+        await window.go.main.Launcher.MarkOnboardingCompleted();
+    } catch (e) {
+        console.log('[Launcher] Mark onboarding skipped:', e);
+    }
+    showReady('Bereit zum Starten');
+}
+
+async function completeOnboarding() {
+    console.log('[Launcher] Completing onboarding');
+
+    // Collect form data
+    const firstName = document.getElementById('onb-firstName')?.value || '';
+    const lastName = document.getElementById('onb-lastName')?.value || '';
+    const email = document.getElementById('onb-email')?.value || '';
+    const jobTitle = document.getElementById('onb-jobTitle')?.value || '';
+
+    const onboardingData = {
+        firstName,
+        lastName,
+        email,
+        jobTitle,
+        template: selectedTheme.template,
+        colorScheme: selectedTheme.color
+    };
+
+    console.log('[Launcher] Onboarding data:', onboardingData);
+
+    try {
+        await window.go.main.Launcher.SaveOnboardingData(onboardingData);
+        await window.go.main.Launcher.MarkOnboardingCompleted();
+    } catch (e) {
+        console.log('[Launcher] Save onboarding failed:', e);
+    }
+
+    showReady('Setup abgeschlossen!');
+}
+
+// ==================== Config View ====================
+
+async function showConfigView() {
+    console.log('[Launcher] Showing config view');
+    previousView = currentView;
+
+    try {
+        const config = await window.go.main.Launcher.GetFullConfig();
+        console.log('[Launcher] Config:', config);
+
+        setText('configDataPath', config.data_location || 'Nicht konfiguriert');
+        setText('configLauncherVer', config.launcher_version || '--');
+        setText('configAppVer', config.app_version || '--');
+        setText('configOnboardingStatus', config.onboarding_completed ? 'Abgeschlossen' : 'Ausstehend');
+    } catch (e) {
+        console.log('[Launcher] Failed to get config:', e);
+        setText('configDataPath', 'Fehler');
+    }
+
+    showView('viewConfigInfo');
+}
+
+function closeConfigView() {
+    if (previousView) {
+        showView(previousView);
+    } else {
+        showReady('');
+    }
+}
+
+async function resetAllConfig() {
+    if (!confirm('Bist du sicher? Alle Einstellungen werden zurückgesetzt.')) {
+        return;
+    }
+
+    console.log('[Launcher] Resetting config');
+
+    try {
+        await window.go.main.Launcher.ResetConfig();
+        console.log('[Launcher] Config reset successful');
+        showView('viewDataLocation');
+
+        const exePath = await getExePath();
+        setText('defaultPath', exePath + '/cv-data/');
+    } catch (e) {
+        console.error('[Launcher] Reset failed:', e);
+        showError('Reset fehlgeschlagen: ' + getErrorMessage(e));
+    }
+}
+
+// ==================== Modified startUpdateCheck ====================
+
+async function checkAndShowOnboarding() {
+    try {
+        const config = await window.go.main.Launcher.GetFullConfig();
+        if (!config.onboarding_completed) {
+            console.log('[Launcher] Onboarding not completed, showing wizard');
+            showOnboarding();
+            return true;
+        }
+    } catch (e) {
+        console.log('[Launcher] Could not check onboarding status:', e);
+    }
+    return false;
+}
+
 // Global exports
 window.useDefaultLocation = useDefaultLocation;
 window.selectCustomLocation = selectCustomLocation;
@@ -371,5 +553,12 @@ window.downloadAllUpdates = downloadAllUpdates;
 window.skipUpdates = skipUpdates;
 window.launchApp = launchApp;
 window.retryOperation = retryOperation;
+window.nextOnboardingStep = nextOnboardingStep;
+window.prevOnboardingStep = prevOnboardingStep;
+window.skipOnboarding = skipOnboarding;
+window.completeOnboarding = completeOnboarding;
+window.showConfigView = showConfigView;
+window.closeConfigView = closeConfigView;
+window.resetAllConfig = resetAllConfig;
 
 console.log('[Launcher] Ready');

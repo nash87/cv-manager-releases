@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Manager Pro - Verschlüsselt & DSGVO-Konform</title>
+    <title>CV Manager - Verschlüsselt & DSGVO-Konform</title>
     <link rel="stylesheet" href="style.css">
     <script src="i18n/i18n.js"></script>
 </head>
 <body>
     <!-- Custom Titlebar with Window Controls -->
     <div class="titlebar" data-wails-drag>
-        <div class="titlebar-title">CV Manager Pro</div>
+        <div class="titlebar-title">CV Manager</div>
         <div class="titlebar-controls">
             <button class="titlebar-btn" id="minimizeBtn" title="Minimieren">
                 <svg width="12" height="12" viewBox="0 0 12 12"><line x1="0" y1="6" x2="12" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>
@@ -40,7 +40,7 @@
                 </defs>
             </div>
 
-            <h1 class="splash-title">CV Manager Pro</h1>
+            <h1 class="splash-title">CV Manager</h1>
             <p class="splash-subtitle">Verschlüsselt & DSGVO-Konform</p>
 
             <!-- Loading Spinner -->
@@ -133,7 +133,7 @@
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="var(--accent-primary)"></path>
                     </svg>
                 </div>
-                <h1>Willkommen bei <span style="color: var(--accent-primary);">CV Manager Pro</span></h1>
+                <h1>Willkommen bei <span style="color: var(--accent-primary);">CV Manager</span></h1>
                 <p class="consent-tagline">Professionelle Lebenslauf-Verwaltung mit militärischer Verschlüsselung</p>
             </div>
 
@@ -269,220 +269,10 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                Ich stimme zu - CV Manager Pro starten
+                Ich stimme zu - CV Manager starten
             </button>
 
-            <p class="consent-version">CV Manager Pro v1.0.0 - Made with Go & Wails</p>
-        </div>
-    </div>
-
-    <!-- Onboarding Wizard -->
-    <div id="onboardingWizard" class="onboarding-wizard" style="display: none;">
-        <div class="onboarding-content">
-            <button class="onboarding-skip" id="skipOnboarding" data-i18n="onboarding.skip">Skip Tutorial</button>
-
-            <div class="onboarding-step" data-step="1">
-                <div class="onboarding-icon">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        <path d="M9 12l2 2 4-4"></path>
-                    </svg>
-                </div>
-                <h2 data-i18n="onboarding.welcome">Welcome to CV Manager Pro!</h2>
-                <p data-i18n="onboarding.steps.step1.description">Let's walk you through creating your professional CV in just a few steps.</p>
-                <div class="onboarding-progress">
-                    <div class="progress-dot active"></div>
-                    <div class="progress-dot"></div>
-                    <div class="progress-dot"></div>
-                    <div class="progress-dot"></div>
-                </div>
-                <button class="btn-primary btn-large onboarding-next" data-i18n="onboarding.next">Next</button>
-            </div>
-
-            <div class="onboarding-step" data-step="2" style="display: none;">
-                <div class="onboarding-icon">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="8.5" cy="7" r="4"></circle>
-                        <line x1="20" y1="8" x2="20" y2="14"></line>
-                        <line x1="23" y1="11" x2="17" y2="11"></line>
-                    </svg>
-                </div>
-                <h2 data-i18n="onboarding.steps.step2.title">Personal Information</h2>
-                <p data-i18n="onboarding.steps.step2.description">Enter your name, contact details, and professional summary. All data is encrypted and stored locally.</p>
-
-                <!-- Onboarding Input Forms -->
-                <div class="onboarding-form">
-                    <div class="form-group-inline">
-                        <input type="text" id="onb-firstName" placeholder="Max" class="input-sm">
-                        <label data-i18n="onboarding.form.firstName">First Name</label>
-                    </div>
-                    <div class="form-group-inline">
-                        <input type="text" id="onb-lastName" placeholder="Mustermann" class="input-sm">
-                        <label data-i18n="onboarding.form.lastName">Last Name</label>
-                    </div>
-                    <div class="form-group-inline">
-                        <input type="email" id="onb-email" placeholder="max@example.com" class="input-sm">
-                        <label data-i18n="onboarding.form.email">Email</label>
-                    </div>
-                </div>
-
-                <div class="onboarding-progress">
-                    <div class="progress-dot completed"></div>
-                    <div class="progress-dot active"></div>
-                    <div class="progress-dot"></div>
-                    <div class="progress-dot"></div>
-                </div>
-                <div class="onboarding-buttons">
-                    <button class="btn-secondary onboarding-prev" data-i18n="onboarding.previous">Previous</button>
-                    <button class="btn-primary onboarding-next" data-i18n="onboarding.next">Next</button>
-                </div>
-            </div>
-
-            <div class="onboarding-step" data-step="3" style="display: none;">
-                <div class="onboarding-icon">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                </div>
-                <h2 data-i18n="onboarding.steps.step3.title">Wähle deinen CV-Stil</h2>
-                <p data-i18n="onboarding.steps.step3.description">Wähle aus 6 professionellen Designs. Du kannst den Stil später jederzeit ändern!</p>
-
-                <!-- Theme Selection Grid -->
-                <div class="theme-selection-grid">
-                    <!-- Classic Template Variations -->
-                    <div class="theme-card" data-theme="classic-blue" data-template="classic" data-color="blue">
-                        <div class="theme-thumbnail classic-blue-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Classic Professional</h4>
-                            <span class="theme-badge" style="background:#2563EB">Blau</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="classic-green" data-template="classic" data-color="green">
-                        <div class="theme-thumbnail classic-green-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Classic Nature</h4>
-                            <span class="theme-badge" style="background:#059669">Grün</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="classic-red" data-template="classic" data-color="red">
-                        <div class="theme-thumbnail classic-red-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Classic Energy</h4>
-                            <span class="theme-badge" style="background:#DC2626">Rot</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="classic-purple" data-template="classic" data-color="purple">
-                        <div class="theme-thumbnail classic-purple-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Classic Elegant</h4>
-                            <span class="theme-badge" style="background:#8B5CF6">Lila</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="classic-dark" data-template="classic" data-color="dark">
-                        <div class="theme-thumbnail classic-dark-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Classic Executive</h4>
-                            <span class="theme-badge" style="background:#1F2937">Dunkel</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="classic-teal" data-template="classic" data-color="teal">
-                        <div class="theme-thumbnail classic-teal-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Classic Ocean</h4>
-                            <span class="theme-badge" style="background:#0D9488">Türkis</span>
-                        </div>
-                    </div>
-
-                    <!-- Modern Template Variations -->
-                    <div class="theme-card" data-theme="modern-purple" data-template="modern" data-color="purple">
-                        <div class="theme-thumbnail modern-purple-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Modern Minimal</h4>
-                            <span class="theme-badge" style="background:#8B5CF6">Lila</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="modern-blue" data-template="modern" data-color="blue">
-                        <div class="theme-thumbnail modern-blue-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Modern Tech</h4>
-                            <span class="theme-badge" style="background:#3B82F6">Blau</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="modern-coral" data-template="modern" data-color="coral">
-                        <div class="theme-thumbnail modern-coral-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Modern Warm</h4>
-                            <span class="theme-badge" style="background:#F59E0B">Koralle</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="modern-teal" data-template="modern" data-color="teal">
-                        <div class="theme-thumbnail modern-teal-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Modern Fresh</h4>
-                            <span class="theme-badge" style="background:#14B8A6">Türkis</span>
-                        </div>
-                    </div>
-
-                    <!-- Creative Template Variations -->
-                    <div class="theme-card" data-theme="creative-orange" data-template="creative" data-color="orange">
-                        <div class="theme-thumbnail creative-orange-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Creative Bold</h4>
-                            <span class="theme-badge" style="background:#EA580C">Orange</span>
-                        </div>
-                    </div>
-
-                    <div class="theme-card" data-theme="creative-pink" data-template="creative" data-color="pink">
-                        <div class="theme-thumbnail creative-pink-thumb"></div>
-                        <div class="theme-info">
-                            <h4>Creative Vibrant</h4>
-                            <span class="theme-badge" style="background:#EC4899">Pink</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="onboarding-progress">
-                    <div class="progress-dot completed"></div>
-                    <div class="progress-dot completed"></div>
-                    <div class="progress-dot active"></div>
-                    <div class="progress-dot"></div>
-                </div>
-                <div class="onboarding-buttons">
-                    <button class="btn-secondary onboarding-prev" data-i18n="onboarding.previous">Previous</button>
-                    <button class="btn-primary onboarding-next" data-i18n="onboarding.next">Next</button>
-                </div>
-            </div>
-
-            <div class="onboarding-step" data-step="4" style="display: none;">
-                <div class="onboarding-icon">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                </div>
-                <h2 data-i18n="onboarding.steps.step4.title">You're All Set!</h2>
-                <p data-i18n="onboarding.steps.step4.description">Start creating your CVs. Your data is encrypted with AES-256 and GDPR compliant.</p>
-                <div class="onboarding-progress">
-                    <div class="progress-dot completed"></div>
-                    <div class="progress-dot completed"></div>
-                    <div class="progress-dot completed"></div>
-                    <div class="progress-dot active"></div>
-                </div>
-                <button class="btn-primary btn-large onboarding-finish" data-i18n="onboarding.finish">Get Started</button>
-            </div>
+            <p class="consent-version">CV Manager v1.0.0 - Made with Go & Wails</p>
         </div>
     </div>
 
@@ -858,151 +648,753 @@
             </div>
         </div>
 
-        <!-- Visual PDF Editor View -->
+        <!-- WYSIWYG CV Builder View - State of the Art -->
         <div id="visualEditorView" class="view">
-            <div class="visual-editor-container">
-                <!-- Editor Toolbar -->
-                <div class="visual-editor-toolbar">
-                    <h2>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 8px;">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                        Live PDF Editor
-                    </h2>
-                    <div class="toolbar-actions">
-                        <select id="visualEditorCVSelect" class="cv-selector">
-                            <option value="">CV auswählen...</option>
-                        </select>
-                        <button class="btn-secondary" id="refreshPreviewBtn">
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
-                            </svg>
-                            Aktualisieren
-                        </button>
-                        <button class="btn-primary" id="exportVisualPDFBtn">
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                            PDF Exportieren
-                        </button>
+            <div class="wysiwyg-builder-pro">
+                <!-- Floating Format Toolbar (appears on text selection) -->
+                <div class="floating-toolbar" id="floatingToolbar" style="display: none;">
+                    <button class="fmt-btn" data-cmd="bold" title="Fett (Ctrl+B)"><strong>B</strong></button>
+                    <button class="fmt-btn" data-cmd="italic" title="Kursiv (Ctrl+I)"><em>I</em></button>
+                    <button class="fmt-btn" data-cmd="underline" title="Unterstrichen (Ctrl+U)"><u>U</u></button>
+                    <div class="fmt-divider"></div>
+                    <button class="fmt-btn" data-cmd="link" title="Link einfügen">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                    <button class="fmt-btn" data-cmd="highlight" title="Hervorheben">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+                    </button>
+                </div>
+
+                <!-- Context Menu -->
+                <div class="context-menu" id="contextMenu" style="display: none;">
+                    <div class="context-menu-item" data-action="edit">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Bearbeiten
+                    </div>
+                    <div class="context-menu-item" data-action="duplicate">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Duplizieren
+                    </div>
+                    <div class="context-menu-item" data-action="moveUp">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                        Nach oben
+                    </div>
+                    <div class="context-menu-item" data-action="moveDown">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                        Nach unten
+                    </div>
+                    <div class="context-menu-divider"></div>
+                    <div class="context-menu-item danger" data-action="delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Löschen
                     </div>
                 </div>
 
-                <!-- Split View: PDF Preview + Settings -->
-                <div class="split-view">
-                    <!-- Left: Live PDF Preview -->
-                    <div class="pdf-preview-panel">
-                        <div class="panel-header">
-                            <h3>Live Vorschau</h3>
-                            <div class="zoom-controls">
-                                <button class="btn-icon" id="zoomOutBtn">
-                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                                <span id="zoomLevel">100%</span>
-                                <button class="btn-icon" id="zoomInBtn">
-                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="pdf-preview-container" id="pdfPreviewContainer">
-                            <div class="pdf-loading">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10" opacity="0.25"></circle>
-                                    <path d="M12 2a10 10 0 0 1 10 10" opacity="0.75">
-                                        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
-                                    </path>
-                                </svg>
-                                <p>Wähle einen Lebenslauf aus...</p>
-                            </div>
-                            <iframe id="pdfPreviewFrame" style="display: none;"></iframe>
+                <!-- Top Toolbar -->
+                <div class="builder-toolbar-pro">
+                    <div class="toolbar-section toolbar-left">
+                        <button class="toolbar-btn back-btn" onclick="showView('dashboardView')" title="Zurück zum Dashboard">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <div class="toolbar-divider"></div>
+                        <select id="visualEditorCVSelect" class="cv-selector-pro">
+                            <option value="">CV auswählen...</option>
+                        </select>
+                        <div class="autosave-badge" id="autosaveIndicator">
+                            <div class="save-dot"></div>
+                            <span>Gespeichert</span>
                         </div>
                     </div>
 
-                    <!-- Right: Style Settings -->
-                    <div class="settings-panel">
-                        <div class="panel-header">
-                            <h3>Einstellungen</h3>
-                            <p>Ändere Template & Stil</p>
+                    <div class="toolbar-section toolbar-center">
+                        <!-- Undo/Redo -->
+                        <div class="toolbar-group">
+                            <button class="toolbar-btn" id="undoBtn" title="Rückgängig (Ctrl+Z)" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                            </button>
+                            <button class="toolbar-btn" id="redoBtn" title="Wiederholen (Ctrl+Y)" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>
+                            </button>
                         </div>
-
-                        <div class="style-settings">
-                            <div class="setting-group">
-                                <label>
-                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                        <div class="toolbar-divider"></div>
+                        <!-- Templates Dropdown -->
+                        <div class="toolbar-group template-group">
+                            <span class="toolbar-label">Layout:</span>
+                            <div class="template-dropdown">
+                                <button class="template-trigger" id="templateTrigger">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/>
                                     </svg>
-                                    Template
-                                </label>
-                                <select id="templateSelect" class="setting-control">
-                                    <option value="modern">Modern (2-Spalten)</option>
-                                    <option value="classic">Classic (1-Spalte)</option>
-                                    <option value="creative">Creative (Farbenfroh)</option>
-                                </select>
-                            </div>
-
-                            <div class="setting-group">
-                                <label>
-                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.757l4.9-4.9a2 2 0 000-2.828L13.485 5.1a2 2 0 00-2.828 0L10 5.757v8.486zM16 18H9.071l6-6H16a2 2 0 012 2v2a2 2 0 01-2 2z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Farbschema
-                                </label>
-                                <select id="colorSchemeSelect" class="setting-control">
-                                    <option value="blue">Professional Blau</option>
-                                    <option value="green">Frisches Grün</option>
-                                    <option value="purple">Kreatives Lila</option>
-                                    <option value="red">Mutiges Rot</option>
-                                    <option value="orange">Warmes Orange</option>
-                                    <option value="dark">Elegantes Dunkel</option>
-                                </select>
-                            </div>
-
-                            <div class="setting-group">
-                                <label>
-                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                    </svg>
-                                    Schriftgröße
-                                </label>
-                                <input type="range" id="fontSizeRange" min="8" max="16" value="12" class="setting-control">
-                            <span id="fontSizeValue">12pt</span>
-                            </div>
-
-                            <div class="setting-group">
-                                <label>
-                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
-                                        <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
-                                        <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
-                                    </svg>
-                                    Zeilenabstand
-                                </label>
-                                <input type="range" id="spacingRange" min="1" max="3" step="0.5" value="1.5" class="setting-control">
-                                <span id="spacingValue">1.5x</span>
-                            </div>
-
-                            <div class="setting-action">
-                                <button class="btn-primary btn-block" id="applyChangesBtn">
-                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Änderungen anwenden
+                                    <span id="templateName">Modern</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                                 </button>
-                            </div>
-
-                            <div class="setting-info">
-                                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                </svg>
-                                <p>Änderungen werden live in der Vorschau angezeigt. Klicke auf "PDF Exportieren" um das finale PDF zu erstellen.</p>
+                                <div class="template-menu" id="templateMenu">
+                                    <div class="template-category">
+                                        <span class="category-label">Professionell</span>
+                                        <button class="template-option active" data-template="modern">
+                                            <div class="template-preview modern-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Modern</strong>
+                                                <span>2-Spalten Layout mit Sidebar</span>
+                                            </div>
+                                        </button>
+                                        <button class="template-option" data-template="executive">
+                                            <div class="template-preview executive-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Executive</strong>
+                                                <span>Elegant für Führungskräfte</span>
+                                            </div>
+                                        </button>
+                                        <button class="template-option" data-template="classic">
+                                            <div class="template-preview classic-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Klassisch</strong>
+                                                <span>Traditionelles Format</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                    <div class="template-category">
+                                        <span class="category-label">Kreativ</span>
+                                        <button class="template-option" data-template="creative">
+                                            <div class="template-preview creative-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Kreativ</strong>
+                                                <span>Auffällig mit Farbakzenten</span>
+                                            </div>
+                                        </button>
+                                        <button class="template-option" data-template="tech">
+                                            <div class="template-preview tech-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Tech</strong>
+                                                <span>Modern für IT & Tech</span>
+                                            </div>
+                                        </button>
+                                        <button class="template-option" data-template="bold">
+                                            <div class="template-preview bold-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Bold</strong>
+                                                <span>Statement mit großen Titeln</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                    <div class="template-category">
+                                        <span class="category-label">Minimalistisch</span>
+                                        <button class="template-option" data-template="minimal">
+                                            <div class="template-preview minimal-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Minimal</strong>
+                                                <span>Schlicht & elegant</span>
+                                            </div>
+                                        </button>
+                                        <button class="template-option" data-template="clean">
+                                            <div class="template-preview clean-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Clean</strong>
+                                                <span>Maximale Lesbarkeit</span>
+                                            </div>
+                                        </button>
+                                        <button class="template-option" data-template="elegant">
+                                            <div class="template-preview elegant-preview"></div>
+                                            <div class="template-info">
+                                                <strong>Elegant</strong>
+                                                <span>Zeitlos & stilvoll</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        <div class="toolbar-divider"></div>
+                        <!-- Colors -->
+                        <div class="toolbar-group color-group">
+                            <span class="toolbar-label">Farbe:</span>
+                            <div class="color-palette">
+                                <button class="color-swatch active" data-color="blue" style="--swatch-color: #3b82f6" title="Blau"></button>
+                                <button class="color-swatch" data-color="emerald" style="--swatch-color: #10b981" title="Smaragd"></button>
+                                <button class="color-swatch" data-color="violet" style="--swatch-color: #8b5cf6" title="Violett"></button>
+                                <button class="color-swatch" data-color="rose" style="--swatch-color: #f43f5e" title="Rose"></button>
+                                <button class="color-swatch" data-color="amber" style="--swatch-color: #f59e0b" title="Amber"></button>
+                                <button class="color-swatch" data-color="slate" style="--swatch-color: #475569" title="Schiefer"></button>
+                                <button class="color-swatch custom-color" id="customColorBtn" title="Eigene Farbe">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+                                </button>
+                                <input type="color" id="customColorPicker" style="display: none;" value="#3b82f6">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="toolbar-section toolbar-right">
+                        <!-- Zoom -->
+                        <div class="toolbar-group zoom-group">
+                            <button class="toolbar-btn" id="zoomOutBtn" title="Verkleinern">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                            </button>
+                            <div class="zoom-display" id="zoomLevel" title="Klicken zum Zurücksetzen">100%</div>
+                            <button class="toolbar-btn" id="zoomInBtn" title="Vergrößern">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                            </button>
+                        </div>
+                        <div class="toolbar-divider"></div>
+                        <!-- Preview Mode -->
+                        <button class="toolbar-btn" id="previewModeBtn" title="Vorschau-Modus (P)">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                        <div class="toolbar-divider"></div>
+                        <!-- Export -->
+                        <div class="export-dropdown">
+                            <button class="toolbar-btn-primary" id="exportBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Export
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="export-menu" id="exportMenu">
+                                <div class="export-option" data-format="pdf">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15v-2h6v2"/><path d="M11 13v4"/><path d="M13 13v4"/></svg>
+                                    <div>
+                                        <strong>PDF Export</strong>
+                                        <span>Für Bewerbungen & Druck</span>
+                                    </div>
+                                </div>
+                                <div class="export-option" data-format="docx">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                    <div>
+                                        <strong>Word Export</strong>
+                                        <span>Editierbar in MS Word</span>
+                                    </div>
+                                </div>
+                                <div class="export-option" data-format="png">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                    <div>
+                                        <strong>Bild Export</strong>
+                                        <span>PNG für Social Media</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keyboard Shortcuts Help -->
+                <div class="shortcuts-help" id="shortcutsHelp" style="display: none;">
+                    <div class="shortcuts-header">
+                        <h4>Tastenkürzel</h4>
+                        <button class="btn-icon-sm" onclick="toggleShortcutsHelp()">×</button>
+                    </div>
+                    <div class="shortcuts-grid">
+                        <div class="shortcut"><kbd>Ctrl</kbd>+<kbd>S</kbd> Speichern</div>
+                        <div class="shortcut"><kbd>Ctrl</kbd>+<kbd>Z</kbd> Rückgängig</div>
+                        <div class="shortcut"><kbd>Ctrl</kbd>+<kbd>Y</kbd> Wiederholen</div>
+                        <div class="shortcut"><kbd>Ctrl</kbd>+<kbd>B</kbd> Fett</div>
+                        <div class="shortcut"><kbd>Ctrl</kbd>+<kbd>I</kbd> Kursiv</div>
+                        <div class="shortcut"><kbd>Ctrl</kbd>+<kbd>U</kbd> Unterstrichen</div>
+                        <div class="shortcut"><kbd>P</kbd> Vorschau</div>
+                        <div class="shortcut"><kbd>Esc</kbd> Abbrechen</div>
+                        <div class="shortcut"><kbd>?</kbd> Diese Hilfe</div>
+                    </div>
+                </div>
+
+                <!-- Main Builder Area -->
+                <div class="builder-main-pro">
+                    <!-- Left: Smart Section Navigator -->
+                    <div class="section-navigator" id="sectionNavigator">
+                        <div class="nav-header">
+                            <h3>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                Sektionen
+                            </h3>
+                            <button class="nav-toggle" id="navToggle" title="Einklappen">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                            </button>
+                        </div>
+                        <div class="nav-sections" id="navSections">
+                            <!-- Sections werden dynamisch eingefügt mit drag handles -->
+                        </div>
+                        <div class="nav-footer">
+                            <button class="add-section-btn" id="addSectionBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Sektion hinzufügen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Center: Live CV Canvas -->
+                    <div class="cv-canvas-area" id="cvCanvasArea">
+                        <div class="canvas-scroll" id="canvasScroll">
+                            <div class="cv-canvas" id="cvCanvas" data-template="modern" data-color="blue">
+                                <!-- Loading State -->
+                                <div class="canvas-loading" id="canvasLoading">
+                                    <div class="loading-animation">
+                                        <div class="loading-doc">
+                                            <div class="loading-line w-60"></div>
+                                            <div class="loading-line w-40"></div>
+                                            <div class="loading-line w-80"></div>
+                                            <div class="loading-line w-50"></div>
+                                        </div>
+                                    </div>
+                                    <p>Wähle einen Lebenslauf aus...</p>
+                                </div>
+
+                                <!-- CV Document -->
+                                <div class="cv-document" id="cvDocument" style="display: none;">
+                                    <!-- Header Section -->
+                                    <section class="cv-sec cv-sec-header" data-section="header" data-draggable="false">
+                                        <div class="sec-overlay"></div>
+                                        <div class="photo-wrapper">
+                                            <div class="photo-container" id="photoContainer">
+                                                <div class="photo-placeholder" id="photoPlaceholder">
+                                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                                        <circle cx="12" cy="7" r="4"/>
+                                                    </svg>
+                                                </div>
+                                                <img class="photo-img" id="photoImg" src="" alt="" style="display: none;">
+                                                <div class="photo-overlay">
+                                                    <button class="photo-btn upload" id="photoUploadBtn" title="Foto hochladen">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                                    </button>
+                                                    <button class="photo-btn remove" id="photoRemoveBtn" title="Foto entfernen" style="display: none;">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                                        </div>
+                                        <div class="header-content">
+                                            <h1 class="cv-name live-edit" data-field="fullname" data-placeholder="Dein vollständiger Name"></h1>
+                                            <p class="cv-title live-edit" data-field="job_title" data-placeholder="Deine Berufsbezeichnung"></p>
+                                            <div class="cv-contact-row">
+                                                <span class="contact-chip" data-field="email">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+                                                    <span class="live-edit" data-field="email" data-placeholder="email@beispiel.de"></span>
+                                                </span>
+                                                <span class="contact-chip" data-field="phone">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                                    <span class="live-edit" data-field="phone" data-placeholder="+49 123 456789"></span>
+                                                </span>
+                                                <span class="contact-chip" data-field="location">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                                    <span class="live-edit" data-field="location" data-placeholder="Stadt, Land"></span>
+                                                </span>
+                                                <span class="contact-chip optional" data-field="linkedin" style="display: none;">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                                                    <span class="live-edit" data-field="linkedin" data-placeholder="LinkedIn URL"></span>
+                                                </span>
+                                                <span class="contact-chip optional" data-field="website" style="display: none;">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                                    <span class="live-edit" data-field="website" data-placeholder="www.beispiel.de"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <!-- Summary Section -->
+                                    <section class="cv-sec cv-sec-summary" data-section="summary" data-draggable="true">
+                                        <div class="sec-controls">
+                                            <button class="sec-ctrl drag-handle" title="Ziehen zum Verschieben">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl toggle-vis" title="Ein-/Ausblenden">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl sec-settings" title="Sektion anpassen" onclick="openSectionSettings('summary')">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                                            </button>
+                                        </div>
+                                        <div class="sec-overlay"></div>
+                                        <h2 class="sec-title editable-title" contenteditable="true" data-section="summary" data-default="Profil">
+                                            <span class="sec-icon" data-icon="user">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                            </span>
+                                            <span class="sec-title-text">Profil</span>
+                                        </h2>
+                                        <div class="sec-content">
+                                            <p class="summary-text live-edit multiline" data-field="summary" data-placeholder="Beschreibe dich kurz und professionell. Was macht dich aus? Was sind deine Stärken und Ziele?"></p>
+                                        </div>
+                                    </section>
+
+                                    <!-- Experience Section -->
+                                    <section class="cv-sec cv-sec-experience" data-section="experience" data-draggable="true">
+                                        <div class="sec-controls">
+                                            <button class="sec-ctrl drag-handle" title="Ziehen zum Verschieben">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl toggle-vis" title="Ein-/Ausblenden">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl sec-settings" title="Sektion anpassen" onclick="openSectionSettings('experience')">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                                            </button>
+                                        </div>
+                                        <div class="sec-overlay"></div>
+                                        <div class="sec-header-row">
+                                            <h2 class="sec-title editable-title" data-section="experience" data-default="Berufserfahrung">
+                                                <span class="sec-icon" data-icon="briefcase">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                                                </span>
+                                                <span class="sec-title-text" contenteditable="true">Berufserfahrung</span>
+                                            </h2>
+                                            <button class="sec-add-btn" onclick="addExperienceItem()" title="Position hinzufügen">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                            </button>
+                                        </div>
+                                        <div class="sec-content">
+                                            <div class="items-list timeline-list" id="experienceItems">
+                                                <!-- Experience items -->
+                                            </div>
+                                            <button class="add-item-inline" onclick="addExperienceItem()">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                Position hinzufügen
+                                            </button>
+                                        </div>
+                                    </section>
+
+                                    <!-- Education Section -->
+                                    <section class="cv-sec cv-sec-education" data-section="education" data-draggable="true">
+                                        <div class="sec-controls">
+                                            <button class="sec-ctrl drag-handle" title="Ziehen zum Verschieben">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl toggle-vis" title="Ein-/Ausblenden">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl sec-settings" title="Sektion anpassen" onclick="openSectionSettings('education')">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                                            </button>
+                                        </div>
+                                        <div class="sec-overlay"></div>
+                                        <div class="sec-header-row">
+                                            <h2 class="sec-title editable-title" data-section="education" data-default="Ausbildung">
+                                                <span class="sec-icon" data-icon="graduation">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                                </span>
+                                                <span class="sec-title-text" contenteditable="true">Ausbildung</span>
+                                            </h2>
+                                            <button class="sec-add-btn" onclick="addEducationItem()" title="Ausbildung hinzufügen">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                            </button>
+                                        </div>
+                                        <div class="sec-content">
+                                            <div class="items-list timeline-list" id="educationItems">
+                                                <!-- Education items -->
+                                            </div>
+                                            <button class="add-item-inline" onclick="addEducationItem()">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                Ausbildung hinzufügen
+                                            </button>
+                                        </div>
+                                    </section>
+
+                                    <!-- Skills Section -->
+                                    <section class="cv-sec cv-sec-skills" data-section="skills" data-draggable="true">
+                                        <div class="sec-controls">
+                                            <button class="sec-ctrl drag-handle" title="Ziehen zum Verschieben">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl toggle-vis" title="Ein-/Ausblenden">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl sec-settings" title="Sektion anpassen" onclick="openSectionSettings('skills')">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                                            </button>
+                                        </div>
+                                        <div class="sec-overlay"></div>
+                                        <div class="sec-header-row">
+                                            <h2 class="sec-title editable-title" data-section="skills" data-default="Fähigkeiten">
+                                                <span class="sec-icon" data-icon="star">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                                </span>
+                                                <span class="sec-title-text" contenteditable="true">Fähigkeiten</span>
+                                            </h2>
+                                            <div class="sec-controls-inline">
+                                                <select class="skills-display-select" id="skillsDisplayStyle" title="Darstellung ändern">
+                                                    <option value="tags">Tags</option>
+                                                    <option value="bars">Balken</option>
+                                                    <option value="dots">Punkte</option>
+                                                    <option value="percentage">Prozent</option>
+                                                    <option value="list">Liste</option>
+                                                </select>
+                                                <button class="sec-add-btn" onclick="addSkillItem()" title="Skill hinzufügen">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="sec-content">
+                                            <div class="skills-container" id="skillsContainer" data-display="tags">
+                                                <div class="skills-cloud" id="skillsCloud">
+                                                    <!-- Skills as tags -->
+                                                </div>
+                                            </div>
+                                            <button class="add-item-inline" onclick="addSkillItem()">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                Skill hinzufügen
+                                            </button>
+                                        </div>
+                                    </section>
+
+                                    <!-- Languages Section -->
+                                    <section class="cv-sec cv-sec-languages" data-section="languages" data-draggable="true">
+                                        <div class="sec-controls">
+                                            <button class="sec-ctrl drag-handle" title="Ziehen zum Verschieben">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl toggle-vis" title="Ein-/Ausblenden">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                            </button>
+                                            <button class="sec-ctrl sec-settings" title="Sektion anpassen" onclick="openSectionSettings('languages')">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                                            </button>
+                                        </div>
+                                        <div class="sec-overlay"></div>
+                                        <div class="sec-header-row">
+                                            <h2 class="sec-title editable-title" data-section="languages" data-default="Sprachen">
+                                                <span class="sec-icon" data-icon="globe">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                                </span>
+                                                <span class="sec-title-text" contenteditable="true">Sprachen</span>
+                                            </h2>
+                                            <div class="sec-controls-inline">
+                                                <select class="lang-display-select" id="langDisplayStyle" title="Darstellung ändern">
+                                                    <option value="bars">Balken</option>
+                                                    <option value="circles">Kreise</option>
+                                                    <option value="text">Text</option>
+                                                    <option value="flags">Mit Flaggen</option>
+                                                </select>
+                                                <button class="sec-add-btn" onclick="addLanguageItem()" title="Sprache hinzufügen">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="sec-content">
+                                            <div class="languages-container" id="languagesContainer" data-display="bars">
+                                                <div class="languages-grid" id="languagesGrid">
+                                                    <!-- Languages with level bars -->
+                                                </div>
+                                            </div>
+                                            <button class="add-item-inline" onclick="addLanguageItem()">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                Sprache hinzufügen
+                                            </button>
+                                        </div>
+                                    </section>
+
+                                    <!-- Additional Sections Container -->
+                                    <div id="additionalSections">
+                                        <!-- Dynamically added sections (Certifications, Projects, etc.) -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Zoom Minimap -->
+                        <div class="canvas-minimap" id="canvasMinimap">
+                            <div class="minimap-viewport" id="minimapViewport"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Smart Properties Panel -->
+                    <div class="properties-panel-pro" id="propertiesPanel">
+                        <div class="panel-tabs">
+                            <button class="panel-tab active" data-panel="style">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="0.5"/><circle cx="17.5" cy="10.5" r="0.5"/><circle cx="8.5" cy="7.5" r="0.5"/><circle cx="6.5" cy="12.5" r="0.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/></svg>
+                                Design
+                            </button>
+                            <button class="panel-tab" data-panel="settings">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                                Optionen
+                            </button>
+                        </div>
+
+                        <div class="panel-content" id="panelContent">
+                            <!-- Style Panel -->
+                            <div class="panel-section style-panel active" data-panel="style">
+                                <div class="prop-group">
+                                    <label class="prop-label">Schriftart</label>
+                                    <select class="prop-select" id="fontSelect">
+                                        <option value="Inter">Inter (Modern)</option>
+                                        <option value="Roboto">Roboto</option>
+                                        <option value="Open Sans">Open Sans</option>
+                                        <option value="Lato">Lato</option>
+                                        <option value="Montserrat">Montserrat</option>
+                                        <option value="Poppins">Poppins</option>
+                                        <option value="Georgia">Georgia (Serif)</option>
+                                        <option value="Merriweather">Merriweather (Serif)</option>
+                                    </select>
+                                </div>
+
+                                <div class="prop-group">
+                                    <label class="prop-label">Schriftgröße</label>
+                                    <div class="prop-slider-row">
+                                        <input type="range" class="prop-slider" id="fontSizeSlider" min="10" max="16" value="12">
+                                        <span class="prop-value" id="fontSizeValue">12px</span>
+                                    </div>
+                                </div>
+
+                                <div class="prop-group">
+                                    <label class="prop-label">Zeilenabstand</label>
+                                    <div class="prop-slider-row">
+                                        <input type="range" class="prop-slider" id="lineHeightSlider" min="1.2" max="2" step="0.1" value="1.5">
+                                        <span class="prop-value" id="lineHeightValue">1.5</span>
+                                    </div>
+                                </div>
+
+                                <div class="prop-group">
+                                    <label class="prop-label">Seitenränder</label>
+                                    <div class="prop-slider-row">
+                                        <input type="range" class="prop-slider" id="marginSlider" min="20" max="60" value="40">
+                                        <span class="prop-value" id="marginValue">40px</span>
+                                    </div>
+                                </div>
+
+                                <div class="prop-divider"></div>
+
+                                <div class="prop-group">
+                                    <label class="prop-label">Akzentfarbe Stärke</label>
+                                    <div class="prop-btn-group">
+                                        <button class="prop-btn" data-accent="light">Leicht</button>
+                                        <button class="prop-btn active" data-accent="medium">Mittel</button>
+                                        <button class="prop-btn" data-accent="strong">Stark</button>
+                                    </div>
+                                </div>
+
+                                <div class="prop-group">
+                                    <label class="prop-label">Foto-Stil</label>
+                                    <div class="prop-btn-group">
+                                        <button class="prop-btn" data-photo="square">Eckig</button>
+                                        <button class="prop-btn active" data-photo="rounded">Rund</button>
+                                        <button class="prop-btn" data-photo="circle">Kreis</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Settings Panel -->
+                            <div class="panel-section settings-panel" data-panel="settings">
+                                <div class="prop-group">
+                                    <label class="prop-label">Sichtbare Kontaktinfos</label>
+                                    <div class="prop-checkboxes">
+                                        <label class="prop-checkbox">
+                                            <input type="checkbox" id="showEmail" checked> E-Mail
+                                        </label>
+                                        <label class="prop-checkbox">
+                                            <input type="checkbox" id="showPhone" checked> Telefon
+                                        </label>
+                                        <label class="prop-checkbox">
+                                            <input type="checkbox" id="showLocation" checked> Standort
+                                        </label>
+                                        <label class="prop-checkbox">
+                                            <input type="checkbox" id="showLinkedin"> LinkedIn
+                                        </label>
+                                        <label class="prop-checkbox">
+                                            <input type="checkbox" id="showWebsite"> Website
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="prop-divider"></div>
+
+                                <div class="prop-group">
+                                    <label class="prop-label">PDF Einstellungen</label>
+                                    <div class="prop-checkboxes">
+                                        <label class="prop-checkbox">
+                                            <input type="checkbox" id="pdfHighQuality" checked> Hohe Qualität
+                                        </label>
+                                        <label class="prop-checkbox">
+                                            <input type="checkbox" id="pdfIncludePhoto" checked> Foto einschließen
+                                        </label>
+                                        <label class="prop-checkbox">
+                                            <input type="checkbox" id="pdfA4" checked> A4 Format
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="prop-divider"></div>
+
+                                <div class="prop-group">
+                                    <label class="prop-label">Tastenkürzel</label>
+                                    <button class="prop-btn-full" onclick="toggleShortcutsHelp()">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h8M6 16h.001M18 16h.001"/></svg>
+                                        Alle Shortcuts anzeigen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="panel-footer">
+                            <button class="quick-action" id="duplicateCVBtn" title="CV duplizieren">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            </button>
+                            <button class="quick-action" id="resetStyleBtn" title="Design zurücksetzen">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                            </button>
+                            <button class="quick-action" id="helpBtn" title="Hilfe">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item Edit Modal -->
+            <div class="edit-modal" id="itemEditModal" style="display: none;">
+                <div class="modal-backdrop" onclick="closeItemModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="modalTitle">Element bearbeiten</h3>
+                        <button class="modal-close" onclick="closeItemModal()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <!-- Dynamic content -->
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-secondary" onclick="closeItemModal()">Abbrechen</button>
+                        <button class="btn-primary" id="modalSaveBtn">Speichern</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Section Modal -->
+            <div class="add-section-modal" id="addSectionModal" style="display: none;">
+                <div class="modal-backdrop" onclick="closeAddSectionModal()"></div>
+                <div class="modal-content compact">
+                    <div class="modal-header">
+                        <h3>Sektion hinzufügen</h3>
+                        <button class="modal-close" onclick="closeAddSectionModal()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <div class="section-options">
+                        <button class="section-option" data-section="certifications">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                            <span>Zertifikate</span>
+                        </button>
+                        <button class="section-option" data-section="projects">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            <span>Projekte</span>
+                        </button>
+                        <button class="section-option" data-section="interests">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span>Interessen</span>
+                        </button>
+                        <button class="section-option" data-section="references">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <span>Referenzen</span>
+                        </button>
+                        <button class="section-option" data-section="publications">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            <span>Publikationen</span>
+                        </button>
+                        <button class="section-option" data-section="custom">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            <span>Eigene Sektion</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1725,20 +2117,30 @@
         </div>
     </div>
 
-    <!-- Theme Toggle Button (Floating) -->
-    <button class="theme-toggle" id="themeToggle">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-    </button>
+    <!-- Quick Settings Panel (Floating) -->
+    <div class="quick-settings-panel" id="quickSettingsPanel">
+        <!-- Language Toggle -->
+        <button class="quick-settings-btn" id="langToggle" title="DE / EN">
+            <span class="lang-indicator" id="langIndicator">DE</span>
+        </button>
+        <!-- Theme Toggle -->
+        <button class="quick-settings-btn" id="themeToggle" title="Theme wechseln">
+            <svg class="theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+    </div>
 
     <script src="chart.min.js"></script>
     <script src="./wailsjs/runtime/runtime.js"></script>
@@ -1751,7 +2153,7 @@
         <div class="footer-content">
             <span class="footer-version" id="footerVersion">v1.1.2</span>
             <span class="footer-separator">•</span>
-            <span>© 2025 CV Manager Pro</span>
+            <span>© 2025 CV Manager</span>
             <span class="footer-separator">•</span>
             <span>Encrypted & GDPR Compliant</span>
         </div>

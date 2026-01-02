@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "CV Manager Pro",
+    "title": "CV Manager",
     "subtitle": "Verschlüsselt & DSGVO-Konform"
   },
   "nav": {
@@ -214,7 +214,7 @@
     }
   },
   "consent": {
-    "title": "Willkommen bei CV Manager Pro",
+    "title": "Willkommen bei CV Manager",
     "subtitle": "Deine Privatsphäre ist uns wichtig",
     "features": {
       "encryption": {
@@ -244,7 +244,7 @@
       },
       "disclaimer": "Du kannst deine Einwilligung jederzeit in den Einstellungen widerrufen. Alle deine Daten werden lokal auf deinem Gerät gespeichert und nie an externe Server übermittelt."
     },
-    "button": "Ich stimme zu - CV Manager Pro starten",
+    "button": "Ich stimme zu - CV Manager starten",
     "footer": "Durch die Nutzung dieser Anwendung bestätigst du, dass du unsere Datenverarbeitungspraktiken gelesen und verstanden hast."
   },
   "complianceLog": {
@@ -280,17 +280,17 @@
     "deleteAllDataConfirm": "ALLE MEINE DATEN LÖSCHEN",
     "exportAllData": "Dies exportiert alle deine Daten als JSON. Fortfahren?",
     "withdrawConsent": "Warnung: Widerruf der Einwilligung deaktiviert alle Datenoperationen.\\n\\nDu musst erneut zustimmen um die Anwendung zu nutzen.\\n\\nFortfahren?",
-    "exit": "Möchtest du CV Manager Pro wirklich beenden?"
+    "exit": "Möchtest du CV Manager wirklich beenden?"
   },
   "onboarding": {
     "skip": "Tutorial überspringen",
-    "welcome": "Willkommen bei CV Manager Pro!",
+    "welcome": "Willkommen bei CV Manager!",
     "next": "Weiter",
     "previous": "Zurück",
     "finish": "Los geht's",
     "steps": {
       "step1": {
-        "title": "Willkommen bei CV Manager Pro!",
+        "title": "Willkommen bei CV Manager!",
         "description": "Lass uns gemeinsam in nur wenigen Schritten deinen professionellen Lebenslauf erstellen."
       },
       "step2": {

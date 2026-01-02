@@ -1,5 +1,5 @@
 /**
- * CV Manager Pro - Utility Functions
+ * CV Manager - Utility Functions
  * Robust error handling, formatting, and helper functions
  */
 

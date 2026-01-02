@@ -19,7 +19,7 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "CV Manager Pro",
+		Title:  "CV Manager",
 		Width:  1400,
 		Height: 900,
 		AssetServer: &assetserver.Options{

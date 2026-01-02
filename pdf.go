@@ -192,7 +192,7 @@ func ExportToPDF(cv *CV) (string, error) {
 	pdf.SetY(-15)
 	pdf.SetFont("Arial", "I", 8)
 	pdf.SetTextColor(textLightR, textLightG, textLightB)
-	footerText := "Generated with CV Manager Pro | " + time.Now().Format("02.01.2006")
+	footerText := "Generated with CV Manager | " + time.Now().Format("02.01.2006")
 	pdf.CellFormat(0, 10, footerText, "", 0, "C", false, 0, "")
 
 	// Save PDF

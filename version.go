@@ -8,7 +8,7 @@ import (
 // Version information - automatically incremented on build
 const (
 	MajorVersion = 1
-	MinorVersion = 2
+	MinorVersion = 3
 	PatchVersion = 0
 )
 
@@ -56,6 +56,25 @@ func GetBuildInfo() BuildInfo {
 // GetChangeLog returns the changelog entries
 func GetChangeLog() []ChangeLogEntry {
 	return []ChangeLogEntry{
+		{
+			Version:     "1.3.0",
+			Date:        "2026-01-03",
+			Description: "WYSIWYG Editor - Erweiterte Funktionen & Rebranding",
+			Changes: []string{
+				"🎨 NEU: 9 professionelle CV-Templates (Modern, Executive, Classic, Creative, Tech, Bold, Minimal, Clean, Elegant)",
+				"📝 NEU: Editierbare Abschnitt-Überschriften direkt im CV",
+				"⚡ NEU: Skills-Visualisierung mit 5 Stilen (Tags, Balken, Punkte, Prozent, Liste)",
+				"🌍 NEU: Sprachen-Visualisierung mit 4 Stilen (Balken, Kreise, Text, Flaggen)",
+				"⚙️ NEU: Abschnitt-Einstellungen Modal (Titel, Icon, Sichtbarkeit)",
+				"🎯 NEU: Template-Dropdown mit Kategorien statt Pills",
+				"🌐 NEU: i18n Sprachunterstützung (DE/EN) mit Toggle",
+				"📱 NEU: Vollständig responsives Design für alle Geräte",
+				"✨ VERBESSERT: Komplett überarbeitetes WYSIWYG Interface",
+				"🔧 VERBESSERT: Section Settings Button für jeden Abschnitt",
+				"🏷️ REBRANDING: Umbenennung von CV Manager Pro zu CV Manager",
+				"🐛 FIX: Verwaister Legacy-Code entfernt",
+			},
+		},
 		{
 			Version:     "1.2.0",
 			Date:        "2025-12-30",

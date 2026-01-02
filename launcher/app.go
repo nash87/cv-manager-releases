@@ -29,11 +29,22 @@ type Launcher struct {
 
 // LauncherConfig stores launcher configuration
 type LauncherConfig struct {
-	DataLocation    string    `json:"data_location"`    // Where user data is stored
-	AutoUpdate      bool      `json:"auto_update"`      // Auto-update enabled
-	LastUpdateCheck time.Time `json:"last_update_check"`
-	LauncherVersion string    `json:"launcher_version"`
-	AppVersion      string    `json:"app_version"`
+	DataLocation        string    `json:"data_location"`        // Where user data is stored
+	AutoUpdate          bool      `json:"auto_update"`          // Auto-update enabled
+	LastUpdateCheck     time.Time `json:"last_update_check"`
+	LauncherVersion     string    `json:"launcher_version"`
+	AppVersion          string    `json:"app_version"`
+	OnboardingCompleted bool      `json:"onboarding_completed"` // Onboarding wizard done
+}
+
+// OnboardingData contains user info from onboarding wizard
+type OnboardingData struct {
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Email       string `json:"email"`
+	JobTitle    string `json:"jobTitle"`
+	Template    string `json:"template"`
+	ColorScheme string `json:"colorScheme"`
 }
 
 // UpdateInfo contains update information from GitHub
@@ -117,8 +128,8 @@ type ReleaseInfo struct {
 }
 
 const (
-	LauncherVersion      = "1.0.2"
-	LauncherBuildDate    = "2025-12-30"
+	LauncherVersion      = "1.3.0"
+	LauncherBuildDate    = "2026-01-02"
 
 	GitHubOwner          = "nash87"
 	GitHubRepo           = "cv-manager-pro-releases"
@@ -149,7 +160,7 @@ func NewLauncher() *Launcher {
 		log.SetFlags(log.LstdFlags | log.Lshortfile)
 	}
 
-	log.Printf("[Launcher] CV Manager Pro Launcher v%s\n", LauncherVersion)
+	log.Printf("[Launcher] CV Manager Launcher v%s\n", LauncherVersion)
 	log.Printf("[Launcher] Log file: %s\n", logPath)
 	log.Printf("[Launcher] Executable: %s\n", exePath)
 	log.Printf("[Launcher] Working directory: %s\n", exeDir)
@@ -164,7 +175,7 @@ func NewLauncher() *Launcher {
 // startup is called when the launcher starts
 func (l *Launcher) startup(ctx context.Context) {
 	l.ctx = ctx
-	fmt.Println("[Launcher] Starting CV Manager Pro Launcher v" + LauncherVersion)
+	fmt.Println("[Launcher] Starting CV Manager Launcher v" + LauncherVersion)
 
 	// Load configuration
 	l.loadConfig()
@@ -227,6 +238,66 @@ func (l *Launcher) GetLauncherInfo() map[string]interface{} {
 // GetDataLocation returns current data location
 func (l *Launcher) GetDataLocation() string {
 	return l.config.DataLocation
+}
+
+// GetFullConfig returns the full config for the frontend
+func (l *Launcher) GetFullConfig() map[string]interface{} {
+	return map[string]interface{}{
+		"data_location":        l.config.DataLocation,
+		"auto_update":          l.config.AutoUpdate,
+		"launcher_version":     l.config.LauncherVersion,
+		"app_version":          l.config.AppVersion,
+		"onboarding_completed": l.config.OnboardingCompleted,
+	}
+}
+
+// MarkOnboardingCompleted marks onboarding as done
+func (l *Launcher) MarkOnboardingCompleted() error {
+	fmt.Println("[Launcher] Marking onboarding as completed")
+	l.config.OnboardingCompleted = true
+	return l.saveConfig()
+}
+
+// SaveOnboardingData saves user data from onboarding wizard
+func (l *Launcher) SaveOnboardingData(data OnboardingData) error {
+	fmt.Printf("[Launcher] Saving onboarding data: %+v\n", data)
+
+	// Save onboarding data to a file in the data directory
+	if l.config.DataLocation == "" {
+		return fmt.Errorf("data location not configured")
+	}
+
+	onboardingPath := filepath.Join(l.config.DataLocation, "onboarding.json")
+	jsonData, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal onboarding data: %v", err)
+	}
+
+	if err := os.WriteFile(onboardingPath, jsonData, 0644); err != nil {
+		return fmt.Errorf("failed to save onboarding data: %v", err)
+	}
+
+	fmt.Printf("[Launcher] Onboarding data saved to: %s\n", onboardingPath)
+	return nil
+}
+
+// ResetConfig resets all configuration
+func (l *Launcher) ResetConfig() error {
+	fmt.Println("[Launcher] Resetting configuration")
+
+	// Reset config to defaults
+	l.config = &LauncherConfig{
+		AutoUpdate:      true,
+		LauncherVersion: LauncherVersion,
+	}
+
+	// Delete config file
+	if err := os.Remove(l.configPath); err != nil && !os.IsNotExist(err) {
+		fmt.Printf("[Launcher] Warning: could not delete config file: %v\n", err)
+	}
+
+	// Save empty config
+	return l.saveConfig()
 }
 
 // SetDataLocation sets and creates the data directory
@@ -493,9 +564,14 @@ func (l *Launcher) DownloadUpdate(component, downloadURL, expectedSHA256 string)
 	return progress, nil
 }
 
-// ApplyUpdate installs a downloaded update
+// ApplyUpdate installs a downloaded update and saves the new version
 func (l *Launcher) ApplyUpdate(component string) error {
-	fmt.Printf("[Launcher] Applying update for: %s\n", component)
+	return l.ApplyUpdateWithVersion(component, "")
+}
+
+// ApplyUpdateWithVersion installs a downloaded update with version tracking
+func (l *Launcher) ApplyUpdateWithVersion(component, newVersion string) error {
+	fmt.Printf("[Launcher] Applying update for: %s (version: %s)\n", component, newVersion)
 
 	exePath, _ := os.Executable()
 	exeDir := filepath.Dir(exePath)
@@ -536,6 +612,16 @@ func (l *Launcher) ApplyUpdate(component string) error {
 
 	// Remove update file
 	os.Remove(updateFile)
+
+	// Save version to config
+	if newVersion != "" {
+		if component == "app" {
+			l.config.AppVersion = newVersion
+		} else if component == "launcher" {
+			l.config.LauncherVersion = newVersion
+		}
+		l.saveConfig()
+	}
 
 	fmt.Printf("[Launcher] Update applied successfully! Backup: %s\n", backupFile)
 	return nil

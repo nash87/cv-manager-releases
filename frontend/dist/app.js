@@ -1,4 +1,4 @@
-// CV Manager Pro - Complete Frontend Application Logic with GDPR
+// CV Manager - Complete Frontend Application Logic with GDPR
 // Encrypted & GDPR Compliant CV Management System
 
 let currentView = 'dashboard';
@@ -32,7 +32,7 @@ async function hideSplash() {
 // ==================== Initialization ====================
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('CV Manager Pro - Encrypted & GDPR Compliant - Initializing...');
+    console.log('CV Manager - Encrypted & GDPR Compliant - Initializing...');
 
     try {
         // Step 1: Initialize i18n
@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateSplashStatus('Initialisiere Benutzeroberfläche...', 60);
         setupNavigation();
         setupThemeToggle();
+        setupLanguageToggle();
         setupDashboardListeners();
         await new Promise(resolve => setTimeout(resolve, 150));
 
@@ -66,7 +67,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateSplashStatus('Initialisiere Einstellungen...', 80);
         setupSettingsListeners();
         setupExitButton();
-        setupOnboarding();
         setupKeyboardShortcuts();
         setupAutoSave();
         setupDarkModeToggle();
@@ -76,25 +76,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateSplashStatus('Finalisiere...', 90);
         await new Promise(resolve => setTimeout(resolve, 200));
 
-        console.log('CV Manager Pro ready!');
+        console.log('CV Manager ready!');
 
         // Hide splash screen
         await hideSplash();
-
-        // Show onboarding if flagged or first run
-        if (window.shouldShowOnboarding) {
-            await showOnboarding();
-        } else {
-            // Check backend config for first run
-            try {
-                const config = await window.go.main.App.GetAppConfig();
-                if (config && (config.first_run || !config.onboarding_shown)) {
-                    await showOnboarding();
-                }
-            } catch (err) {
-                console.log('Could not check onboarding status:', err);
-            }
-        }
     } catch (error) {
         console.error('Initialization error:', error);
         updateSplashStatus('Fehler beim Laden!', 0);
@@ -145,7 +130,7 @@ async function ensureDefaultCV() {
             defaultCV.email = 'max@example.com';
             defaultCV.job_title = 'Berufstitel';
             defaultCV.phone = '+49 123 456789';
-            defaultCV.summary = 'Professioneller Lebenslauf erstellt mit CV Manager Pro';
+            defaultCV.summary = 'Professioneller Lebenslauf erstellt mit CV Manager';
             defaultCV.template = 'modern';
             defaultCV.color_scheme = 'purple';
             defaultCV.status = 'draft';
@@ -191,9 +176,6 @@ function showConsentScreen() {
             await loadDashboard();
 
             await showSuccess(window.i18n ? window.i18n.t('notifications.consentGranted') : 'Willkommen! Deine Daten sind jetzt sicher verschlüsselt.');
-
-            // Mark that onboarding should be shown after splash
-            window.shouldShowOnboarding = true;
         } catch (error) {
             console.error('[Consent] Error granting consent:', error);
             const errorMsg = error?.message || error?.toString() || 'Unbekannter Fehler';
@@ -231,6 +213,34 @@ function setupThemeToggle() {
 
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
     if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+}
+
+function setupLanguageToggle() {
+    const langToggle = document.getElementById('langToggle');
+    const langIndicator = document.getElementById('langIndicator');
+
+    if (!langToggle || !langIndicator) return;
+
+    // Set initial language indicator
+    const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'de';
+    langIndicator.textContent = currentLang.toUpperCase();
+
+    langToggle.addEventListener('click', () => {
+        if (!window.i18n) return;
+
+        const current = window.i18n.getCurrentLanguage();
+        const newLang = current === 'de' ? 'en' : 'de';
+        window.i18n.setLanguage(newLang);
+        langIndicator.textContent = newLang.toUpperCase();
+
+        // Show toast notification
+        showToast(newLang === 'de' ? 'Sprache: Deutsch' : 'Language: English', 'success');
+    });
+
+    // Listen for language changes from other sources
+    window.addEventListener('languageChanged', (e) => {
+        langIndicator.textContent = e.detail.language.toUpperCase();
+    });
 }
 
 // ==================== Navigation ====================
@@ -890,203 +900,2284 @@ async function loadVisualEditorCVList() {
     }
 }
 
+// ==================== WYSIWYG Builder PRO ====================
+
+let autoSaveTimeout = null;
+let currentColorScheme = 'blue';
+let currentTemplate = 'modern';
+let undoStack = [];
+let redoStack = [];
+let isPreviewMode = false;
+let currentFontSize = 12;
+let currentLineHeight = 1.5;
+let currentMargin = 40;
+let currentPhotoStyle = 'rounded';
+let currentAccentStrength = 'medium';
+
+// History State Management
+function saveToHistory() {
+    if (!visualEditorCurrentCV) return;
+    const state = JSON.stringify(visualEditorCurrentCV);
+    undoStack.push(state);
+    if (undoStack.length > 50) undoStack.shift(); // Limit history
+    redoStack = []; // Clear redo on new action
+    updateUndoRedoButtons();
+}
+
+function undo() {
+    if (undoStack.length === 0 || !visualEditorCurrentCV) return;
+    const currentState = JSON.stringify(visualEditorCurrentCV);
+    redoStack.push(currentState);
+    const previousState = undoStack.pop();
+    visualEditorCurrentCV = JSON.parse(previousState);
+    refreshCVDisplay();
+    updateUndoRedoButtons();
+    showAutoSaveIndicator('Rückgängig');
+}
+
+function redo() {
+    if (redoStack.length === 0 || !visualEditorCurrentCV) return;
+    const currentState = JSON.stringify(visualEditorCurrentCV);
+    undoStack.push(currentState);
+    const nextState = redoStack.pop();
+    visualEditorCurrentCV = JSON.parse(nextState);
+    refreshCVDisplay();
+    updateUndoRedoButtons();
+    showAutoSaveIndicator('Wiederherstellt');
+}
+
+function updateUndoRedoButtons() {
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    if (undoBtn) undoBtn.disabled = undoStack.length === 0;
+    if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+}
+
 function setupVisualEditorEventListeners() {
     // CV Selection
     const cvSelect = document.getElementById('visualEditorCVSelect');
     if (cvSelect) {
         cvSelect.addEventListener('change', async (e) => {
             if (e.target.value) {
-                await loadCVPreview(e.target.value);
+                await loadCVIntoBuilder(e.target.value);
             }
         });
     }
 
-    // Refresh button
-    const refreshBtn = document.getElementById('refreshPreviewBtn');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', async () => {
-            if (visualEditorCurrentCV) {
-                await loadCVPreview(visualEditorCurrentCV.id);
-            }
-        });
-    }
+    // Undo/Redo buttons
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    if (undoBtn) undoBtn.addEventListener('click', undo);
+    if (redoBtn) redoBtn.addEventListener('click', redo);
 
-    // Export button
-    const exportBtn = document.getElementById('exportVisualPDFBtn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', async () => {
+    // Export dropdown
+    document.querySelectorAll('.export-option').forEach(opt => {
+        opt.addEventListener('click', async () => {
+            const format = opt.dataset.format;
             if (visualEditorCurrentCV) {
-                await exportCV(visualEditorCurrentCV.id);
-            } else {
-                await showError('Bitte wähle zuerst einen Lebenslauf aus');
+                if (format === 'pdf') {
+                    await exportCV(visualEditorCurrentCV.id);
+                } else {
+                    showAutoSaveIndicator(format.toUpperCase() + ' Export kommt bald');
+                }
             }
         });
-    }
-
-    // Apply changes button
-    const applyBtn = document.getElementById('applyChangesBtn');
-    if (applyBtn) {
-        applyBtn.addEventListener('click', async () => {
-            if (visualEditorCurrentCV) {
-                await applyVisualEditorChanges();
-            }
-        });
-    }
+    });
 
     // Zoom controls
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const zoomDisplay = document.getElementById('zoomLevel');
 
     if (zoomInBtn) {
         zoomInBtn.addEventListener('click', () => {
-            visualEditorZoom = Math.min(200, visualEditorZoom + 10);
-            updateZoom();
+            visualEditorZoom = Math.min(150, visualEditorZoom + 10);
+            updateBuilderZoom();
         });
     }
 
     if (zoomOutBtn) {
         zoomOutBtn.addEventListener('click', () => {
             visualEditorZoom = Math.max(50, visualEditorZoom - 10);
-            updateZoom();
+            updateBuilderZoom();
         });
     }
 
-    // Settings live update
-    const templateSelect = document.getElementById('templateSelect');
-    const colorSchemeSelect = document.getElementById('colorSchemeSelect');
-    const fontSizeRange = document.getElementById('fontSizeRange');
-    const spacingRange = document.getElementById('spacingRange');
-
-    if (fontSizeRange) {
-        fontSizeRange.addEventListener('input', (e) => {
-            document.getElementById('fontSizeValue').textContent = e.target.value + 'pt';
+    if (zoomDisplay) {
+        zoomDisplay.addEventListener('click', () => {
+            visualEditorZoom = 100;
+            updateBuilderZoom();
         });
     }
 
-    if (spacingRange) {
-        spacingRange.addEventListener('input', (e) => {
-            document.getElementById('spacingValue').textContent = e.target.value + 'x';
+    // Preview mode toggle
+    const previewBtn = document.getElementById('previewModeBtn');
+    if (previewBtn) {
+        previewBtn.addEventListener('click', togglePreviewMode);
+    }
+
+    // Template dropdown
+    const templateTrigger = document.getElementById('templateTrigger');
+    const templateMenu = document.getElementById('templateMenu');
+    const templateName = document.getElementById('templateName');
+
+    if (templateTrigger && templateMenu) {
+        templateTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            templateMenu.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.template-dropdown')) {
+                templateMenu.classList.remove('show');
+            }
+        });
+
+        // Template options
+        document.querySelectorAll('.template-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.template-option').forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                currentTemplate = option.dataset.template;
+                if (templateName) {
+                    // Get template name from strong element or template-info
+                    const nameEl = option.querySelector('strong') || option.querySelector('.template-name');
+                    if (nameEl) {
+                        templateName.textContent = nameEl.textContent;
+                    }
+                }
+                applyTemplate(currentTemplate);
+                templateMenu.classList.remove('show');
+                saveToHistory();
+                triggerAutoSave();
+            });
+        });
+    }
+
+    // Skills display style selector
+    const skillsDisplaySelect = document.getElementById('skillsDisplayStyle');
+    if (skillsDisplaySelect) {
+        skillsDisplaySelect.addEventListener('change', (e) => {
+            applySkillsDisplayStyle(e.target.value);
+            triggerAutoSave();
+        });
+    }
+
+    // Languages display style selector
+    const langDisplaySelect = document.getElementById('langDisplayStyle');
+    if (langDisplaySelect) {
+        langDisplaySelect.addEventListener('change', (e) => {
+            applyLanguagesDisplayStyle(e.target.value);
+            triggerAutoSave();
+        });
+    }
+
+    // Section settings buttons
+    document.querySelectorAll('.section-settings-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const section = btn.closest('.cv-section');
+            if (section) {
+                openSectionSettings(section.id || section.dataset.section);
+            }
+        });
+    });
+
+    // Editable section titles
+    document.querySelectorAll('.sec-title-text[contenteditable="true"]').forEach(titleEl => {
+        titleEl.addEventListener('blur', () => {
+            const sectionTitle = titleEl.closest('.sec-title');
+            if (sectionTitle) {
+                const defaultText = sectionTitle.dataset.default;
+                if (titleEl.textContent.trim() === '') {
+                    titleEl.textContent = defaultText;
+                }
+            }
+            triggerAutoSave();
+        });
+
+        titleEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                titleEl.blur();
+            }
+        });
+    });
+
+    // Color swatches
+    document.querySelectorAll('.color-swatch:not(.custom-color)').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+            currentColorScheme = swatch.dataset.color;
+            applyColorScheme(currentColorScheme);
+            saveToHistory();
+            triggerAutoSave();
+        });
+    });
+
+    // Custom color picker
+    const customColorBtn = document.getElementById('customColorBtn');
+    const customColorPicker = document.getElementById('customColorPicker');
+    if (customColorBtn && customColorPicker) {
+        customColorBtn.addEventListener('click', () => customColorPicker.click());
+        customColorPicker.addEventListener('input', (e) => {
+            const color = e.target.value;
+            document.documentElement.style.setProperty('--cv-accent-custom', color);
+            const canvas = document.getElementById('cvCanvas');
+            if (canvas) {
+                canvas.style.setProperty('--cv-accent', color);
+            }
+        });
+    }
+
+    // Panel tabs
+    document.querySelectorAll('.panel-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+            tab.classList.add('active');
+            const panel = document.querySelector(`.panel-section[data-panel="${tab.dataset.panel}"]`);
+            if (panel) panel.classList.add('active');
+        });
+    });
+
+    // Property controls
+    setupPropertyControls();
+
+    // Setup inline editing
+    setupLiveEditing();
+
+    // Setup keyboard shortcuts
+    setupKeyboardShortcuts();
+
+    // Setup context menu
+    setupContextMenu();
+
+    // Setup floating toolbar
+    setupFloatingToolbar();
+
+    // Setup drag and drop
+    setupDragAndDrop();
+
+    // Photo upload
+    setupPhotoUpload();
+
+    // Add section button
+    const addSectionBtn = document.getElementById('addSectionBtn');
+    if (addSectionBtn) {
+        addSectionBtn.addEventListener('click', openAddSectionModal);
+    }
+
+    // Navigator toggle
+    const navToggle = document.getElementById('navToggle');
+    if (navToggle) {
+        navToggle.addEventListener('click', () => {
+            const nav = document.getElementById('sectionNavigator');
+            if (nav) nav.classList.toggle('collapsed');
         });
     }
 }
 
-async function loadCVPreview(cvId) {
+function setupPropertyControls() {
+    // Font select
+    const fontSelect = document.getElementById('fontSelect');
+    if (fontSelect) {
+        fontSelect.addEventListener('change', (e) => {
+            const canvas = document.getElementById('cvCanvas');
+            if (canvas) {
+                document.querySelector('.cv-document').style.fontFamily = `'${e.target.value}', sans-serif`;
+            }
+            triggerAutoSave();
+        });
+    }
+
+    // Font size slider
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+    if (fontSizeSlider) {
+        fontSizeSlider.addEventListener('input', (e) => {
+            currentFontSize = parseInt(e.target.value);
+            if (fontSizeValue) fontSizeValue.textContent = currentFontSize + 'px';
+            const doc = document.querySelector('.cv-document');
+            if (doc) doc.style.fontSize = currentFontSize + 'px';
+            triggerAutoSave();
+        });
+    }
+
+    // Line height slider
+    const lineHeightSlider = document.getElementById('lineHeightSlider');
+    const lineHeightValue = document.getElementById('lineHeightValue');
+    if (lineHeightSlider) {
+        lineHeightSlider.addEventListener('input', (e) => {
+            currentLineHeight = parseFloat(e.target.value);
+            if (lineHeightValue) lineHeightValue.textContent = currentLineHeight.toFixed(1);
+            const doc = document.querySelector('.cv-document');
+            if (doc) doc.style.lineHeight = currentLineHeight;
+            triggerAutoSave();
+        });
+    }
+
+    // Margin slider
+    const marginSlider = document.getElementById('marginSlider');
+    const marginValue = document.getElementById('marginValue');
+    if (marginSlider) {
+        marginSlider.addEventListener('input', (e) => {
+            currentMargin = parseInt(e.target.value);
+            if (marginValue) marginValue.textContent = currentMargin + 'px';
+            const doc = document.querySelector('.cv-document');
+            if (doc) doc.style.padding = currentMargin + 'px';
+            triggerAutoSave();
+        });
+    }
+
+    // Accent strength buttons
+    document.querySelectorAll('[data-accent]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-accent]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentAccentStrength = btn.dataset.accent;
+            // Apply accent strength to CV
+            triggerAutoSave();
+        });
+    });
+
+    // Photo style buttons
+    document.querySelectorAll('[data-photo]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-photo]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentPhotoStyle = btn.dataset.photo;
+            const canvas = document.getElementById('cvCanvas');
+            if (canvas) canvas.setAttribute('data-photo', currentPhotoStyle);
+            triggerAutoSave();
+        });
+    });
+
+    // Contact visibility checkboxes
+    ['showEmail', 'showPhone', 'showLocation', 'showLinkedin', 'showWebsite'].forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox) {
+            checkbox.addEventListener('change', () => {
+                const field = id.replace('show', '').toLowerCase();
+                const chip = document.querySelector(`.contact-chip[data-field="${field}"]`);
+                if (chip) {
+                    chip.style.display = checkbox.checked ? 'inline-flex' : 'none';
+                }
+            });
+        }
+    });
+}
+
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+        // Only in visual editor
+        if (document.getElementById('visualEditorView')?.classList.contains('active') === false) return;
+
+        // Ctrl+S - Save
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            saveCurrentCVChanges();
+            showAutoSaveIndicator('Gespeichert');
+        }
+
+        // Ctrl+Z - Undo
+        if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+            e.preventDefault();
+            undo();
+        }
+
+        // Ctrl+Y or Ctrl+Shift+Z - Redo
+        if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'z')) {
+            e.preventDefault();
+            redo();
+        }
+
+        // P - Preview mode
+        if (e.key === 'p' && !e.ctrlKey && !isEditingText()) {
+            e.preventDefault();
+            togglePreviewMode();
+        }
+
+        // ? - Show shortcuts
+        if (e.key === '?' && !isEditingText()) {
+            e.preventDefault();
+            toggleShortcutsHelp();
+        }
+
+        // Escape - Close modals
+        if (e.key === 'Escape') {
+            closeItemModal();
+            closeAddSectionModal();
+            hideContextMenu();
+            hideFloatingToolbar();
+            if (isPreviewMode) togglePreviewMode();
+        }
+    });
+}
+
+function isEditingText() {
+    const active = document.activeElement;
+    return active && (active.isContentEditable || active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+}
+
+function togglePreviewMode() {
+    isPreviewMode = !isPreviewMode;
+    const builder = document.querySelector('.wysiwyg-builder-pro');
+    const btn = document.getElementById('previewModeBtn');
+
+    if (builder) {
+        builder.classList.toggle('preview-mode', isPreviewMode);
+    }
+    if (btn) {
+        btn.classList.toggle('active', isPreviewMode);
+    }
+}
+
+function toggleShortcutsHelp() {
+    const help = document.getElementById('shortcutsHelp');
+    if (help) {
+        help.style.display = help.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function closeItemModal() {
+    const modal = document.getElementById('editModal');
+    if (modal) {
+        modal.classList.remove('visible');
+    }
+}
+
+function closeAddSectionModal() {
+    const modal = document.getElementById('addSectionModal');
+    if (modal) {
+        modal.classList.remove('visible');
+    }
+}
+
+function openAddSectionModal() {
+    const modal = document.getElementById('addSectionModal');
+    if (modal) {
+        modal.classList.add('visible');
+    }
+}
+
+function setupContextMenu() {
+    const contextMenu = document.getElementById('contextMenu');
+    if (!contextMenu) return;
+
+    // Hide on click outside
+    document.addEventListener('click', () => hideContextMenu());
+    document.addEventListener('contextmenu', (e) => {
+        const item = e.target.closest('.timeline-item, .skill-tag, .language-item');
+        if (item && !isPreviewMode) {
+            e.preventDefault();
+            showContextMenu(e.clientX, e.clientY, item);
+        }
+    });
+
+    // Context menu actions
+    contextMenu.querySelectorAll('.context-menu-item').forEach(menuItem => {
+        menuItem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const action = menuItem.dataset.action;
+            const targetItem = contextMenu.targetItem;
+
+            if (!targetItem) return;
+
+            switch(action) {
+                case 'edit':
+                    const idx = targetItem.dataset.index;
+                    if (targetItem.classList.contains('experience-item') || targetItem.closest('.experience-list, #experienceItems')) {
+                        editExperienceItem(parseInt(idx));
+                    } else if (targetItem.classList.contains('education-item') || targetItem.closest('.education-list, #educationItems')) {
+                        editEducationItem(parseInt(idx));
+                    } else if (targetItem.classList.contains('skill-tag')) {
+                        editSkillItem(parseInt(idx));
+                    }
+                    break;
+                case 'duplicate':
+                    duplicateItem(targetItem);
+                    break;
+                case 'moveUp':
+                    moveItemUp(targetItem);
+                    break;
+                case 'moveDown':
+                    moveItemDown(targetItem);
+                    break;
+                case 'delete':
+                    deleteItem(targetItem);
+                    break;
+            }
+            hideContextMenu();
+        });
+    });
+}
+
+function showContextMenu(x, y, item) {
+    const menu = document.getElementById('contextMenu');
+    if (!menu) return;
+
+    menu.style.left = x + 'px';
+    menu.style.top = y + 'px';
+    menu.style.display = 'block';
+    menu.targetItem = item;
+
+    // Adjust position if off-screen
+    const rect = menu.getBoundingClientRect();
+    if (rect.right > window.innerWidth) {
+        menu.style.left = (x - rect.width) + 'px';
+    }
+    if (rect.bottom > window.innerHeight) {
+        menu.style.top = (y - rect.height) + 'px';
+    }
+}
+
+function hideContextMenu() {
+    const menu = document.getElementById('contextMenu');
+    if (menu) menu.style.display = 'none';
+}
+
+function setupFloatingToolbar() {
+    const toolbar = document.getElementById('floatingToolbar');
+    if (!toolbar) return;
+
+    // Show on text selection
+    document.addEventListener('selectionchange', () => {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && !selection.isCollapsed) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+
+            // Check if selection is in editable area
+            const container = range.commonAncestorContainer.parentElement;
+            if (container && (container.classList?.contains('live-edit') || container.closest('.live-edit'))) {
+                showFloatingToolbar(rect.left + rect.width / 2, rect.top - 10);
+            } else {
+                hideFloatingToolbar();
+            }
+        } else {
+            hideFloatingToolbar();
+        }
+    });
+
+    // Format buttons
+    toolbar.querySelectorAll('.fmt-btn').forEach(btn => {
+        btn.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // Prevent blur
+            const cmd = btn.dataset.cmd;
+
+            switch(cmd) {
+                case 'bold':
+                    document.execCommand('bold');
+                    break;
+                case 'italic':
+                    document.execCommand('italic');
+                    break;
+                case 'underline':
+                    document.execCommand('underline');
+                    break;
+                case 'link':
+                    const url = prompt('Link URL:');
+                    if (url) document.execCommand('createLink', false, url);
+                    break;
+                case 'highlight':
+                    document.execCommand('backColor', false, 'yellow');
+                    break;
+            }
+        });
+    });
+}
+
+function showFloatingToolbar(x, y) {
+    const toolbar = document.getElementById('floatingToolbar');
+    if (!toolbar || isPreviewMode) return;
+
+    toolbar.style.left = x + 'px';
+    toolbar.style.top = y + 'px';
+    toolbar.style.transform = 'translate(-50%, -100%)';
+    toolbar.style.display = 'flex';
+}
+
+function hideFloatingToolbar() {
+    const toolbar = document.getElementById('floatingToolbar');
+    if (toolbar) toolbar.style.display = 'none';
+}
+
+function setupDragAndDrop() {
+    // Section drag and drop in navigator
+    const navSections = document.getElementById('navSections');
+    if (navSections) {
+        navSections.addEventListener('dragstart', handleNavDragStart);
+        navSections.addEventListener('dragover', handleNavDragOver);
+        navSections.addEventListener('drop', handleNavDrop);
+        navSections.addEventListener('dragend', handleNavDragEnd);
+    }
+
+    // CV section drag and drop
+    const cvDocument = document.getElementById('cvDocument');
+    if (cvDocument) {
+        cvDocument.addEventListener('dragstart', handleSectionDragStart);
+        cvDocument.addEventListener('dragover', handleSectionDragOver);
+        cvDocument.addEventListener('drop', handleSectionDrop);
+        cvDocument.addEventListener('dragend', handleSectionDragEnd);
+    }
+}
+
+let draggedElement = null;
+
+function handleNavDragStart(e) {
+    const item = e.target.closest('.nav-section-item');
+    if (!item) return;
+
+    draggedElement = item;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleNavDragOver(e) {
+    e.preventDefault();
+    const item = e.target.closest('.nav-section-item');
+    if (item && item !== draggedElement) {
+        const rect = item.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+        if (e.clientY < mid) {
+            item.parentNode.insertBefore(draggedElement, item);
+        } else {
+            item.parentNode.insertBefore(draggedElement, item.nextSibling);
+        }
+    }
+}
+
+function handleNavDrop(e) {
+    e.preventDefault();
+    // Update section order in CV data
+    updateSectionOrder();
+}
+
+function handleNavDragEnd(e) {
+    if (draggedElement) {
+        draggedElement.classList.remove('dragging');
+        draggedElement = null;
+    }
+}
+
+function handleSectionDragStart(e) {
+    const section = e.target.closest('.cv-sec[data-draggable="true"]');
+    if (!section) return;
+
+    draggedElement = section;
+    section.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleSectionDragOver(e) {
+    e.preventDefault();
+    const section = e.target.closest('.cv-sec');
+    if (section && section !== draggedElement && section.dataset.draggable === 'true') {
+        section.classList.add('drag-over');
+    }
+}
+
+function handleSectionDrop(e) {
+    e.preventDefault();
+    const section = e.target.closest('.cv-sec');
+    if (section && section !== draggedElement) {
+        section.classList.remove('drag-over');
+        const rect = section.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+        if (e.clientY < mid) {
+            section.parentNode.insertBefore(draggedElement, section);
+        } else {
+            section.parentNode.insertBefore(draggedElement, section.nextSibling);
+        }
+        updateSectionOrder();
+    }
+}
+
+function handleSectionDragEnd(e) {
+    if (draggedElement) {
+        draggedElement.classList.remove('dragging');
+        draggedElement = null;
+    }
+    document.querySelectorAll('.cv-sec').forEach(s => s.classList.remove('drag-over'));
+}
+
+function updateSectionOrder() {
+    // Update the CV's section order based on current DOM order
+    const sections = document.querySelectorAll('.cv-sec[data-section]');
+    const order = Array.from(sections).map(s => s.dataset.section);
+    if (visualEditorCurrentCV) {
+        visualEditorCurrentCV.section_order = order;
+        saveToHistory();
+        triggerAutoSave();
+    }
+}
+
+function setupPhotoUpload() {
+    const photoInput = document.getElementById('photoInput');
+    const uploadBtn = document.getElementById('photoUploadBtn');
+    const removeBtn = document.getElementById('photoRemoveBtn');
+
+    if (uploadBtn && photoInput) {
+        uploadBtn.addEventListener('click', () => photoInput.click());
+
+        photoInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                // Read file as base64
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const base64 = e.target.result;
+
+                    // Update display
+                    const photoImg = document.getElementById('photoImg');
+                    const photoPlaceholder = document.getElementById('photoPlaceholder');
+
+                    if (photoImg && photoPlaceholder) {
+                        photoImg.src = base64;
+                        photoImg.style.display = 'block';
+                        photoPlaceholder.style.display = 'none';
+                        if (removeBtn) removeBtn.style.display = 'block';
+                    }
+
+                    // Save to backend if we have Wails API
+                    if (visualEditorCurrentCV && window.go?.main?.App?.UploadPhoto) {
+                        try {
+                            const result = await window.go.main.App.UploadPhoto(visualEditorCurrentCV.id, file.name, base64.split(',')[1]);
+                            visualEditorCurrentCV.photo_path = result;
+                        } catch (err) {
+                            console.error('Photo upload failed:', err);
+                        }
+                    }
+
+                    saveToHistory();
+                    triggerAutoSave();
+                };
+                reader.readAsDataURL(file);
+            } catch (error) {
+                console.error('Error uploading photo:', error);
+            }
+        });
+    }
+
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+            const photoImg = document.getElementById('photoImg');
+            const photoPlaceholder = document.getElementById('photoPlaceholder');
+
+            if (photoImg && photoPlaceholder) {
+                photoImg.src = '';
+                photoImg.style.display = 'none';
+                photoPlaceholder.style.display = 'flex';
+                removeBtn.style.display = 'none';
+            }
+
+            if (visualEditorCurrentCV) {
+                visualEditorCurrentCV.photo_path = '';
+            }
+
+            saveToHistory();
+            triggerAutoSave();
+        });
+    }
+}
+
+function setupLiveEditing() {
+    // Delegate events to the document for dynamically created elements
+    document.addEventListener('focus', (e) => {
+        if (e.target.classList?.contains('live-edit')) {
+            e.target.dataset.originalValue = e.target.textContent;
+        }
+    }, true);
+
+    document.addEventListener('blur', (e) => {
+        if (e.target.classList?.contains('live-edit')) {
+            const field = e.target.dataset.field;
+            const newValue = e.target.textContent.trim();
+            const originalValue = e.target.dataset.originalValue;
+
+            if (newValue !== originalValue && visualEditorCurrentCV) {
+                saveToHistory();
+                updateCVField(field, newValue);
+                triggerAutoSave();
+            }
+        }
+    }, true);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.target.classList?.contains('live-edit')) {
+            // Enter to confirm (for single-line fields)
+            if (e.key === 'Enter' && !e.target.classList.contains('multiline')) {
+                e.preventDefault();
+                e.target.blur();
+            }
+            // Escape to cancel
+            if (e.key === 'Escape') {
+                e.target.textContent = e.target.dataset.originalValue || '';
+                e.target.blur();
+            }
+        }
+    });
+}
+
+function duplicateItem(item) {
+    if (!visualEditorCurrentCV) return;
+
+    const idx = parseInt(item.dataset.index);
+
+    if (item.closest('#experienceItems') || item.classList.contains('experience-item')) {
+        const exp = visualEditorCurrentCV.work_experience[idx];
+        if (exp) {
+            visualEditorCurrentCV.work_experience.splice(idx + 1, 0, {...exp});
+            renderExperienceList(visualEditorCurrentCV.work_experience);
+        }
+    } else if (item.closest('#educationItems') || item.classList.contains('education-item')) {
+        const edu = visualEditorCurrentCV.education[idx];
+        if (edu) {
+            visualEditorCurrentCV.education.splice(idx + 1, 0, {...edu});
+            renderEducationList(visualEditorCurrentCV.education);
+        }
+    }
+
+    saveToHistory();
+    triggerAutoSave();
+}
+
+function moveItemUp(item) {
+    const idx = parseInt(item.dataset.index);
+    if (idx === 0) return;
+
+    if (item.closest('#experienceItems')) {
+        const arr = visualEditorCurrentCV.work_experience;
+        [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+        renderExperienceList(arr);
+    } else if (item.closest('#educationItems')) {
+        const arr = visualEditorCurrentCV.education;
+        [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+        renderEducationList(arr);
+    }
+
+    saveToHistory();
+    triggerAutoSave();
+}
+
+function moveItemDown(item) {
+    const idx = parseInt(item.dataset.index);
+
+    if (item.closest('#experienceItems')) {
+        const arr = visualEditorCurrentCV.work_experience;
+        if (idx >= arr.length - 1) return;
+        [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]];
+        renderExperienceList(arr);
+    } else if (item.closest('#educationItems')) {
+        const arr = visualEditorCurrentCV.education;
+        if (idx >= arr.length - 1) return;
+        [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]];
+        renderEducationList(arr);
+    }
+
+    saveToHistory();
+    triggerAutoSave();
+}
+
+function deleteItem(item) {
+    const idx = parseInt(item.dataset.index);
+
+    if (item.closest('#experienceItems')) {
+        deleteExperienceItem(idx);
+    } else if (item.closest('#educationItems')) {
+        deleteEducationItem(idx);
+    } else if (item.classList.contains('skill-tag')) {
+        deleteSkillItem(idx);
+    } else if (item.classList.contains('language-item')) {
+        deleteLanguageItem(idx);
+    }
+}
+
+function openAddSectionModal() {
+    const modal = document.getElementById('addSectionModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeAddSectionModal() {
+    const modal = document.getElementById('addSectionModal');
+    if (modal) modal.style.display = 'none';
+}
+
+window.closeAddSectionModal = closeAddSectionModal;
+window.openAddSectionModal = openAddSectionModal;
+window.closeItemModal = closeItemModal;
+window.toggleShortcutsHelp = toggleShortcutsHelp;
+window.togglePreviewMode = togglePreviewMode;
+window.applyColorScheme = applyColorScheme;
+window.applyTemplate = applyTemplate;
+window.undo = undo;
+window.redo = redo;
+window.applySkillsDisplayStyle = applySkillsDisplayStyle;
+window.applyLanguagesDisplayStyle = applyLanguagesDisplayStyle;
+window.openSectionSettings = openSectionSettings;
+window.closeSectionSettings = closeSectionSettings;
+window.saveSectionSettings = saveSectionSettings;
+
+async function loadCVIntoBuilder(cvId) {
+    console.log('[Builder] Loading CV:', cvId);
+
+    const loadingEl = document.getElementById('canvasLoading');
+    const documentEl = document.getElementById('cvDocument');
+    const cvCanvas = document.getElementById('cvCanvas');
+
+    if (loadingEl) loadingEl.style.display = 'flex';
+    if (documentEl) documentEl.style.display = 'none';
+
+    // Reset history
+    undoStack = [];
+    redoStack = [];
+    updateUndoRedoButtons();
+
     try {
         const cv = await window.go.main.App.GetCV(cvId);
         visualEditorCurrentCV = cv;
+        console.log('[Builder] CV loaded:', cv);
 
-        // Show loading state
-        const loadingEl = document.querySelector('.pdf-loading');
-        const iframe = document.getElementById('pdfPreviewFrame');
+        // Apply color scheme and template
+        currentColorScheme = cv.color_scheme || 'blue';
+        currentTemplate = cv.template || 'modern';
 
-        if (loadingEl) {
-            loadingEl.innerHTML = `
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10" opacity="0.25"></circle>
-                    <path d="M12 2a10 10 0 0 1 10 10" opacity="0.75">
-                        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
-                    </path>
-                </svg>
-                <p>PDF wird generiert...</p>
-            `;
-            loadingEl.style.display = 'flex';
+        // Update toolbar buttons - pills and swatches
+        document.querySelectorAll('.color-swatch').forEach(s => {
+            s.classList.toggle('active', s.dataset.color === currentColorScheme);
+        });
+        document.querySelectorAll('.template-pill').forEach(p => {
+            p.classList.toggle('active', p.dataset.template === currentTemplate);
+        });
+
+        // Apply to CV canvas
+        if (cvCanvas) {
+            cvCanvas.setAttribute('data-color', currentColorScheme);
+            cvCanvas.setAttribute('data-template', currentTemplate);
         }
 
-        if (iframe) {
-            iframe.style.display = 'none';
+        // Populate header with live-edit fields
+        const nameEl = document.querySelector('.cv-name.live-edit');
+        const jobTitleEl = document.querySelector('.cv-title.live-edit');
+
+        if (nameEl) {
+            nameEl.textContent = `${cv.firstname || ''} ${cv.lastname || ''}`.trim();
+            nameEl.setAttribute('contenteditable', 'true');
+        }
+        if (jobTitleEl) {
+            jobTitleEl.textContent = cv.job_title || '';
+            jobTitleEl.setAttribute('contenteditable', 'true');
         }
 
-        // Generate PDF (temporary file) - Backend function is ExportPDF not ExportCVToPDF
-        console.log('[Visual Editor] Generating PDF for CV:', cvId);
-        const pdfPath = await window.go.main.App.ExportPDF(cvId);
-        console.log('[Visual Editor] PDF generated at:', pdfPath);
+        // Contact chips with live-edit spans
+        const emailSpan = document.querySelector('.contact-chip[data-field="email"] .live-edit');
+        const phoneSpan = document.querySelector('.contact-chip[data-field="phone"] .live-edit');
+        const locationSpan = document.querySelector('.contact-chip[data-field="location"] .live-edit');
 
-        // Load PDF in iframe
-        if (iframe && pdfPath) {
-            // Convert Windows path to file URL
-            const fileUrl = 'file:///' + pdfPath.replace(/\\/g, '/');
-            console.log('[Visual Editor] Loading PDF from:', fileUrl);
-
-            iframe.src = fileUrl;
-            iframe.onload = () => {
-                console.log('[Visual Editor] PDF loaded successfully');
-                if (loadingEl) loadingEl.style.display = 'none';
-                iframe.style.display = 'block';
-                updateZoom();
-            };
-            iframe.onerror = (err) => {
-                console.error('[Visual Editor] Failed to load PDF in iframe:', err);
-                if (loadingEl) {
-                    loadingEl.innerHTML = `
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="15" y1="9" x2="9" y2="15"></line>
-                            <line x1="9" y1="9" x2="15" y2="15"></line>
-                        </svg>
-                        <p style="color: var(--error-color);">Fehler beim Laden der PDF</p>
-                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">PDF wurde generiert: ${pdfPath}</p>
-                        <button class="btn-small" onclick="window.go.main.App.OpenPDFExternally('${pdfPath}')">Extern öffnen</button>
-                    `;
-                }
-            };
-        } else {
-            throw new Error('Iframe element nicht gefunden oder PDF-Pfad leer');
+        if (emailSpan) {
+            emailSpan.textContent = cv.email || '';
+            emailSpan.setAttribute('contenteditable', 'true');
         }
+        if (phoneSpan) {
+            phoneSpan.textContent = cv.phone || '';
+            phoneSpan.setAttribute('contenteditable', 'true');
+        }
+        if (locationSpan) {
+            locationSpan.textContent = cv.address || '';
+            locationSpan.setAttribute('contenteditable', 'true');
+        }
+
+        // Summary
+        const summaryEl = document.querySelector('.summary-text.live-edit');
+        if (summaryEl) {
+            summaryEl.textContent = cv.summary || '';
+            summaryEl.setAttribute('contenteditable', 'true');
+        }
+
+        // Photo
+        const photoImg = document.getElementById('photoImg');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        const photoRemoveBtn = document.getElementById('photoRemoveBtn');
+
+        if (cv.photo_path && photoImg && photoPlaceholder) {
+            photoImg.src = `file:///${cv.photo_path.replace(/\\/g, '/')}`;
+            photoImg.style.display = 'block';
+            photoPlaceholder.style.display = 'none';
+            if (photoRemoveBtn) photoRemoveBtn.style.display = 'block';
+        } else if (photoImg && photoPlaceholder) {
+            photoImg.style.display = 'none';
+            photoPlaceholder.style.display = 'flex';
+            if (photoRemoveBtn) photoRemoveBtn.style.display = 'none';
+        }
+
+        // Render all sections
+        renderExperienceList(cv.work_experience || []);
+        renderEducationList(cv.education || []);
+        renderSkillsList(cv.skills || []);
+        renderLanguagesList(cv.languages || []);
+
+        // Update section navigator
+        updateSectionNavigator(cv);
+
+        // Show content
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (documentEl) documentEl.style.display = 'block';
+
+        // Show autosave indicator
+        showAutoSaveIndicator('Geladen');
 
     } catch (error) {
-        console.error('[Visual Editor] Failed to load CV preview:', error);
-        const loadingEl = document.querySelector('.pdf-loading');
+        console.error('[Builder] Failed to load CV:', error);
         if (loadingEl) {
             loadingEl.innerHTML = `
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                </svg>
-                <p style="color: var(--error-color);">Fehler beim Laden der PDF-Vorschau</p>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">${error.message}</p>
+                <div class="loading-animation" style="color: #ef4444;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                </div>
+                <p style="color: #ef4444;">Fehler beim Laden</p>
+                <p style="color: #888; font-size: 12px; margin-top: 8px;">${error.message}</p>
             `;
-            loadingEl.style.display = 'flex';
         }
     }
 }
 
-async function applyVisualEditorChanges() {
+function refreshCVDisplay() {
     if (!visualEditorCurrentCV) return;
 
-    // Get settings
-    const template = document.getElementById('templateSelect')?.value;
-    const colorScheme = document.getElementById('colorSchemeSelect')?.value;
+    const cv = visualEditorCurrentCV;
 
-    try {
-        // Update CV with new settings
-        visualEditorCurrentCV.template = template;
-        visualEditorCurrentCV.color_scheme = colorScheme;
+    // Update header fields
+    const nameEl = document.querySelector('.cv-name.live-edit');
+    const jobTitleEl = document.querySelector('.cv-title.live-edit');
 
-        await window.go.main.App.SaveCV(visualEditorCurrentCV);
-        await showSuccess('Änderungen gespeichert! Vorschau wird aktualisiert...');
+    if (nameEl) nameEl.textContent = `${cv.firstname || ''} ${cv.lastname || ''}`.trim();
+    if (jobTitleEl) jobTitleEl.textContent = cv.job_title || '';
 
-        // Reload preview
-        await loadCVPreview(visualEditorCurrentCV.id);
-    } catch (error) {
-        console.error('Failed to apply changes:', error);
-        await showError('Fehler beim Anwenden der Änderungen');
+    const emailSpan = document.querySelector('.contact-chip[data-field="email"] .live-edit');
+    const phoneSpan = document.querySelector('.contact-chip[data-field="phone"] .live-edit');
+    const locationSpan = document.querySelector('.contact-chip[data-field="location"] .live-edit');
+
+    if (emailSpan) emailSpan.textContent = cv.email || '';
+    if (phoneSpan) phoneSpan.textContent = cv.phone || '';
+    if (locationSpan) locationSpan.textContent = cv.address || '';
+
+    const summaryEl = document.querySelector('.summary-text.live-edit');
+    if (summaryEl) summaryEl.textContent = cv.summary || '';
+
+    renderExperienceList(cv.work_experience || []);
+    renderEducationList(cv.education || []);
+    renderSkillsList(cv.skills || []);
+    renderLanguagesList(cv.languages || []);
+    updateSectionNavigator(cv);
+}
+
+function updateSectionNavigator(cv) {
+    const container = document.getElementById('navSections');
+    if (!container) return;
+
+    const sections = [
+        { id: 'header', name: 'Kopfzeile', icon: 'user', count: '' },
+        { id: 'summary', name: 'Profil', icon: 'file-text', count: '' },
+        { id: 'experience', name: 'Berufserfahrung', icon: 'briefcase', count: (cv.work_experience?.length || 0) + ' Einträge' },
+        { id: 'education', name: 'Ausbildung', icon: 'graduation-cap', count: (cv.education?.length || 0) + ' Einträge' },
+        { id: 'skills', name: 'Fähigkeiten', icon: 'star', count: (cv.skills?.length || 0) + ' Skills' },
+        { id: 'languages', name: 'Sprachen', icon: 'globe', count: (cv.languages?.length || 0) + ' Sprachen' }
+    ];
+
+    const iconMap = {
+        'user': '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        'file-text': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+        'briefcase': '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+        'graduation-cap': '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
+        'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+        'globe': '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'
+    };
+
+    container.innerHTML = sections.map(sec => `
+        <div class="nav-section-item" data-section="${sec.id}" draggable="${sec.id !== 'header'}">
+            <div class="drag-handle" style="${sec.id === 'header' ? 'visibility:hidden' : ''}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
+                    <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+                </svg>
+            </div>
+            <div class="nav-section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    ${iconMap[sec.icon] || ''}
+                </svg>
+            </div>
+            <div class="nav-section-info">
+                <div class="nav-section-name">${sec.name}</div>
+                ${sec.count ? `<div class="nav-section-count">${sec.count}</div>` : ''}
+            </div>
+            <button class="nav-section-toggle" onclick="toggleSectionVisibility('${sec.id}')" title="Ein-/Ausblenden">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+            </button>
+        </div>
+    `).join('');
+
+    // Add click handlers for navigation
+    container.querySelectorAll('.nav-section-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.drag-handle') || e.target.closest('.nav-section-toggle')) return;
+            scrollToSection(item.dataset.section);
+            container.querySelectorAll('.nav-section-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        });
+    });
+}
+
+function toggleSectionVisibility(sectionId) {
+    const section = document.querySelector(`.cv-sec[data-section="${sectionId}"]`);
+    const navItem = document.querySelector(`.nav-section-item[data-section="${sectionId}"]`);
+
+    if (section) {
+        section.classList.toggle('hidden-section');
+    }
+    if (navItem) {
+        navItem.classList.toggle('hidden');
     }
 }
 
-function updateZoom() {
-    const iframe = document.getElementById('pdfPreviewFrame');
+window.toggleSectionVisibility = toggleSectionVisibility;
+
+function renderExperienceList(experiences) {
+    const container = document.getElementById('experienceItems');
+    if (!container) return;
+
+    if (experiences.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = experiences.map((exp, idx) => `
+        <div class="timeline-item" data-index="${idx}" draggable="true">
+            <div class="item-actions">
+                <button class="item-action-btn" onclick="editExperienceItem(${idx})" title="Bearbeiten">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </button>
+                <button class="item-action-btn delete" onclick="deleteExperienceItem(${idx})" title="Löschen">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="item-header">
+                <h4 class="item-title">${exp.position || 'Position'}</h4>
+                <span class="item-date">${exp.start_date || ''} - ${exp.end_date || 'heute'}</span>
+            </div>
+            <p class="item-subtitle">${exp.company || 'Unternehmen'}${exp.location ? ', ' + exp.location : ''}</p>
+            ${exp.description ? `<p class="item-description">${exp.description}</p>` : ''}
+            ${exp.tasks && exp.tasks.length > 0 ? `
+                <ul class="item-tasks">
+                    ${exp.tasks.map(task => `<li>${task}</li>`).join('')}
+                </ul>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+function renderEducationList(education) {
+    const container = document.getElementById('educationItems');
+    if (!container) return;
+
+    if (education.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = education.map((edu, idx) => `
+        <div class="timeline-item" data-index="${idx}" draggable="true">
+            <div class="item-actions">
+                <button class="item-action-btn" onclick="editEducationItem(${idx})" title="Bearbeiten">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </button>
+                <button class="item-action-btn delete" onclick="deleteEducationItem(${idx})" title="Löschen">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="item-header">
+                <h4 class="item-title">${edu.degree || 'Abschluss'}</h4>
+                <span class="item-date">${edu.start_date || ''} - ${edu.end_date || ''}</span>
+            </div>
+            <p class="item-subtitle">${edu.institution || 'Institution'}${edu.location ? ', ' + edu.location : ''}</p>
+            ${edu.description ? `<p class="item-description">${edu.description}</p>` : ''}
+        </div>
+    `).join('');
+}
+
+function renderSkillsList(skills) {
+    const container = document.getElementById('skillsCloud');
+    if (!container) return;
+
+    if (skills.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = skills.map((skill, idx) => {
+        const level = skill.level || 3;
+        const dots = Array(5).fill(0).map((_, i) =>
+            `<span class="skill-dot ${i < level ? 'filled' : ''}"></span>`
+        ).join('');
+
+        return `
+            <div class="skill-tag" data-index="${idx}" onclick="editSkillItem(${idx})" draggable="true">
+                <span>${skill.name || 'Skill'}</span>
+                <span class="skill-level">${dots}</span>
+                <button class="remove-skill" onclick="event.stopPropagation(); deleteSkillItem(${idx})">×</button>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderLanguagesList(languages) {
+    const container = document.getElementById('languagesGrid');
+    if (!container) return;
+
+    if (languages.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = languages.map((lang, idx) => {
+        const level = lang.level || 3;
+        const bars = Array(5).fill(0).map((_, i) =>
+            `<span class="level-bar ${i < level ? 'filled' : ''}"></span>`
+        ).join('');
+
+        return `
+            <div class="language-item" data-index="${idx}" onclick="editLanguageItem(${idx})" draggable="true">
+                <div class="item-actions">
+                    <button class="item-action-btn delete" onclick="event.stopPropagation(); deleteLanguageItem(${idx})" title="Löschen">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                    </button>
+                </div>
+                <span class="language-name">${lang.name || 'Sprache'}</span>
+                <div class="language-level">${bars}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Legacy function for backwards compatibility
+function updateSectionSidebar(cv) {
+    // Now handled by updateSectionNavigator
+    updateSectionNavigator(cv);
+}
+
+function scrollToSection(sectionId) {
+    const section = document.querySelector(`[data-section="${sectionId}"]`);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Highlight section briefly
+        section.classList.add('highlight');
+        setTimeout(() => section.classList.remove('highlight'), 1000);
+    }
+}
+
+function applyColorScheme(color) {
+    const cvCanvas = document.getElementById('cvCanvas');
+    if (cvCanvas) {
+        cvCanvas.setAttribute('data-color', color);
+    }
+
+    // Update active state in color options
+    document.querySelectorAll('.color-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.color === color);
+    });
+
+    currentColorScheme = color;
+    triggerAutoSave();
+}
+
+function applyTemplate(template) {
+    const cvCanvas = document.getElementById('cvCanvas');
+    if (cvCanvas) {
+        cvCanvas.setAttribute('data-template', template);
+    }
+
+    // Update active state in template options
+    document.querySelectorAll('.template-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.template === template);
+    });
+
+    // Update dropdown trigger text
+    const templateName = document.getElementById('templateName');
+    const activeOption = document.querySelector(`.template-option[data-template="${template}"]`);
+    if (templateName && activeOption) {
+        const nameEl = activeOption.querySelector('.template-name');
+        if (nameEl) {
+            templateName.textContent = nameEl.textContent;
+        }
+    }
+
+    currentTemplate = template;
+    triggerAutoSave();
+}
+
+// Skills display style functions
+function applySkillsDisplayStyle(style) {
+    const skillsSection = document.querySelector('.cv-sec[data-section="skills"], .cv-section[data-section="skills"]');
+    if (!skillsSection) return;
+
+    const skillsContainer = skillsSection.querySelector('.skills-container, .skills-cloud');
+    if (skillsContainer) {
+        skillsContainer.setAttribute('data-display', style);
+    }
+
+    // Re-render skills based on style
+    renderSkillsWithStyle(style);
+}
+
+function renderSkillsWithStyle(style) {
+    const skillsCloud = document.getElementById('skillsCloud') || document.querySelector('.skills-cloud');
+    if (!skillsCloud) return;
+
+    // Get skills from current CV or from existing elements
+    let skills = [];
+    if (visualEditorCurrentCV?.skills) {
+        skills = visualEditorCurrentCV.skills;
+    } else {
+        // Try to get skills from existing skill tags
+        const existingTags = skillsCloud.querySelectorAll('.skill-tag, .skill-item');
+        existingTags.forEach(tag => {
+            const name = tag.textContent.trim().replace('×', '').trim();
+            if (name) skills.push({ name, level: 80 });
+        });
+    }
+
+    if (skills.length === 0) return;
+
+    skillsCloud.innerHTML = '';
+
+    skills.forEach(skill => {
+        const skillEl = document.createElement('div');
+        skillEl.className = 'skill-item';
+
+        switch (style) {
+            case 'tags':
+                skillEl.className = 'skill-tag';
+                skillEl.innerHTML = `<span class="skill-name">${skill.name}</span>`;
+                break;
+
+            case 'bars':
+                const level = skill.level || 80;
+                skillEl.innerHTML = `
+                    <div class="skill-header">
+                        <span class="skill-name">${skill.name}</span>
+                        <span class="skill-level">${level}%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" style="width: ${level}%"></div>
+                    </div>
+                `;
+                break;
+
+            case 'dots':
+                const dotLevel = Math.round((skill.level || 80) / 20);
+                let dots = '';
+                for (let i = 1; i <= 5; i++) {
+                    dots += `<span class="skill-dot ${i <= dotLevel ? 'filled' : ''}"></span>`;
+                }
+                skillEl.innerHTML = `
+                    <span class="skill-name">${skill.name}</span>
+                    <div class="skill-dots">${dots}</div>
+                `;
+                break;
+
+            case 'percentage':
+                const pctLevel = skill.level || 80;
+                skillEl.innerHTML = `
+                    <div class="skill-circle" style="--percentage: ${pctLevel}">
+                        <svg viewBox="0 0 36 36">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="circle-fill" stroke-dasharray="${pctLevel}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        </svg>
+                        <span class="skill-pct">${pctLevel}%</span>
+                    </div>
+                    <span class="skill-name">${skill.name}</span>
+                `;
+                break;
+
+            case 'list':
+                skillEl.innerHTML = `
+                    <span class="skill-bullet">•</span>
+                    <span class="skill-name">${skill.name}</span>
+                `;
+                break;
+        }
+
+        skillsCloud.appendChild(skillEl);
+    });
+
+    // Update container class
+    skillsCloud.className = `skills-cloud skills-${style}`;
+}
+
+// Languages display style functions
+function applyLanguagesDisplayStyle(style) {
+    const langSection = document.querySelector('.cv-sec[data-section="languages"], .cv-section[data-section="languages"]');
+    if (!langSection) return;
+
+    const langContainer = langSection.querySelector('.languages-container, .languages-grid');
+    if (langContainer) {
+        langContainer.setAttribute('data-display', style);
+    }
+
+    // Re-render languages based on style
+    renderLanguagesWithStyle(style);
+}
+
+function renderLanguagesWithStyle(style) {
+    const langGrid = document.getElementById('languagesGrid') || document.querySelector('.languages-grid');
+    if (!langGrid) return;
+
+    // Get languages from current CV or from existing elements
+    let languages = [];
+    if (visualEditorCurrentCV?.languages) {
+        languages = visualEditorCurrentCV.languages;
+    } else {
+        // Try to get languages from existing elements
+        const existingLangs = langGrid.querySelectorAll('.lang-item, .language-item');
+        existingLangs.forEach(lang => {
+            const nameEl = lang.querySelector('.lang-name, .language-name');
+            const name = nameEl ? nameEl.textContent.trim() : lang.textContent.trim();
+            if (name) languages.push({ name, level: 80, proficiency: 'Fließend' });
+        });
+    }
+
+    if (languages.length === 0) return;
+
+    langGrid.innerHTML = '';
+
+    const levelNames = {
+        100: 'Muttersprache',
+        90: 'Verhandlungssicher (C2)',
+        80: 'Fließend (C1)',
+        70: 'Fortgeschritten (B2)',
+        60: 'Gute Kenntnisse (B1)',
+        50: 'Grundkenntnisse (A2)',
+        30: 'Anfänger (A1)'
+    };
+
+    const flagEmojis = {
+        'Deutsch': '🇩🇪',
+        'Englisch': '🇬🇧',
+        'Französisch': '🇫🇷',
+        'Spanisch': '🇪🇸',
+        'Italienisch': '🇮🇹',
+        'Portugiesisch': '🇵🇹',
+        'Russisch': '🇷🇺',
+        'Chinesisch': '🇨🇳',
+        'Japanisch': '🇯🇵',
+        'Koreanisch': '🇰🇷',
+        'Arabisch': '🇸🇦',
+        'Türkisch': '🇹🇷',
+        'Polnisch': '🇵🇱',
+        'Niederländisch': '🇳🇱',
+        'Schwedisch': '🇸🇪'
+    };
+
+    languages.forEach(lang => {
+        const langEl = document.createElement('div');
+        langEl.className = 'lang-item';
+        const level = lang.level || 80;
+        const levelText = levelNames[level] || lang.proficiency || `${level}%`;
+
+        switch (style) {
+            case 'bars':
+                langEl.innerHTML = `
+                    <div class="lang-header">
+                        <span class="lang-name">${lang.name}</span>
+                        <span class="lang-level">${levelText}</span>
+                    </div>
+                    <div class="lang-bar">
+                        <div class="lang-bar-fill" style="width: ${level}%"></div>
+                    </div>
+                `;
+                break;
+
+            case 'circles':
+                const circleLevel = Math.round(level / 20);
+                let circles = '';
+                for (let i = 1; i <= 5; i++) {
+                    circles += `<span class="lang-circle ${i <= circleLevel ? 'filled' : ''}"></span>`;
+                }
+                langEl.innerHTML = `
+                    <span class="lang-name">${lang.name}</span>
+                    <div class="lang-circles">${circles}</div>
+                    <span class="lang-level-text">${levelText}</span>
+                `;
+                break;
+
+            case 'text':
+                langEl.innerHTML = `
+                    <span class="lang-name">${lang.name}</span>
+                    <span class="lang-separator">—</span>
+                    <span class="lang-level-text">${levelText}</span>
+                `;
+                break;
+
+            case 'flags':
+                const flag = flagEmojis[lang.name] || '🌐';
+                langEl.innerHTML = `
+                    <span class="lang-flag">${flag}</span>
+                    <span class="lang-name">${lang.name}</span>
+                    <span class="lang-level-text">${levelText}</span>
+                `;
+                break;
+        }
+
+        langGrid.appendChild(langEl);
+    });
+
+    // Update container class
+    langGrid.className = `languages-grid lang-${style}`;
+}
+
+// Section settings
+function openSectionSettings(sectionId) {
+    const section = document.querySelector(`#${sectionId}, .cv-sec[data-section="${sectionId}"], .cv-section[data-section="${sectionId}"]`);
+    if (!section) return;
+
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('sectionSettingsModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'sectionSettingsModal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content section-settings-modal">
+                <div class="modal-header">
+                    <h3>Abschnitt-Einstellungen</h3>
+                    <button class="modal-close" onclick="closeSectionSettings()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-group">
+                        <label>Abschnitt-Titel</label>
+                        <input type="text" id="sectionTitleInput" placeholder="Titel eingeben">
+                    </div>
+                    <div class="settings-group">
+                        <label>Icon</label>
+                        <div class="icon-selector" id="iconSelector">
+                            <button class="icon-option" data-icon="briefcase" title="Koffer">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+                            </button>
+                            <button class="icon-option" data-icon="graduation" title="Bildung">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                            </button>
+                            <button class="icon-option" data-icon="star" title="Stern">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            </button>
+                            <button class="icon-option" data-icon="globe" title="Sprachen">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            </button>
+                            <button class="icon-option" data-icon="award" title="Zertifikate">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                            </button>
+                            <button class="icon-option" data-icon="heart" title="Hobbys">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            </button>
+                            <button class="icon-option" data-icon="none" title="Kein Icon">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <label>Sichtbarkeit</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="sectionVisibleToggle" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Sichtbar</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeSectionSettings()">Abbrechen</button>
+                    <button class="btn-primary" onclick="saveSectionSettings()">Speichern</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    // Store current section ID
+    modal.dataset.sectionId = sectionId;
+
+    // Populate current values
+    const titleEl = section.querySelector('.sec-title-text');
+    const titleInput = document.getElementById('sectionTitleInput');
+    if (titleEl && titleInput) {
+        titleInput.value = titleEl.textContent.trim();
+    }
+
+    // Set current icon
+    const iconEl = section.querySelector('.sec-icon');
+    if (iconEl) {
+        const currentIcon = iconEl.dataset.icon || 'briefcase';
+        document.querySelectorAll('#iconSelector .icon-option').forEach(opt => {
+            opt.classList.toggle('active', opt.dataset.icon === currentIcon);
+        });
+    }
+
+    // Setup icon selection
+    document.querySelectorAll('#iconSelector .icon-option').forEach(opt => {
+        opt.onclick = () => {
+            document.querySelectorAll('#iconSelector .icon-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+        };
+    });
+
+    // Set visibility toggle
+    const visibleToggle = document.getElementById('sectionVisibleToggle');
+    if (visibleToggle) {
+        visibleToggle.checked = !section.classList.contains('hidden');
+    }
+
+    // Show modal
+    modal.classList.add('active');
+}
+
+function closeSectionSettings() {
+    const modal = document.getElementById('sectionSettingsModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+function saveSectionSettings() {
+    const modal = document.getElementById('sectionSettingsModal');
+    if (!modal) return;
+
+    const sectionId = modal.dataset.sectionId;
+    const section = document.querySelector(`#${sectionId}, .cv-sec[data-section="${sectionId}"], .cv-section[data-section="${sectionId}"]`);
+    if (!section) return;
+
+    // Update title
+    const titleInput = document.getElementById('sectionTitleInput');
+    const titleEl = section.querySelector('.sec-title-text');
+    if (titleInput && titleEl) {
+        titleEl.textContent = titleInput.value;
+    }
+
+    // Update icon
+    const activeIcon = document.querySelector('#iconSelector .icon-option.active');
+    const iconEl = section.querySelector('.sec-icon');
+    if (activeIcon && iconEl) {
+        const iconType = activeIcon.dataset.icon;
+        iconEl.dataset.icon = iconType;
+
+        if (iconType === 'none') {
+            iconEl.style.display = 'none';
+        } else {
+            iconEl.style.display = '';
+            iconEl.innerHTML = activeIcon.innerHTML;
+        }
+    }
+
+    // Update visibility
+    const visibleToggle = document.getElementById('sectionVisibleToggle');
+    if (visibleToggle) {
+        section.classList.toggle('hidden', !visibleToggle.checked);
+    }
+
+    closeSectionSettings();
+    triggerAutoSave();
+}
+
+function updateBuilderZoom() {
+    const cvCanvas = document.getElementById('cvCanvas');
     const zoomLevelEl = document.getElementById('zoomLevel');
 
-    if (iframe) {
-        iframe.style.transform = `scale(${visualEditorZoom / 100})`;
-        iframe.style.transformOrigin = 'top center';
+    if (cvCanvas) {
+        cvCanvas.style.transform = `scale(${visualEditorZoom / 100})`;
+        cvCanvas.style.transformOrigin = 'top center';
     }
 
     if (zoomLevelEl) {
         zoomLevelEl.textContent = visualEditorZoom + '%';
     }
 }
+
+function setupInlineEditing() {
+    // Setup editable fields
+    document.querySelectorAll('.editable').forEach(el => {
+        el.addEventListener('blur', () => {
+            const field = el.dataset.field;
+            const value = el.textContent.trim();
+            updateCVField(field, value);
+        });
+
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                el.blur();
+            }
+        });
+    });
+}
+
+function updateCVField(field, value) {
+    if (!visualEditorCurrentCV) return;
+
+    switch (field) {
+        case 'fullname':
+            const parts = value.split(' ');
+            visualEditorCurrentCV.firstname = parts[0] || '';
+            visualEditorCurrentCV.lastname = parts.slice(1).join(' ') || '';
+            break;
+        case 'job_title':
+            visualEditorCurrentCV.job_title = value;
+            break;
+        case 'email':
+            visualEditorCurrentCV.email = value;
+            break;
+        case 'phone':
+            visualEditorCurrentCV.phone = value;
+            break;
+        case 'location':
+            visualEditorCurrentCV.address = value;
+            break;
+        case 'summary':
+            visualEditorCurrentCV.summary = value;
+            break;
+    }
+
+    triggerAutoSave();
+}
+
+function triggerAutoSave() {
+    if (autoSaveTimeout) {
+        clearTimeout(autoSaveTimeout);
+    }
+
+    showAutoSaveIndicator('Speichert...', true);
+
+    autoSaveTimeout = setTimeout(async () => {
+        await saveCurrentCVChanges();
+    }, 1000);
+}
+
+async function saveCurrentCVChanges() {
+    if (!visualEditorCurrentCV) return;
+
+    try {
+        // Update template and color scheme
+        visualEditorCurrentCV.template = currentTemplate;
+        visualEditorCurrentCV.color_scheme = currentColorScheme;
+
+        await window.go.main.App.SaveCV(visualEditorCurrentCV);
+        console.log('[Builder] CV saved successfully');
+        showAutoSaveIndicator('Gespeichert');
+    } catch (error) {
+        console.error('[Builder] Save failed:', error);
+        showAutoSaveIndicator('Fehler!', false, true);
+    }
+}
+
+function showAutoSaveIndicator(text, saving = false, error = false) {
+    const indicator = document.getElementById('autosaveIndicator');
+    if (!indicator) return;
+
+    indicator.textContent = text;
+    indicator.classList.toggle('saving', saving);
+    indicator.classList.toggle('error', error);
+    indicator.classList.add('visible');
+
+    if (!saving) {
+        setTimeout(() => {
+            indicator.classList.remove('visible');
+        }, 2000);
+    }
+}
+
+// Add/Edit/Delete functions for items
+async function addExperienceItem() {
+    if (!visualEditorCurrentCV) return;
+
+    const newExp = {
+        id: Date.now().toString(),
+        position: 'Neue Position',
+        company: 'Unternehmen',
+        location: '',
+        start_date: '',
+        end_date: '',
+        tasks: []
+    };
+
+    if (!visualEditorCurrentCV.work_experience) {
+        visualEditorCurrentCV.work_experience = [];
+    }
+
+    visualEditorCurrentCV.work_experience.push(newExp);
+    renderExperienceList(visualEditorCurrentCV.work_experience);
+    updateSectionSidebar(visualEditorCurrentCV);
+    triggerAutoSave();
+
+    // Open edit dialog
+    editExperienceItem(visualEditorCurrentCV.work_experience.length - 1);
+}
+
+async function addEducationItem() {
+    if (!visualEditorCurrentCV) return;
+
+    const newEdu = {
+        id: Date.now().toString(),
+        degree: 'Neuer Abschluss',
+        institution: 'Institution',
+        location: '',
+        start_date: '',
+        end_date: '',
+        description: ''
+    };
+
+    if (!visualEditorCurrentCV.education) {
+        visualEditorCurrentCV.education = [];
+    }
+
+    visualEditorCurrentCV.education.push(newEdu);
+    renderEducationList(visualEditorCurrentCV.education);
+    updateSectionSidebar(visualEditorCurrentCV);
+    triggerAutoSave();
+
+    editEducationItem(visualEditorCurrentCV.education.length - 1);
+}
+
+async function addSkillItem() {
+    if (!visualEditorCurrentCV) return;
+    showSkillEditModal(-1); // -1 = new skill
+}
+
+async function addLanguageItem() {
+    if (!visualEditorCurrentCV) return;
+    showLanguageEditModal(-1); // -1 = new language
+}
+
+// Skill Edit Modal
+function showSkillEditModal(idx) {
+    const isNew = idx === -1;
+    const skill = isNew ? { name: '', level: 3 } : visualEditorCurrentCV.skills[idx];
+
+    let modal = document.getElementById('skillEditModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'skillEditModal';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="modal-content item-edit-modal">
+            <div class="modal-header">
+                <h3>${isNew ? 'Skill hinzufügen' : 'Skill bearbeiten'}</h3>
+                <button class="modal-close" onclick="closeSkillEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Skill-Name</label>
+                    <input type="text" id="skillNameInput" value="${skill.name}" placeholder="z.B. JavaScript, Projektmanagement">
+                </div>
+                <div class="form-group">
+                    <label>Level (1-5)</label>
+                    <div class="level-selector">
+                        ${[1,2,3,4,5].map(l => `
+                            <button class="level-btn ${l <= skill.level ? 'active' : ''}" data-level="${l}" onclick="setSkillLevel(${l})">
+                                <span class="level-dot"></span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="level-labels">
+                        <span>Grundkenntnisse</span>
+                        <span>Experte</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeSkillEditModal()">Abbrechen</button>
+                <button class="btn-primary" onclick="saveSkillEdit(${idx})">Speichern</button>
+            </div>
+        </div>
+    `;
+
+    modal.dataset.skillLevel = skill.level;
+    modal.classList.add('active');
+
+    // Focus input
+    setTimeout(() => document.getElementById('skillNameInput')?.focus(), 100);
+}
+
+function setSkillLevel(level) {
+    const modal = document.getElementById('skillEditModal');
+    if (modal) {
+        modal.dataset.skillLevel = level;
+        modal.querySelectorAll('.level-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', i < level);
+        });
+    }
+}
+
+function closeSkillEditModal() {
+    const modal = document.getElementById('skillEditModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function saveSkillEdit(idx) {
+    const modal = document.getElementById('skillEditModal');
+    const nameInput = document.getElementById('skillNameInput');
+    if (!modal || !nameInput) return;
+
+    const name = nameInput.value.trim();
+    if (!name) {
+        nameInput.focus();
+        return;
+    }
+
+    const level = parseInt(modal.dataset.skillLevel) || 3;
+    const isNew = idx === -1;
+
+    if (!visualEditorCurrentCV.skills) {
+        visualEditorCurrentCV.skills = [];
+    }
+
+    if (isNew) {
+        visualEditorCurrentCV.skills.push({ name, level });
+    } else {
+        visualEditorCurrentCV.skills[idx] = { name, level };
+    }
+
+    renderSkillsList(visualEditorCurrentCV.skills);
+    updateSectionSidebar(visualEditorCurrentCV);
+    closeSkillEditModal();
+    triggerAutoSave();
+}
+
+// Language Edit Modal
+function showLanguageEditModal(idx) {
+    const isNew = idx === -1;
+    const lang = isNew ? { name: '', level: 3, proficiency: '' } : visualEditorCurrentCV.languages[idx];
+
+    const proficiencyLevels = [
+        { value: 1, label: 'Anfänger (A1)' },
+        { value: 2, label: 'Grundkenntnisse (A2)' },
+        { value: 3, label: 'Gute Kenntnisse (B1)' },
+        { value: 4, label: 'Fließend (B2/C1)' },
+        { value: 5, label: 'Muttersprache (C2)' }
+    ];
+
+    let modal = document.getElementById('languageEditModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'languageEditModal';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="modal-content item-edit-modal">
+            <div class="modal-header">
+                <h3>${isNew ? 'Sprache hinzufügen' : 'Sprache bearbeiten'}</h3>
+                <button class="modal-close" onclick="closeLanguageEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Sprache</label>
+                    <input type="text" id="langNameInput" value="${lang.name}" placeholder="z.B. Englisch, Französisch" list="languageSuggestions">
+                    <datalist id="languageSuggestions">
+                        <option value="Deutsch">
+                        <option value="Englisch">
+                        <option value="Französisch">
+                        <option value="Spanisch">
+                        <option value="Italienisch">
+                        <option value="Portugiesisch">
+                        <option value="Russisch">
+                        <option value="Chinesisch">
+                        <option value="Japanisch">
+                        <option value="Arabisch">
+                        <option value="Türkisch">
+                        <option value="Polnisch">
+                        <option value="Niederländisch">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label>Sprachniveau</label>
+                    <div class="proficiency-selector">
+                        ${proficiencyLevels.map(p => `
+                            <label class="proficiency-option ${p.value === lang.level ? 'selected' : ''}">
+                                <input type="radio" name="proficiency" value="${p.value}" ${p.value === lang.level ? 'checked' : ''}>
+                                <span class="proficiency-label">${p.label}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeLanguageEditModal()">Abbrechen</button>
+                <button class="btn-primary" onclick="saveLanguageEdit(${idx})">Speichern</button>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
+
+    // Add radio change handlers
+    modal.querySelectorAll('input[name="proficiency"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            modal.querySelectorAll('.proficiency-option').forEach(opt => opt.classList.remove('selected'));
+            radio.closest('.proficiency-option').classList.add('selected');
+        });
+    });
+
+    // Focus input
+    setTimeout(() => document.getElementById('langNameInput')?.focus(), 100);
+}
+
+function closeLanguageEditModal() {
+    const modal = document.getElementById('languageEditModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function saveLanguageEdit(idx) {
+    const modal = document.getElementById('languageEditModal');
+    const nameInput = document.getElementById('langNameInput');
+    if (!modal || !nameInput) return;
+
+    const name = nameInput.value.trim();
+    if (!name) {
+        nameInput.focus();
+        return;
+    }
+
+    const selectedRadio = modal.querySelector('input[name="proficiency"]:checked');
+    const level = selectedRadio ? parseInt(selectedRadio.value) : 3;
+    const isNew = idx === -1;
+
+    if (!visualEditorCurrentCV.languages) {
+        visualEditorCurrentCV.languages = [];
+    }
+
+    const proficiencyLabels = {
+        1: 'Anfänger (A1)',
+        2: 'Grundkenntnisse (A2)',
+        3: 'Gute Kenntnisse (B1)',
+        4: 'Fließend (B2/C1)',
+        5: 'Muttersprache (C2)'
+    };
+
+    if (isNew) {
+        visualEditorCurrentCV.languages.push({ name, level, proficiency: proficiencyLabels[level] });
+    } else {
+        visualEditorCurrentCV.languages[idx] = { name, level, proficiency: proficiencyLabels[level] };
+    }
+
+    renderLanguagesList(visualEditorCurrentCV.languages);
+    updateSectionSidebar(visualEditorCurrentCV);
+    closeLanguageEditModal();
+    triggerAutoSave();
+}
+
+function editExperienceItem(idx) {
+    showExperienceEditDialog(idx);
+}
+
+function editEducationItem(idx) {
+    showEducationEditDialog(idx);
+}
+
+function editSkillItem(idx) {
+    showSkillEditModal(idx);
+}
+
+function deleteExperienceItem(idx) {
+    if (!confirm('Position wirklich löschen?')) return;
+    visualEditorCurrentCV.work_experience.splice(idx, 1);
+    renderExperienceList(visualEditorCurrentCV.work_experience);
+    updateSectionSidebar(visualEditorCurrentCV);
+    triggerAutoSave();
+}
+
+function deleteEducationItem(idx) {
+    if (!confirm('Ausbildung wirklich löschen?')) return;
+    visualEditorCurrentCV.education.splice(idx, 1);
+    renderEducationList(visualEditorCurrentCV.education);
+    updateSectionSidebar(visualEditorCurrentCV);
+    triggerAutoSave();
+}
+
+function deleteSkillItem(idx) {
+    visualEditorCurrentCV.skills.splice(idx, 1);
+    renderSkillsList(visualEditorCurrentCV.skills);
+    updateSectionSidebar(visualEditorCurrentCV);
+    triggerAutoSave();
+}
+
+function editLanguageItem(idx) {
+    showLanguageEditModal(idx);
+}
+
+function deleteLanguageItem(idx) {
+    visualEditorCurrentCV.languages.splice(idx, 1);
+    renderLanguagesList(visualEditorCurrentCV.languages);
+    updateSectionSidebar(visualEditorCurrentCV);
+    triggerAutoSave();
+}
+
+function showExperienceEditDialog(idx) {
+    const exp = visualEditorCurrentCV.work_experience[idx];
+
+    const panel = document.getElementById('propertiesPanelContent');
+    if (!panel) return;
+
+    panel.innerHTML = `
+        <div class="property-group">
+            <div class="property-label">Position</div>
+            <input type="text" class="property-input" id="expPosition" value="${exp.position || ''}">
+        </div>
+        <div class="property-group">
+            <div class="property-label">Unternehmen</div>
+            <input type="text" class="property-input" id="expCompany" value="${exp.company || ''}">
+        </div>
+        <div class="property-group">
+            <div class="property-label">Ort</div>
+            <input type="text" class="property-input" id="expLocation" value="${exp.location || ''}">
+        </div>
+        <div class="property-group">
+            <div class="property-label">Zeitraum</div>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" class="property-input" id="expStart" placeholder="Von" value="${exp.start_date || ''}">
+                <input type="text" class="property-input" id="expEnd" placeholder="Bis" value="${exp.end_date || ''}">
+            </div>
+        </div>
+        <div class="property-group">
+            <div class="property-label">Aufgaben (eine pro Zeile)</div>
+            <textarea class="property-input property-textarea" id="expTasks">${(exp.tasks || []).join('\n')}</textarea>
+        </div>
+        <button class="btn-primary btn-block" onclick="saveExperienceEdit(${idx})">Speichern</button>
+    `;
+}
+
+function saveExperienceEdit(idx) {
+    const exp = visualEditorCurrentCV.work_experience[idx];
+    exp.position = document.getElementById('expPosition').value;
+    exp.company = document.getElementById('expCompany').value;
+    exp.location = document.getElementById('expLocation').value;
+    exp.start_date = document.getElementById('expStart').value;
+    exp.end_date = document.getElementById('expEnd').value;
+    exp.tasks = document.getElementById('expTasks').value.split('\n').filter(t => t.trim());
+
+    renderExperienceList(visualEditorCurrentCV.work_experience);
+    closePropertiesPanel();
+    triggerAutoSave();
+}
+
+function showEducationEditDialog(idx) {
+    const edu = visualEditorCurrentCV.education[idx];
+
+    const panel = document.getElementById('propertiesPanelContent');
+    if (!panel) return;
+
+    panel.innerHTML = `
+        <div class="property-group">
+            <div class="property-label">Abschluss</div>
+            <input type="text" class="property-input" id="eduDegree" value="${edu.degree || ''}">
+        </div>
+        <div class="property-group">
+            <div class="property-label">Institution</div>
+            <input type="text" class="property-input" id="eduInstitution" value="${edu.institution || ''}">
+        </div>
+        <div class="property-group">
+            <div class="property-label">Ort</div>
+            <input type="text" class="property-input" id="eduLocation" value="${edu.location || ''}">
+        </div>
+        <div class="property-group">
+            <div class="property-label">Zeitraum</div>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" class="property-input" id="eduStart" placeholder="Von" value="${edu.start_date || ''}">
+                <input type="text" class="property-input" id="eduEnd" placeholder="Bis" value="${edu.end_date || ''}">
+            </div>
+        </div>
+        <div class="property-group">
+            <div class="property-label">Beschreibung</div>
+            <textarea class="property-input property-textarea" id="eduDescription">${edu.description || ''}</textarea>
+        </div>
+        <button class="btn-primary btn-block" onclick="saveEducationEdit(${idx})">Speichern</button>
+    `;
+}
+
+function saveEducationEdit(idx) {
+    const edu = visualEditorCurrentCV.education[idx];
+    edu.degree = document.getElementById('eduDegree').value;
+    edu.institution = document.getElementById('eduInstitution').value;
+    edu.location = document.getElementById('eduLocation').value;
+    edu.start_date = document.getElementById('eduStart').value;
+    edu.end_date = document.getElementById('eduEnd').value;
+    edu.description = document.getElementById('eduDescription').value;
+
+    renderEducationList(visualEditorCurrentCV.education);
+    closePropertiesPanel();
+    triggerAutoSave();
+}
+
+function closePropertiesPanel() {
+    const panel = document.getElementById('propertiesPanelContent');
+    if (panel) {
+        panel.innerHTML = `
+            <div class="empty-state">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+                <p>Klicke auf ein Element um es zu bearbeiten</p>
+            </div>
+        `;
+    }
+}
+
+// Make functions globally available
+window.addExperienceItem = addExperienceItem;
+window.addEducationItem = addEducationItem;
+window.addSkillItem = addSkillItem;
+window.addLanguageItem = addLanguageItem;
+window.editExperienceItem = editExperienceItem;
+window.editEducationItem = editEducationItem;
+window.editSkillItem = editSkillItem;
+window.editLanguageItem = editLanguageItem;
+window.deleteExperienceItem = deleteExperienceItem;
+window.deleteEducationItem = deleteEducationItem;
+window.deleteSkillItem = deleteSkillItem;
+window.deleteLanguageItem = deleteLanguageItem;
+window.saveExperienceEdit = saveExperienceEdit;
+window.saveEducationEdit = saveEducationEdit;
+window.closePropertiesPanel = closePropertiesPanel;
+window.scrollToSection = scrollToSection;
+window.showSkillEditModal = showSkillEditModal;
+window.setSkillLevel = setSkillLevel;
+window.closeSkillEditModal = closeSkillEditModal;
+window.saveSkillEdit = saveSkillEdit;
+window.showLanguageEditModal = showLanguageEditModal;
+window.closeLanguageEditModal = closeLanguageEditModal;
+window.saveLanguageEdit = saveLanguageEdit;
 
 function getColorForScheme(scheme) {
     const colors = {
@@ -1098,20 +3189,6 @@ function getColorForScheme(scheme) {
         dark: '#1F2937'
     };
     return colors[scheme] || colors.blue;
-}
-
-function updateZoom() {
-    const preview = document.querySelector('.preview-page');
-    const zoomLevel = document.getElementById('zoomLevel');
-
-    if (preview) {
-        preview.style.transform = `scale(${currentZoom / 100})`;
-        preview.style.transformOrigin = 'top center';
-    }
-
-    if (zoomLevel) {
-        zoomLevel.textContent = currentZoom + '%';
-    }
 }
 
 // ==================== CV Editor ====================
@@ -1299,167 +3376,12 @@ function setupExitButton() {
     const exitBtn = document.getElementById('exitBtn');
     if (exitBtn) {
         exitBtn.addEventListener('click', async () => {
-            const message = window.i18n ? window.i18n.t('confirmations.exit') : 'Möchtest du CV Manager Pro wirklich beenden?';
+            const message = window.i18n ? window.i18n.t('confirmations.exit') : 'Möchtest du CV Manager wirklich beenden?';
             const confirmed = await showCustomConfirm('Beenden?', message, 'warning');
             if (confirmed) {
                 window.runtime.Quit();
             }
         });
-    }
-}
-
-// ==================== Onboarding Wizard ====================
-
-function setupOnboarding() {
-    const wizard = document.getElementById('onboardingWizard');
-    const skipBtn = document.getElementById('skipOnboarding');
-    const nextBtns = document.querySelectorAll('.onboarding-next');
-    const prevBtns = document.querySelectorAll('.onboarding-prev');
-    const finishBtn = document.querySelector('.onboarding-finish');
-
-    let currentStep = 1;
-    let selectedTheme = { template: 'classic', color: 'blue' }; // Default theme
-
-    // Theme selection
-    const themeCards = document.querySelectorAll('.theme-card');
-    themeCards.forEach(card => {
-        card.addEventListener('click', () => {
-            // Remove selected class from all cards
-            themeCards.forEach(c => c.classList.remove('selected'));
-            // Add selected class to clicked card
-            card.classList.add('selected');
-            // Store selected theme
-            selectedTheme = {
-                template: card.getAttribute('data-template'),
-                color: card.getAttribute('data-color')
-            };
-            console.log('Selected theme:', selectedTheme);
-        });
-    });
-
-    // Select first theme by default
-    if (themeCards.length > 0) {
-        themeCards[0].classList.add('selected');
-    }
-
-    // Skip onboarding
-    if (skipBtn) {
-        skipBtn.addEventListener('click', async () => {
-            wizard.style.display = 'none';
-            localStorage.setItem('onboardingCompleted', 'true');
-
-            // Mark as completed in backend
-            try {
-                await window.go.main.App.MarkOnboardingCompleted();
-            } catch (error) {
-                console.error('Failed to mark onboarding completed:', error);
-            }
-        });
-    }
-
-    // Next step
-    nextBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (currentStep < 4) {
-                document.querySelector(`.onboarding-step[data-step="${currentStep}"]`).style.display = 'none';
-                currentStep++;
-                document.querySelector(`.onboarding-step[data-step="${currentStep}"]`).style.display = 'block';
-            }
-        });
-    });
-
-    // Previous step
-    prevBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                document.querySelector(`.onboarding-step[data-step="${currentStep}"]`).style.display = 'none';
-                currentStep--;
-                document.querySelector(`.onboarding-step[data-step="${currentStep}"]`).style.display = 'block';
-            }
-        });
-    });
-
-    // Finish onboarding
-    if (finishBtn) {
-        finishBtn.addEventListener('click', async () => {
-            wizard.style.display = 'none';
-            localStorage.setItem('onboardingCompleted', 'true');
-
-            // Mark as completed in backend
-            try {
-                await window.go.main.App.MarkOnboardingCompleted();
-            } catch (error) {
-                console.error('Failed to mark onboarding completed:', error);
-            }
-
-            // Get input values from onboarding
-            const firstName = document.getElementById('onb-firstName')?.value || 'Max';
-            const lastName = document.getElementById('onb-lastName')?.value || 'Mustermann';
-            const email = document.getElementById('onb-email')?.value || 'max@example.com';
-
-            // Create first CV with selected theme and onboarding data
-            await createFirstCVWithTheme(firstName, lastName, email, selectedTheme);
-        });
-    }
-}
-
-async function createFirstCVWithTheme(firstName, lastName, email, theme) {
-    try {
-        // Create empty CV first
-        const createdCV = await window.go.main.App.CreateCV();
-
-        // Update with user data
-        createdCV.firstname = firstName || 'Max';
-        createdCV.lastname = lastName || 'Mustermann';
-        createdCV.email = email || 'max@example.com';
-        createdCV.job_title = 'Berufstitel';
-        createdCV.template = theme.template || 'modern';
-        createdCV.color_scheme = theme.color || 'purple';
-
-        // Save the updated CV
-        await window.go.main.App.SaveCV(createdCV);
-
-        console.log('Created first CV with theme:', theme);
-        await showSuccess('Dein erster Lebenslauf wurde erstellt!');
-
-        // Switch to dashboard to see the new CV
-        switchView('dashboard');
-        await loadDashboard();
-    } catch (error) {
-        console.error('Failed to create first CV:', error);
-        await showError('Fehler beim Erstellen: ' + error.message);
-    }
-}
-
-async function showOnboarding() {
-    try {
-        // Check backend app config
-        const config = await window.go.main.App.GetAppConfig();
-
-        // Show onboarding if first run or not shown yet
-        if (config && (config.first_run || !config.onboarding_shown)) {
-            const wizard = document.getElementById('onboardingWizard');
-            if (wizard) {
-                wizard.style.display = 'flex';
-                // Reset to first step
-                document.querySelectorAll('.onboarding-step').forEach((step, index) => {
-                    step.style.display = index === 0 ? 'block' : 'none';
-                });
-            }
-        }
-    } catch (error) {
-        console.error('Failed to check onboarding status:', error);
-        // Fallback to localStorage
-        const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-        if (!onboardingCompleted) {
-            const wizard = document.getElementById('onboardingWizard');
-            if (wizard) {
-                wizard.style.display = 'flex';
-                document.querySelectorAll('.onboarding-step').forEach((step, index) => {
-                    step.style.display = index === 0 ? 'block' : 'none';
-                });
-            }
-        }
     }
 }
 
@@ -1632,57 +3554,30 @@ function showCustomConfirm(title, message, iconType = 'warning') {
 // window.confirm = (msg) => showCustomConfirm('Confirm', msg, 'warning');
 
 
-// ==================== STATE-OF-THE-ART FEATURES ====================
+// ==================== GLOBAL KEYBOARD SHORTCUTS ====================
+// Note: Visual Editor has its own keyboard shortcuts in setupKeyboardShortcuts()
 
-// ========== Keyboard Shortcuts ==========
-let undoStack = [];
-let redoStack = [];
-const MAX_UNDO_STACK = 50;
-
-function setupKeyboardShortcuts() {
+function setupGlobalKeyboardShortcuts() {
+    // Already set up in setupKeyboardShortcuts() for visual editor
+    // This is for editor view only
     document.addEventListener('keydown', async (e) => {
+        // Only apply to editor view
+        const editorView = document.getElementById('editorView');
+        if (!editorView || editorView.style.display === 'none') return;
+
         // Ctrl+S or Cmd+S: Save current CV
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
             e.preventDefault();
-            console.log('Keyboard: Save (Ctrl+S)');
-            const currentView = document.querySelector('.view:not([style*="display: none"])');
-            if (currentView && currentView.id === 'editorView') {
+            if (currentEditingCV) {
                 await saveCurrentCV();
                 await showSuccess('Gespeichert (Strg+S)');
             }
             return;
         }
 
-        // Ctrl+Z: Undo
-        if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-            e.preventDefault();
-            console.log('Keyboard: Undo (Ctrl+Z)');
-            performUndo();
-            return;
-        }
-
-        // Ctrl+Shift+Z or Ctrl+Y: Redo
-        if (((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') ||
-            ((e.ctrlKey || e.metaKey) && e.key === 'y')) {
-            e.preventDefault();
-            console.log('Keyboard: Redo (Ctrl+Shift+Z)');
-            performRedo();
-            return;
-        }
-
-        // Ctrl+N: New CV
-        if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-            e.preventDefault();
-            console.log('Keyboard: New CV (Ctrl+N)');
-            switchView('dashboard');
-            setTimeout(() => createNewCV(), 100);
-            return;
-        }
-
         // Ctrl+P: Export/Print
         if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
             e.preventDefault();
-            console.log('Keyboard: Export (Ctrl+P)');
             if (currentEditingCV) {
                 await exportCV(currentEditingCV.id);
             }
@@ -1692,47 +3587,12 @@ function setupKeyboardShortcuts() {
         // Ctrl+D: Duplicate current CV
         if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
             e.preventDefault();
-            console.log('Keyboard: Duplicate (Ctrl+D)');
             if (currentEditingCV) {
                 await duplicateCV(currentEditingCV.id);
             }
             return;
         }
-
-        // Ctrl+F: Focus search
-        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-            e.preventDefault();
-            console.log('Keyboard: Search (Ctrl+F)');
-            const searchInput = document.getElementById('cvSearch');
-            if (searchInput) {
-                searchInput.focus();
-            }
-            return;
-        }
-
-        // Ctrl+1-5: Switch views
-        if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '5') {
-            e.preventDefault();
-            const views = ['dashboard', 'editor', 'visualEditor', 'privacy', 'settings'];
-            const index = parseInt(e.key) - 1;
-            if (views[index]) {
-                console.log(`Keyboard: Switch to ${views[index]} (Ctrl+${e.key})`);
-                switchView(views[index]);
-            }
-            return;
-        }
-
-        // Escape: Close modals or cancel
-        if (e.key === 'Escape') {
-            const modal = document.getElementById('customModal');
-            if (modal && modal.style.display === 'flex') {
-                modal.style.display = 'none';
-            }
-            return;
-        }
     });
-
-    console.log('Keyboard shortcuts initialized');
 }
 
 // ========== Auto-Save ==========
@@ -1750,7 +3610,7 @@ function setupAutoSave() {
                 try {
                     await window.go.main.App.SaveCV(currentEditingCV);
                     lastSaveState = currentState;
-                    showAutoSaveIndicator();
+                    showGlobalAutoSaveIndicator();
                 } catch (error) {
                     console.error('Auto-save failed:', error);
                 }
@@ -1761,8 +3621,8 @@ function setupAutoSave() {
     console.log('Auto-save enabled (every 30s)');
 }
 
-function showAutoSaveIndicator() {
-    // Show a subtle "Saved" indicator
+function showGlobalAutoSaveIndicator() {
+    // Show a subtle "Saved" indicator for editor view
     const indicator = document.createElement('div');
     indicator.style.cssText = `
         position: fixed;

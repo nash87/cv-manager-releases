@@ -32,7 +32,7 @@ func (a *App) ShowLauncherWarning() {
 		return
 	}
 
-	message := `⚠️ CV Manager Pro Launcher nicht gefunden!
+	message := `⚠️ CV Manager Launcher nicht gefunden!
 
 Für automatische Updates und optimale Funktionalität sollte die Anwendung über den Launcher gestartet werden.
 

@@ -10,7 +10,11 @@ export function ApplyUpdate():Promise<void>;
 
 export function BulkDeleteCVs(arg1:Array<string>):Promise<void>;
 
-export function CheckForUpdates():Promise<main.UpdateStatus>;
+export function CheckDataPathFromEnv():Promise<string>;
+
+export function CheckForUpdates():Promise<main.AppUpdateStatus>;
+
+export function CheckLauncherExists():Promise<boolean>;
 
 export function CreateApplication():Promise<main.JobApplication>;
 
@@ -22,9 +26,13 @@ export function DeleteApplication(arg1:string):Promise<void>;
 
 export function DeleteCV(arg1:string):Promise<void>;
 
-export function DownloadUpdate(arg1:string,arg2:string):Promise<main.DownloadProgress>;
+export function DeleteOldAuditLogs(arg1:number):Promise<number>;
+
+export function DownloadUpdate(arg1:string,arg2:string):Promise<main.AppDownloadProgress>;
 
 export function ExportAllDataGDPR():Promise<string>;
+
+export function ExportAuditEvents(arg1:main.AuditFilter):Promise<string>;
 
 export function ExportPDF(arg1:string):Promise<string>;
 
@@ -39,6 +47,12 @@ export function GetApplication(arg1:string):Promise<main.JobApplication>;
 export function GetApplicationsByCV(arg1:string):Promise<Array<main.JobApplication>>;
 
 export function GetApplicationsStatistics():Promise<main.ApplicationsStatistics>;
+
+export function GetAuditEvents(arg1:main.AuditFilter):Promise<Array<main.AuditEvent>>;
+
+export function GetAuditEventsByResource(arg1:string,arg2:string):Promise<Array<main.AuditEvent>>;
+
+export function GetAuditStats():Promise<main.AuditStats>;
 
 export function GetBuildInfo():Promise<main.BuildInfo>;
 
@@ -77,6 +91,8 @@ export function SaveCV(arg1:main.CV):Promise<void>;
 export function SealStorage(arg1:string):Promise<void>;
 
 export function SearchCVs(arg1:string):Promise<Array<main.CVSummary>>;
+
+export function ShowLauncherWarning():Promise<void>;
 
 export function ToggleFavorite(arg1:string):Promise<void>;
 

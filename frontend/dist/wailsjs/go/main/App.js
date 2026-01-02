@@ -18,8 +18,16 @@ export function BulkDeleteCVs(arg1) {
   return window['go']['main']['App']['BulkDeleteCVs'](arg1);
 }
 
+export function CheckDataPathFromEnv() {
+  return window['go']['main']['App']['CheckDataPathFromEnv']();
+}
+
 export function CheckForUpdates() {
   return window['go']['main']['App']['CheckForUpdates']();
+}
+
+export function CheckLauncherExists() {
+  return window['go']['main']['App']['CheckLauncherExists']();
 }
 
 export function CreateApplication() {
@@ -42,12 +50,20 @@ export function DeleteCV(arg1) {
   return window['go']['main']['App']['DeleteCV'](arg1);
 }
 
+export function DeleteOldAuditLogs(arg1) {
+  return window['go']['main']['App']['DeleteOldAuditLogs'](arg1);
+}
+
 export function DownloadUpdate(arg1, arg2) {
   return window['go']['main']['App']['DownloadUpdate'](arg1, arg2);
 }
 
 export function ExportAllDataGDPR() {
   return window['go']['main']['App']['ExportAllDataGDPR']();
+}
+
+export function ExportAuditEvents(arg1) {
+  return window['go']['main']['App']['ExportAuditEvents'](arg1);
 }
 
 export function ExportPDF(arg1) {
@@ -76,6 +92,18 @@ export function GetApplicationsByCV(arg1) {
 
 export function GetApplicationsStatistics() {
   return window['go']['main']['App']['GetApplicationsStatistics']();
+}
+
+export function GetAuditEvents(arg1) {
+  return window['go']['main']['App']['GetAuditEvents'](arg1);
+}
+
+export function GetAuditEventsByResource(arg1, arg2) {
+  return window['go']['main']['App']['GetAuditEventsByResource'](arg1, arg2);
+}
+
+export function GetAuditStats() {
+  return window['go']['main']['App']['GetAuditStats']();
 }
 
 export function GetBuildInfo() {
@@ -152,6 +180,10 @@ export function SealStorage(arg1) {
 
 export function SearchCVs(arg1) {
   return window['go']['main']['App']['SearchCVs'](arg1);
+}
+
+export function ShowLauncherWarning() {
+  return window['go']['main']['App']['ShowLauncherWarning']();
 }
 
 export function ToggleFavorite(arg1) {

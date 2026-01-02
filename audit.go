@@ -105,7 +105,7 @@ func (am *AuditManager) LogEvent(event *AuditEvent) error {
 		event.IPAddress = "127.0.0.1"
 	}
 	if event.UserAgent == "" {
-		event.UserAgent = "CV Manager Pro v" + am.appVersion
+		event.UserAgent = "CV Manager v" + am.appVersion
 	}
 
 	// Ensure logs directory exists

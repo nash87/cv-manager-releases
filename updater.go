@@ -14,11 +14,11 @@ import (
 
 const (
 	UpdateCheckURL = "https://raw.githubusercontent.com/nash87/cv-manager-pro-releases/main/version.json"
-	UpdateTimeout  = 10 * time.Second
+	UpdateTimeout  = 5 * time.Second // Reduced timeout to avoid UI hanging
 )
 
-// UpdateInfo contains information about available updates
-type UpdateInfo struct {
+// AppUpdateInfo contains information about available updates (main app specific)
+type AppUpdateInfo struct {
 	LatestVersion  string `json:"latest_version"`
 	ReleaseDate    string `json:"release_date"`
 	DownloadURL    string `json:"download_url"`
@@ -29,32 +29,32 @@ type UpdateInfo struct {
 	SizeMB         int    `json:"size_mb"`
 }
 
-// UpdateStatus represents the current update check status
-type UpdateStatus struct {
-	Checking       bool   `json:"checking"`
+// AppUpdateStatus represents the current update check status for main app
+type AppUpdateStatus struct {
+	Checking        bool   `json:"checking"`
 	UpdateAvailable bool   `json:"update_available"`
-	CurrentVersion string `json:"current_version"`
-	LatestVersion  string `json:"latest_version"`
-	ReleaseNotes   string `json:"release_notes"`
-	DownloadURL    string `json:"download_url"`
-	ChangelogURL   string `json:"changelog_url"`
-	SHA256         string `json:"sha256"`
-	Error          string `json:"error"`
-	SizeMB         int    `json:"size_mb"`
+	CurrentVersion  string `json:"current_version"`
+	LatestVersion   string `json:"latest_version"`
+	ReleaseNotes    string `json:"release_notes"`
+	DownloadURL     string `json:"download_url"`
+	ChangelogURL    string `json:"changelog_url"`
+	SHA256          string `json:"sha256"`
+	Error           string `json:"error"`
+	SizeMB          int    `json:"size_mb"`
 }
 
-// DownloadProgress tracks update download progress
-type DownloadProgress struct {
-	Downloading    bool   `json:"downloading"`
+// AppDownloadProgress tracks update download progress for main app
+type AppDownloadProgress struct {
+	Downloading     bool   `json:"downloading"`
 	BytesDownloaded int64  `json:"bytes_downloaded"`
-	TotalBytes     int64  `json:"total_bytes"`
+	TotalBytes      int64  `json:"total_bytes"`
 	PercentComplete int    `json:"percent_complete"`
-	Error          string `json:"error"`
+	Error           string `json:"error"`
 }
 
 // CheckForUpdates checks if a new version is available on GitHub
-func (a *App) CheckForUpdates() (*UpdateStatus, error) {
-	status := &UpdateStatus{
+func (a *App) CheckForUpdates() (*AppUpdateStatus, error) {
+	status := &AppUpdateStatus{
 		Checking:       true,
 		CurrentVersion: GetVersion(),
 	}
@@ -84,7 +84,7 @@ func (a *App) CheckForUpdates() (*UpdateStatus, error) {
 	}
 
 	// Parse version.json
-	var updateInfo UpdateInfo
+	var updateInfo AppUpdateInfo
 	if err := json.NewDecoder(resp.Body).Decode(&updateInfo); err != nil {
 		status.Checking = false
 		status.Error = fmt.Sprintf("Failed to parse update info: %v", err)
@@ -100,8 +100,8 @@ func (a *App) CheckForUpdates() (*UpdateStatus, error) {
 	status.SHA256 = updateInfo.SHA256
 	status.SizeMB = updateInfo.SizeMB
 
-	// Compare versions
-	if updateInfo.LatestVersion != status.CurrentVersion {
+	// Compare versions using version.go helper
+	if IsNewerVersion(updateInfo.LatestVersion, status.CurrentVersion) {
 		status.UpdateAvailable = true
 		fmt.Printf("[Updater] Update available: %s -> %s\n", status.CurrentVersion, status.LatestVersion)
 	} else {
@@ -113,16 +113,16 @@ func (a *App) CheckForUpdates() (*UpdateStatus, error) {
 }
 
 // DownloadUpdate downloads the new version from GitHub
-func (a *App) DownloadUpdate(downloadURL string, expectedSHA256 string) (*DownloadProgress, error) {
-	progress := &DownloadProgress{
+func (a *App) DownloadUpdate(downloadURL string, expectedSHA256 string) (*AppDownloadProgress, error) {
+	progress := &AppDownloadProgress{
 		Downloading: true,
 	}
 
 	fmt.Printf("[Updater] Downloading update from: %s\n", downloadURL)
 
-	// Create HTTP client
+	// Create HTTP client with longer timeout for downloads
 	client := &http.Client{
-		Timeout: 5 * time.Minute, // Longer timeout for download
+		Timeout: 5 * time.Minute,
 	}
 
 	// Download file
@@ -208,7 +208,7 @@ func (a *App) ApplyUpdate() error {
 	}
 
 	// Copy new version to current location
-	if err := copyFile(tempFile, currentExe); err != nil {
+	if err := copyUpdateFile(tempFile, currentExe); err != nil {
 		// Restore backup on failure
 		os.Rename(backupFile, currentExe)
 		return fmt.Errorf("failed to apply update: %v", err)
@@ -228,4 +228,20 @@ func (a *App) GetUpdateDownloadPath() string {
 	return filepath.Join(os.TempDir(), "cv-manager-pro-update.exe")
 }
 
-// copyFile is defined in migration.go
+// copyUpdateFile copies a file from src to dst (separate function to avoid conflict with migration.go)
+func copyUpdateFile(src, dst string) error {
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+
+	destFile, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	_, err = io.Copy(destFile, sourceFile)
+	return err
+}

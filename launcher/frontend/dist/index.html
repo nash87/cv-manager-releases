@@ -3,219 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Manager Pro - Launcher</title>
+    <title>CV Manager Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Phosphor Icons Sprite (inline für Performance) -->
+    <!-- Phosphor Icons Sprite -->
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol id="ph-shield-check" viewBox="0 0 256 256">
-            <path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.27,47,25.53a8,8,0,0,0,4.2,0c1-.26,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a129.3,129.3,0,0,1-39.4-22.2C61.66,179.16,48,149.07,48,112V56H208v56Zm-50.34-18.34a8,8,0,0,1,0,11.31l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L96,143.31,146.34,93.66A8,8,0,0,1,173.66,93.66Z"/>
+            <path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.27,47,25.53a8,8,0,0,0,4.2,0c1-.26,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm-50.34,53.66a8,8,0,0,1,0,11.31l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L96,143.31,146.34,93.66A8,8,0,0,1,157.66,93.66Z"/>
         </symbol>
         <symbol id="ph-download" viewBox="0 0 256 256">
             <path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V24a8,8,0,0,0-16,0V124.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/>
         </symbol>
         <symbol id="ph-check-circle" viewBox="0 0 256 256">
-            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm37.66-101.66a8,8,0,0,1,0,11.32l-40,40a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L120,148.69l34.34-34.35A8,8,0,0,1,165.66,114.34Z"/>
+            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"/>
         </symbol>
         <symbol id="ph-folder" viewBox="0 0 256 256">
             <path d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"/>
         </symbol>
         <symbol id="ph-warning-circle" viewBox="0 0 256 256">
-            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"/>
+            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z"/>
         </symbol>
-        <symbol id="ph-rocket" viewBox="0 0 256 256">
-            <path d="M152,224a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h32A8,8,0,0,1,152,224Zm70.16-138.36C214,73.33,204.53,62.9,192,55.32A71.45,71.45,0,0,0,152,48a72.07,72.07,0,0,0-72,72c0,28.77-8.9,49.58-21.16,62.36A31.82,31.82,0,0,1,36.08,192H21.73A11.73,11.73,0,0,1,10,180.27V171.3A11.73,11.73,0,0,1,21.73,159.6H24.08a79.94,79.94,0,0,0,56.4-23.32C93.18,123.63,96,108.11,96,96.62c0-40.32,12.41-70.07,36.7-88.18A71.47,71.47,0,0,1,152,2h0c20.37,0,37.25,7.55,48,21.32,13,16.66,20,39.33,20,64.43V96c0,28.77,8.91,49.58,21.16,62.36A31.82,31.82,0,0,1,219.92,192h14.35A11.73,11.73,0,0,1,246,180.27V171.3A11.73,11.73,0,0,1,234.27,159.6H231.92A79.94,79.94,0,0,1,175.52,136.28ZM152,16a55.72,55.72,0,0,0-27.5,7.2C104.18,37.08,94,62.89,94,96.62c0,13.43-3.23,30.88-17.75,47.85A96,96,0,0,1,26,175.6v4.67H36.08a16,16,0,0,0,11.31-4.69C69.65,153.32,80,129.05,80,96a56.06,56.06,0,0,1,56-56h16a55.85,55.85,0,0,1,23.48,5.2C191.82,59.08,202,84.89,202,118.62c0,13.43,3.23,30.88,17.75,47.85A96,96,0,0,0,270,175.6v4.67H259.92a16,16,0,0,1-11.31-4.69C226.35,153.32,216,129.05,216,96V87.75C216,54.69,196.67,16,152,16ZM176,120a16,16,0,1,1-16-16A16,16,0,0,1,176,120Z"/>
+        <symbol id="ph-rocket-launch" viewBox="0 0 256 256">
+            <path d="M222.32,69.68a8,8,0,0,0-5.65-2.34,79.93,79.93,0,0,0-47.07,16.18L152,72.11V40a8,8,0,0,0-2.34-5.66l-24-24a8,8,0,0,0-11.32,0l-24,24A8,8,0,0,0,88,40V72.11L70.4,83.52a79.93,79.93,0,0,0-47.07-16.18,8,8,0,0,0-5.65,2.34,80.06,80.06,0,0,0,0,113.32c.38.38.79.73,1.21,1.05l-4.4,24.22a16,16,0,0,0,18.53,18.53l24.22-4.4c.32.42.67.83,1.05,1.21a80.06,80.06,0,0,0,113.32,0c.38-.38.73-.79,1.05-1.21l24.22,4.4a16,16,0,0,0,18.53-18.53l-4.4-24.22c.42-.32.83-.67,1.21-1.05A80.06,80.06,0,0,0,222.32,69.68ZM120,35.31,128,27.31l8,8V72h-16ZM128,208a64,64,0,1,1,64-64A64.07,64.07,0,0,1,128,208Zm0-96a32,32,0,1,0,32,32A32,32,0,0,0,128,112Zm0,48a16,16,0,1,1,16-16A16,16,0,0,1,128,160Z"/>
         </symbol>
-        <symbol id="ph-info" viewBox="0 0 256 256">
-            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"/>
+        <symbol id="ph-github-logo" viewBox="0 0 256 256">
+            <path d="M208.31,75.68A59.78,59.78,0,0,0,202.93,28,8,8,0,0,0,196,24a59.75,59.75,0,0,0-48,24H108A59.75,59.75,0,0,0,60,24a8,8,0,0,0-6.93,4,59.78,59.78,0,0,0-5.38,47.68A58.14,58.14,0,0,0,40,104v8a56.06,56.06,0,0,0,48.44,55.47A39.8,39.8,0,0,0,80,192v8H72a24,24,0,0,1-24-24,40,40,0,0,0-40-40,8,8,0,0,0,0,16,24,24,0,0,1,24,24,40,40,0,0,0,40,40h8v16a8,8,0,0,0,16,0V192a24,24,0,0,1,48,0v40a8,8,0,0,0,16,0V192a39.8,39.8,0,0,0-8.44-24.53A56.06,56.06,0,0,0,200,112v-8A58.14,58.14,0,0,0,208.31,75.68ZM184,112a40,40,0,0,1-40,40H112a40,40,0,0,1-40-40v-8a41.74,41.74,0,0,1,6.9-22.48,8,8,0,0,0,1.1-7.69,43.81,43.81,0,0,1,.79-33.58,43.88,43.88,0,0,1,32.32,20.06,8,8,0,0,0,6.71,3.69h32.35a8,8,0,0,0,6.74-3.69,43.87,43.87,0,0,1,32.32-20.06,43.81,43.81,0,0,1,.77,33.58,8.09,8.09,0,0,0,1,7.65A41.72,41.72,0,0,1,184,104Z"/>
+        </symbol>
+        <symbol id="ph-git-commit" viewBox="0 0 256 256">
+            <path d="M248,120H183.42a56,56,0,0,0-110.84,0H8a8,8,0,0,0,0,16H72.58a56,56,0,0,0,110.84,0H248a8,8,0,0,0,0-16ZM128,168a40,40,0,1,1,40-40A40,40,0,0,1,128,168Z"/>
+        </symbol>
+        <symbol id="ph-cloud-arrow-down" viewBox="0 0 256 256">
+            <path d="M248,128a87.34,87.34,0,0,1-17.6,52.81,8,8,0,1,1-12.8-9.62A71.34,71.34,0,0,0,232,128a72,72,0,0,0-144,0,8,8,0,0,1-16,0,88,88,0,0,1,3.29-23.88C74.2,104,73.1,104,72,104a48,48,0,0,0,0,96H96a8,8,0,0,1,0,16H72A64,64,0,1,1,81.29,88.68,88,88,0,0,1,248,128Zm-90.34,42.34-24,24a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L120,169.37V112a8,8,0,0,1,16,0v57.37l10.34-10.35a8,8,0,0,1,11.32,11.32Z"/>
+        </symbol>
+        <symbol id="ph-arrow-right" viewBox="0 0 256 256">
+            <path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69l-58.35-58.34a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/>
+        </symbol>
+        <symbol id="ph-spinner" viewBox="0 0 256 256">
+            <path d="M136,32V64a8,8,0,0,1-16,0V32a8,8,0,0,1,16,0Zm88,88H192a8,8,0,0,0,0,16h32a8,8,0,0,0,0-16Zm-45.09,47.6a8,8,0,0,0-11.31,11.31l22.62,22.63a8,8,0,0,0,11.32-11.32ZM128,184a8,8,0,0,0-8,8v32a8,8,0,0,0,16,0V192A8,8,0,0,0,128,184ZM77.09,167.6,54.46,190.22a8,8,0,0,0,11.32,11.32L88.4,178.91A8,8,0,0,0,77.09,167.6ZM72,128a8,8,0,0,0-8-8H32a8,8,0,0,0,0,16H64A8,8,0,0,0,72,128ZM65.78,54.46A8,8,0,0,0,54.46,65.78L77.09,88.4A8,8,0,0,0,88.4,77.09Z"/>
+        </symbol>
+        <symbol id="ph-play" viewBox="0 0 256 256">
+            <path d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"/>
+        </symbol>
+        <symbol id="ph-circle-notch" viewBox="0 0 256 256">
+            <path d="M232,128a104,104,0,0,1-208,0c0-41,23.81-78.36,60.66-95.27a8,8,0,0,1,6.68,14.54C60.15,61.59,40,93.27,40,128a88,88,0,0,0,176,0c0-34.73-20.15-66.41-51.34-80.73a8,8,0,0,1,6.68-14.54C208.19,49.64,232,87,232,128Z"/>
         </symbol>
     </svg>
 
-    <!-- Launcher Container -->
-    <div class="launcher-container">
-        <!-- Header -->
-        <div class="launcher-header">
-            <div class="logo">
-                <svg width="48" height="48" viewBox="0 0 256 256" fill="none" stroke="url(#logoGradient)" stroke-width="12">
-                    <use xlink:href="#ph-shield-check"></use>
-                </svg>
-                <defs>
-                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
+    <!-- Launcher Container - Frameless Design -->
+    <div class="launcher">
+        <!-- Background with subtle gradient -->
+        <div class="launcher-bg"></div>
+
+        <!-- Main Content Area -->
+        <div class="launcher-content">
+
+            <!-- Logo & Brand -->
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="48" height="48" viewBox="0 0 256 256" fill="currentColor">
+                        <use href="#ph-shield-check"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>CV Manager Pro</h1>
+                    <span class="brand-tagline">Secure • GDPR Compliant • Encrypted</span>
+                </div>
             </div>
-            <div class="header-text">
-                <h1>CV Manager Pro</h1>
-                <p class="subtitle">Launcher & Updater</p>
+
+            <!-- Views Container -->
+            <div class="views-container">
+
+                <!-- View: Data Location Setup -->
+                <div id="viewDataLocation" class="view" style="display: none;">
+                    <div class="setup-card">
+                        <div class="setup-icon">
+                            <svg width="32" height="32" viewBox="0 0 256 256" fill="currentColor">
+                                <use href="#ph-folder"/>
+                            </svg>
+                        </div>
+                        <h2>Speicherort wählen</h2>
+                        <p>Wo sollen deine verschlüsselten Daten gespeichert werden?</p>
+
+                        <div class="setup-options">
+                            <button class="setup-btn primary" onclick="useDefaultLocation()">
+                                <span class="setup-btn-title">Programmordner (Empfohlen)</span>
+                                <span class="setup-btn-desc" id="defaultPath">./cv-data/</span>
+                            </button>
+                            <button class="setup-btn" onclick="selectCustomLocation()">
+                                <span class="setup-btn-title">Anderen Ordner wählen...</span>
+                                <span class="setup-btn-desc">Dropbox, OneDrive, etc.</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View: Update Check -->
+                <div id="viewUpdateCheck" class="view">
+                    <div class="status-area">
+                        <div class="spinner-container">
+                            <svg class="spinner" width="48" height="48" viewBox="0 0 256 256" fill="currentColor">
+                                <use href="#ph-circle-notch"/>
+                            </svg>
+                        </div>
+                        <p class="status-text" id="statusText">Verbinde mit GitHub...</p>
+
+                        <!-- Live Status Grid -->
+                        <div class="live-status">
+                            <div class="status-item" id="statusLauncher">
+                                <span class="status-dot"></span>
+                                <span class="status-label">Launcher</span>
+                                <span class="status-value" id="launcherConnectionText">prüfe...</span>
+                            </div>
+                            <div class="status-item" id="statusApp">
+                                <span class="status-dot"></span>
+                                <span class="status-label">App</span>
+                                <span class="status-value" id="appConnectionText">warte...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress -->
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View: Updates Available -->
+                <div id="viewUpdatesAvailable" class="view" style="display: none;">
+                    <div class="updates-area">
+                        <div class="updates-header">
+                            <svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor" class="text-accent">
+                                <use href="#ph-download"/>
+                            </svg>
+                            <span>Updates verfügbar</span>
+                        </div>
+
+                        <div id="updateCards" class="update-list">
+                            <!-- Filled dynamically -->
+                        </div>
+
+                        <div class="updates-actions">
+                            <button class="btn-action primary" onclick="downloadAllUpdates()">
+                                <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor">
+                                    <use href="#ph-download"/>
+                                </svg>
+                                Jetzt installieren
+                            </button>
+                            <button class="btn-action ghost" onclick="skipUpdates()">Später</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View: Downloading -->
+                <div id="viewDownloading" class="view" style="display: none;">
+                    <div class="download-area">
+                        <div class="download-icon">
+                            <svg class="downloading" width="40" height="40" viewBox="0 0 256 256" fill="currentColor">
+                                <use href="#ph-cloud-arrow-down"/>
+                            </svg>
+                        </div>
+                        <p class="download-title" id="downloadTitle">Lade Update...</p>
+                        <p class="download-info" id="downloadStatus">Vorbereitung...</p>
+
+                        <div class="download-progress">
+                            <div class="progress-bar large">
+                                <div class="progress-fill" id="downloadProgressFill"></div>
+                            </div>
+                            <div class="download-stats">
+                                <span id="downloadBytes">0 MB / 0 MB</span>
+                                <span id="downloadPercent">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View: Ready -->
+                <div id="viewReady" class="view" style="display: none;">
+                    <div class="ready-area">
+                        <div class="ready-icon">
+                            <svg width="56" height="56" viewBox="0 0 256 256" fill="currentColor">
+                                <use href="#ph-check-circle"/>
+                            </svg>
+                        </div>
+                        <p class="ready-message" id="readyMessage">Bereit</p>
+
+                        <button class="btn-launch" onclick="launchApp()">
+                            <svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor">
+                                <use href="#ph-play"/>
+                            </svg>
+                            <span>Starten</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View: Error -->
+                <div id="viewError" class="view" style="display: none;">
+                    <div class="error-area">
+                        <div class="error-icon">
+                            <svg width="40" height="40" viewBox="0 0 256 256" fill="currentColor">
+                                <use href="#ph-warning-circle"/>
+                            </svg>
+                        </div>
+                        <p class="error-title">Verbindungsfehler</p>
+                        <p class="error-message" id="errorMessage">Keine Verbindung zum Server</p>
+
+                        <div class="error-actions">
+                            <button class="btn-action primary" onclick="retryOperation()">Erneut versuchen</button>
+                            <button class="btn-action ghost" onclick="skipUpdates()">Offline starten</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div id="mainContent" class="main-content">
-
-            <!-- View 1: Data Location Setup (shown first time only) -->
-            <div id="viewDataLocation" class="view" style="display: none;">
-                <div class="icon-large">
-                    <svg width="64" height="64" viewBox="0 0 256 256" fill="currentColor" class="text-primary">
-                        <use xlink:href="#ph-folder"></use>
-                    </svg>
-                </div>
-                <h2>Wo sollen deine Daten gespeichert werden?</h2>
-                <p class="description">
-                    Wähle einen Speicherort für deine verschlüsselten CV-Daten.<br>
-                    Du kannst dies später in den Einstellungen ändern.
-                </p>
-
-                <div class="options-grid">
-                    <button class="option-card" onclick="useDefaultLocation()">
-                        <svg width="32" height="32" viewBox="0 0 256 256" fill="currentColor">
-                            <use xlink:href="#ph-folder"></use>
-                        </svg>
-                        <h3>Hier im Programmordner</h3>
-                        <p>Empfohlen für portable Installation</p>
-                        <span class="path-preview" id="defaultPath">./cv-data/</span>
-                    </button>
-
-                    <button class="option-card" onclick="selectCustomLocation()">
-                        <svg width="32" height="32" viewBox="0 0 256 256" fill="currentColor">
-                            <use xlink:href="#ph-folder"></use>
-                        </svg>
-                        <h3>Anderen Ort wählen</h3>
-                        <p>Z.B. Dokumente, Dropbox, etc.</p>
-                        <span class="path-preview">Ordner wählen...</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- View 2: Update Check -->
-            <div id="viewUpdateCheck" class="view">
-                <div class="status-section">
-                    <div class="status-icon">
-                        <svg width="48" height="48" viewBox="0 0 256 256" fill="currentColor" class="text-primary rotating">
-                            <use xlink:href="#ph-download"></use>
-                        </svg>
-                    </div>
-                    <h2>Suche nach Updates...</h2>
-                    <p id="statusText">Prüfe Launcher und Hauptanwendung</p>
-                </div>
-
-                <div class="progress-bar">
-                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <!-- View 3: Updates Available -->
-            <div id="viewUpdatesAvailable" class="view" style="display: none;">
-                <div class="icon-large">
-                    <svg width="64" height="64" viewBox="0 0 256 256" fill="currentColor" class="text-accent">
-                        <use xlink:href="#ph-download"></use>
-                    </svg>
-                </div>
-                <h2>Updates verfügbar!</h2>
-                <p class="description">Es wurden neue Versionen gefunden</p>
-
-                <!-- Update Cards -->
-                <div id="updateCards" class="update-cards">
-                    <!-- Will be filled dynamically -->
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-primary btn-large" onclick="downloadAllUpdates()">
-                        <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor">
-                            <use xlink:href="#ph-download"></use>
-                        </svg>
-                        Alle Updates installieren
-                    </button>
-                    <button class="btn btn-ghost" onclick="skipUpdates()">
-                        Später aktualisieren
-                    </button>
-                </div>
-            </div>
-
-            <!-- View 4: Downloading Updates -->
-            <div id="viewDownloading" class="view" style="display: none;">
-                <div class="status-section">
-                    <div class="status-icon">
-                        <svg width="48" height="48" viewBox="0 0 256 256" fill="currentColor" class="text-accent pulse">
-                            <use xlink:href="#ph-download"></use>
-                        </svg>
-                    </div>
-                    <h2 id="downloadTitle">Lade Updates herunter...</h2>
-                    <p id="downloadStatus">Bitte warten</p>
-                </div>
-
-                <div class="download-progress">
-                    <div class="progress-stats">
-                        <span id="downloadPercent">0%</span>
-                        <span id="downloadSpeed"></span>
-                        <span id="downloadETA"></span>
-                    </div>
-                    <div class="progress-bar">
-                        <div id="downloadProgressFill" class="progress-fill" style="width: 0%"></div>
-                    </div>
-                    <div class="progress-details">
-                        <span id="downloadBytes">0 MB / 0 MB</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- View 5: Ready to Launch -->
-            <div id="viewReady" class="view" style="display: none;">
-                <div class="icon-large success-pulse">
-                    <svg width="64" height="64" viewBox="0 0 256 256" fill="currentColor" class="text-success">
-                        <use xlink:href="#ph-check-circle"></use>
-                    </svg>
-                </div>
-                <h2>Bereit zum Starten!</h2>
-                <p class="description" id="readyMessage">Alle Updates wurden installiert</p>
-
-                <button class="btn btn-primary btn-large btn-launch" onclick="launchApp()">
-                    <svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor">
-                        <use xlink:href="#ph-rocket"></use>
-                    </svg>
-                    CV Manager Pro starten
-                </button>
-
+        <!-- Bottom Status Bar -->
+        <div class="status-bar">
+            <div class="status-bar-left">
                 <div class="version-info">
-                    <div class="version-row">
-                        <span>Launcher:</span>
-                        <span id="launcherVersion">v1.0.0</span>
-                    </div>
-                    <div class="version-row">
-                        <span>Hauptanwendung:</span>
-                        <span id="appVersion">v1.1.7</span>
-                    </div>
+                    <span class="version-label">Launcher</span>
+                    <span class="version-value" id="launcherVersion">v1.0.0</span>
+                </div>
+                <div class="version-divider"></div>
+                <div class="version-info">
+                    <span class="version-label">App</span>
+                    <span class="version-value" id="appVersion">--</span>
                 </div>
             </div>
-
-            <!-- View 6: Error -->
-            <div id="viewError" class="view" style="display: none;">
-                <div class="icon-large">
-                    <svg width="64" height="64" viewBox="0 0 256 256" fill="currentColor" class="text-error">
-                        <use xlink:href="#ph-warning-circle"></use>
+            <div class="status-bar-right">
+                <div class="github-info">
+                    <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor">
+                        <use href="#ph-github-logo"/>
                     </svg>
-                </div>
-                <h2>Fehler aufgetreten</h2>
-                <p class="description error-message" id="errorMessage"></p>
-
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="retryOperation()">
-                        Erneut versuchen
-                    </button>
-                    <button class="btn btn-ghost" onclick="skipUpdates()">
-                        Ohne Updates fortfahren
-                    </button>
+                    <span id="githubStatus">Checking releases...</span>
                 </div>
             </div>
-
-        </div>
-
-        <!-- Footer -->
-        <div class="launcher-footer">
-            <p>© 2025 CV Manager Pro Team · <span id="footerVersion">Launcher v1.0.0</span></p>
         </div>
     </div>
 

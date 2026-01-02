@@ -1,169 +1,201 @@
 /**
- * CV Manager Pro - Launcher Frontend
- * Handles UI updates, update checks, downloads, and app launching
+ * CV Manager Pro - Launcher
+ * Live GitHub release updates
  */
 
-// ==================== State Management ====================
-
+// State
 let currentView = 'viewUpdateCheck';
 let launcherInfo = null;
 let updateStatus = {};
 let pendingUpdates = [];
-let isDownloading = false;
+let githubStatus = null;
 
-// ==================== Initialization ====================
+// ==================== Init ====================
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('[Launcher] Initializing...');
+    console.log('[Launcher] Starting...');
 
-    // Load launcher info
     try {
+        // Load launcher info
         launcherInfo = await window.go.main.Launcher.GetLauncherInfo();
-        console.log('[Launcher] Info loaded:', launcherInfo);
+        console.log('[Launcher] Info:', launcherInfo);
 
-        // Update footer version
-        document.getElementById('footerVersion').textContent = `Launcher v${launcherInfo.version}`;
-        document.getElementById('launcherVersion').textContent = `v${launcherInfo.version}`;
+        // Update UI with version info
+        setText('launcherVersion', `v${launcherInfo.version}`);
+        setText('githubStatus', 'Connecting...');
 
-        // Check if data location is configured
-        if (!launcherInfo.data_location || launcherInfo.data_location === '') {
-            // First time setup - show data location selector
-            console.log('[Launcher] No data location configured, showing setup');
+        // Check data location
+        if (!launcherInfo.data_location) {
+            console.log('[Launcher] No data location - show setup');
             showView('viewDataLocation');
 
-            // Update default path preview
             const exePath = await getExePath();
-            document.getElementById('defaultPath').textContent = exePath + '/cv-data/';
+            setText('defaultPath', exePath + '/cv-data/');
         } else {
-            // Data location already configured - proceed to update check
-            console.log('[Launcher] Data location configured:', launcherInfo.data_location');
+            console.log('[Launcher] Data:', launcherInfo.data_location);
             await startUpdateCheck();
         }
     } catch (error) {
-        console.error('[Launcher] Initialization error:', error);
-        showError('Fehler beim Initialisieren: ' + getErrorMessage(error));
+        console.error('[Launcher] Init error:', error);
+        showError('Initialisierungsfehler: ' + getErrorMessage(error));
     }
 });
 
-// ==================== View Management ====================
+// ==================== Views ====================
 
 function showView(viewId) {
-    console.log('[Launcher] Showing view:', viewId);
+    console.log('[Launcher] View:', viewId);
 
-    // Hide all views
-    const views = document.querySelectorAll('.view');
-    views.forEach(view => view.style.display = 'none');
+    document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
 
-    // Show target view
-    const targetView = document.getElementById(viewId);
-    if (targetView) {
-        targetView.style.display = 'block';
+    const view = document.getElementById(viewId);
+    if (view) {
+        view.style.display = 'block';
         currentView = viewId;
     }
 }
 
-// ==================== Data Location Setup ====================
+// ==================== Setup ====================
 
 async function useDefaultLocation() {
-    console.log('[Launcher] Using default data location');
-
     try {
         await window.go.main.Launcher.UseDefaultDataLocation();
-        console.log('[Launcher] Default location set successfully');
-
-        // Proceed to update check
         await startUpdateCheck();
     } catch (error) {
-        console.error('[Launcher] Error setting default location:', error);
-        showError('Fehler beim Setzen des Speicherorts: ' + getErrorMessage(error));
+        showError('Fehler: ' + getErrorMessage(error));
     }
 }
 
 async function selectCustomLocation() {
-    console.log('[Launcher] Opening folder picker');
-
     try {
         const path = await window.go.main.Launcher.SelectDataLocationDialog();
-
         if (path) {
-            console.log('[Launcher] Selected path:', path);
             await window.go.main.Launcher.SetDataLocation(path);
-            console.log('[Launcher] Custom location set successfully');
-
-            // Proceed to update check
             await startUpdateCheck();
         }
     } catch (error) {
-        console.error('[Launcher] Error selecting location:', error);
-        // User probably cancelled - don't show error
+        // User cancelled
     }
 }
 
 async function getExePath() {
-    // Get executable path from backend or use current directory
     return '.';
 }
 
 // ==================== Update Check ====================
 
 async function startUpdateCheck() {
-    console.log('[Launcher] Starting update check...');
-
     showView('viewUpdateCheck');
     setProgress(0);
-    document.getElementById('statusText').textContent = 'Prüfe Launcher und Hauptanwendung';
+    setText('statusText', 'Verbinde mit GitHub...');
+    setText('githubStatus', 'Connecting...');
+
+    setItemStatus('statusLauncher', 'checking', 'prüfe...');
+    setItemStatus('statusApp', '', 'warte...');
+
+    let handled = false;
 
     try {
-        // Animate progress
-        animateProgress(0, 30, 1000);
+        animateProgress(0, 25, 800);
 
-        // Check for updates
+        // Timeout after 8s
+        const timeout = setTimeout(() => {
+            if (!handled) {
+                handled = true;
+                setText('statusText', 'Netzwerk langsam...');
+                setText('githubStatus', 'Offline');
+                setItemStatus('statusLauncher', 'error', 'timeout');
+                setItemStatus('statusApp', 'error', 'timeout');
+                animateProgress(25, 100, 400);
+                setTimeout(() => showReady('Offline-Modus'), 500);
+            }
+        }, 8000);
+
+        // Check updates
+        setText('statusText', 'Prüfe Versionen...');
         const updates = await window.go.main.Launcher.CheckForUpdates();
-        console.log('[Launcher] Update check result:', updates);
 
+        clearTimeout(timeout);
+        if (handled) return;
+        handled = true;
+
+        console.log('[Launcher] Updates:', updates);
         updateStatus = updates;
 
-        animateProgress(30, 100, 500);
+        // Update status indicators
+        const launcherOk = updates.launcher && !updates.launcher.error;
+        const appOk = updates.app && !updates.app.error;
 
-        // Wait for animation to complete
-        await sleep(600);
+        setItemStatus('statusLauncher', launcherOk ? 'success' : 'error',
+            launcherOk ? updates.launcher.latest_version : 'fehler');
 
-        // Check if any updates are available
-        const hasUpdates = (updates.launcher && updates.launcher.update_available) ||
-                          (updates.app && updates.app.update_available);
+        setText('statusText', 'Prüfe App...');
+        setItemStatus('statusApp', 'checking', 'prüfe...');
+
+        await sleep(200);
+
+        setItemStatus('statusApp', appOk ? 'success' : 'error',
+            appOk ? updates.app.latest_version : 'fehler');
+
+        // Update app version in status bar
+        if (appOk) {
+            setText('appVersion', `v${updates.app.current_version}`);
+        }
+
+        // Update GitHub status
+        setText('githubStatus', launcherOk || appOk ? 'Connected' : 'Offline');
+
+        animateProgress(25, 100, 400);
+        await sleep(500);
+
+        // Check for available updates
+        const hasUpdates =
+            (updates.launcher?.update_available) ||
+            (updates.app?.update_available);
 
         if (hasUpdates) {
-            console.log('[Launcher] Updates available');
             showUpdatesAvailable(updates);
         } else {
-            console.log('[Launcher] No updates available');
-            showReady();
+            showReady('Alles aktuell');
         }
+
     } catch (error) {
-        console.error('[Launcher] Update check failed:', error);
-        showError('Fehler beim Prüfen von Updates: ' + getErrorMessage(error));
+        if (handled) return;
+        handled = true;
+
+        console.error('[Launcher] Check failed:', error);
+        setText('githubStatus', 'Error');
+        setItemStatus('statusLauncher', 'error', 'fehler');
+        setItemStatus('statusApp', 'error', 'fehler');
+        showReady('Verbindungsfehler - Offline-Modus');
     }
 }
 
-function showUpdatesAvailable(updates) {
-    console.log('[Launcher] Showing updates view');
+function setItemStatus(itemId, status, text) {
+    const item = document.getElementById(itemId);
+    if (!item) return;
 
+    item.className = 'status-item ' + status;
+
+    const valueEl = item.querySelector('.status-value');
+    if (valueEl) valueEl.textContent = text;
+}
+
+// ==================== Updates Available ====================
+
+function showUpdatesAvailable(updates) {
     pendingUpdates = [];
     const container = document.getElementById('updateCards');
     container.innerHTML = '';
 
-    // Add launcher update card
-    if (updates.launcher && updates.launcher.update_available) {
+    if (updates.launcher?.update_available) {
         pendingUpdates.push('launcher');
-        const card = createUpdateCard(updates.launcher);
-        container.appendChild(card);
+        container.appendChild(createUpdateCard(updates.launcher));
     }
 
-    // Add app update card
-    if (updates.app && updates.app.update_available) {
+    if (updates.app?.update_available) {
         pendingUpdates.push('app');
-        const card = createUpdateCard(updates.app);
-        container.appendChild(card);
+        container.appendChild(createUpdateCard(updates.app));
     }
 
     showView('viewUpdatesAvailable');
@@ -173,207 +205,166 @@ function createUpdateCard(update) {
     const card = document.createElement('div');
     card.className = 'update-card';
 
-    const componentName = update.component === 'launcher' ? 'Launcher' : 'Hauptanwendung';
-    const badgeClass = update.is_required ? 'required' : '';
-    const badgeText = update.is_required ? 'Erforderlich' : 'Verfügbar';
+    const name = update.component === 'launcher' ? 'Launcher' : 'App';
+    const date = formatDate(update.release_date);
+    const commit = update.commit_hash ? update.commit_hash.substring(0, 7) : '';
 
     card.innerHTML = `
-        <div class="update-card-header">
-            <div class="update-card-title">${componentName}</div>
-            <div class="update-badge ${badgeClass}">${badgeText}</div>
+        <div class="update-card-info">
+            <div class="update-card-title">${name}</div>
+            <div class="update-card-version">
+                ${update.current_version} → <span class="new">${update.latest_version}</span>
+            </div>
         </div>
-        <div class="update-card-body">
-            <div class="update-version">
-                <span style="color: var(--text-muted);">${update.current_version}</span>
-                <span style="color: var(--text-secondary);">→</span>
-                <span style="color: var(--primary-400); font-weight: 600;">${update.latest_version}</span>
-                <span class="update-size">(${update.size_mb} MB)</span>
-            </div>
-            <div style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">
-                ${update.release_notes || 'Neue Version verfügbar'}
-            </div>
+        <div class="update-card-meta">
+            ${date}${commit ? ' • ' + commit : ''}
         </div>
     `;
 
     return card;
 }
 
-// ==================== Download & Install ====================
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+
+        if (diff === 0) return 'Heute';
+        if (diff === 1) return 'Gestern';
+        if (diff < 7) return `Vor ${diff}d`;
+
+        return date.toLocaleDateString('de-DE');
+    } catch {
+        return dateStr;
+    }
+}
+
+// ==================== Download ====================
 
 async function downloadAllUpdates() {
-    console.log('[Launcher] Starting download for:', pendingUpdates);
-
     if (pendingUpdates.length === 0) {
         await skipUpdates();
         return;
     }
 
-    isDownloading = true;
     showView('viewDownloading');
 
     try {
         for (const component of pendingUpdates) {
-            const updateInfo = updateStatus[component];
+            const info = updateStatus[component];
 
-            console.log(`[Launcher] Downloading ${component}...`);
-            document.getElementById('downloadTitle').textContent = `Lade ${component === 'launcher' ? 'Launcher' : 'Hauptanwendung'} herunter...`;
-            document.getElementById('downloadStatus').textContent = `${updateInfo.latest_version} (${updateInfo.size_mb} MB)`;
+            setText('downloadTitle', `Lade ${component === 'launcher' ? 'Launcher' : 'App'}...`);
+            setText('downloadStatus', `${info.latest_version} (${info.size_mb || '?'} MB)`);
 
-            // Download update
             const progress = await window.go.main.Launcher.DownloadUpdate(
                 component,
-                updateInfo.download_url,
-                updateInfo.sha256 || ''
+                info.download_url,
+                info.sha256 || ''
             );
 
-            console.log(`[Launcher] Download result:`, progress);
+            if (progress.error) throw new Error(progress.error);
 
-            if (progress.error) {
-                throw new Error(progress.error);
-            }
-
-            // Update progress
             setDownloadProgress(100, progress.bytes_downloaded, progress.total_bytes);
 
-            // Install update
-            console.log(`[Launcher] Installing ${component}...`);
-            document.getElementById('downloadStatus').textContent = 'Installiere Update...';
-
+            setText('downloadStatus', 'Installiere...');
             await window.go.main.Launcher.ApplyUpdate(component);
-
-            console.log(`[Launcher] ${component} updated successfully`);
         }
 
-        // All updates installed successfully
-        isDownloading = false;
-        showReady('Alle Updates wurden erfolgreich installiert!');
+        showReady('Updates installiert!');
 
     } catch (error) {
-        isDownloading = false;
-        console.error('[Launcher] Download/Install failed:', error);
-        showError('Fehler beim Installieren der Updates: ' + getErrorMessage(error));
+        console.error('[Launcher] Download failed:', error);
+        showError('Download fehlgeschlagen: ' + getErrorMessage(error));
     }
 }
 
 async function skipUpdates() {
-    console.log('[Launcher] Skipping updates');
-    showReady('Updates können später installiert werden');
+    showReady('Updates übersprungen');
 }
 
-// ==================== Launch App ====================
+// ==================== Launch ====================
 
 async function launchApp() {
-    console.log('[Launcher] Launching main application...');
-
     try {
         await window.go.main.Launcher.LaunchMainApp();
-        console.log('[Launcher] Main app launched successfully');
-
-        // Wait a bit and close launcher
-        await sleep(1000);
+        await sleep(800);
         window.close();
-
     } catch (error) {
-        console.error('[Launcher] Failed to launch app:', error);
-        showError('Fehler beim Starten der Anwendung: ' + getErrorMessage(error));
+        showError('Start fehlgeschlagen: ' + getErrorMessage(error));
     }
 }
 
-// ==================== Ready View ====================
+// ==================== Ready ====================
 
-function showReady(message = 'Bereit zum Starten!') {
-    console.log('[Launcher] Showing ready view');
+function showReady(message = 'Bereit') {
+    setText('readyMessage', message);
 
-    document.getElementById('readyMessage').textContent = message;
-
-    // Update app version if available
     if (updateStatus.app) {
-        const appVersion = updateStatus.app.latest_version || updateStatus.app.current_version;
-        document.getElementById('appVersion').textContent = `v${appVersion}`;
+        const ver = updateStatus.app.latest_version || updateStatus.app.current_version;
+        setText('appVersion', `v${ver}`);
     }
 
     showView('viewReady');
 }
 
-// ==================== Error Handling ====================
+// ==================== Error ====================
 
 function showError(message) {
-    console.error('[Launcher] Error:', message);
-
-    document.getElementById('errorMessage').textContent = message;
+    setText('errorMessage', message);
     showView('viewError');
 }
 
 function retryOperation() {
-    console.log('[Launcher] Retrying operation');
-
-    if (currentView === 'viewError') {
-        // Retry update check
-        startUpdateCheck();
-    }
+    startUpdateCheck();
 }
 
 function getErrorMessage(error) {
-    if (!error) return 'Ein unbekannter Fehler ist aufgetreten';
+    if (!error) return 'Unbekannter Fehler';
     if (typeof error === 'string') return error;
-    if (error.message) return error.message;
-    if (error.error) return error.error;
-
-    try {
-        return error.toString();
-    } catch (e) {
-        return 'Ein unbekannter Fehler ist aufgetreten';
-    }
+    return error.message || error.error || 'Unbekannter Fehler';
 }
 
-// ==================== UI Helpers ====================
+// ==================== Helpers ====================
 
-function setProgress(percent) {
+function setText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+}
+
+function setProgress(pct) {
     const fill = document.getElementById('progressFill');
-    if (fill) {
-        fill.style.width = `${percent}%`;
-    }
+    if (fill) fill.style.width = `${pct}%`;
 }
 
 function animateProgress(from, to, duration) {
     const start = Date.now();
-    const diff = to - from;
-
     const animate = () => {
         const elapsed = Date.now() - start;
         const progress = Math.min(elapsed / duration, 1);
-        const current = from + (diff * progress);
-
-        setProgress(current);
-
-        if (progress < 1) {
-            requestAnimationFrame(animate);
-        }
+        setProgress(from + (to - from) * progress);
+        if (progress < 1) requestAnimationFrame(animate);
     };
-
     requestAnimationFrame(animate);
 }
 
-function setDownloadProgress(percent, downloaded, total) {
+function setDownloadProgress(pct, downloaded, total) {
     const fill = document.getElementById('downloadProgressFill');
-    const percentEl = document.getElementById('downloadPercent');
-    const bytesEl = document.getElementById('downloadBytes');
+    if (fill) fill.style.width = `${pct}%`;
 
-    if (fill) fill.style.width = `${percent}%`;
-    if (percentEl) percentEl.textContent = `${Math.round(percent)}%`;
-    if (bytesEl) {
-        const downloadedMB = (downloaded / 1024 / 1024).toFixed(1);
-        const totalMB = (total / 1024 / 1024).toFixed(1);
-        bytesEl.textContent = `${downloadedMB} MB / ${totalMB} MB`;
-    }
+    setText('downloadPercent', `${Math.round(pct)}%`);
+
+    const dlMB = (downloaded / 1024 / 1024).toFixed(1);
+    const totalMB = (total / 1024 / 1024).toFixed(1);
+    setText('downloadBytes', `${dlMB} / ${totalMB} MB`);
 }
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// ==================== Make functions globally available ====================
-
+// Global exports
 window.useDefaultLocation = useDefaultLocation;
 window.selectCustomLocation = selectCustomLocation;
 window.downloadAllUpdates = downloadAllUpdates;
@@ -381,4 +372,4 @@ window.skipUpdates = skipUpdates;
 window.launchApp = launchApp;
 window.retryOperation = retryOperation;
 
-console.log('[Launcher] Frontend initialized');
+console.log('[Launcher] Ready');

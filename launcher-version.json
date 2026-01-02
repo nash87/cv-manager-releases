@@ -1,0 +1,11 @@
+{
+  "latest_version": "1.0.2",
+  "release_date": "2025-12-30",
+  "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.2.0/cv-manager-launcher.exe",
+  "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.2.0",
+  "release_notes": "Enhanced launcher with live GitHub release info and seamless design",
+  "sha256": "",
+  "size_mb": 12,
+  "is_required": false,
+  "commit_hash": ""
+}

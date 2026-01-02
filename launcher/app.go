@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -45,6 +46,7 @@ type UpdateInfo struct {
 	SHA256         string `json:"sha256"`
 	SizeMB         int    `json:"size_mb"`
 	IsRequired     bool   `json:"is_required"` // Force update
+	CommitHash     string `json:"commit_hash"` // Git commit hash
 }
 
 // UpdateStatus represents current update status
@@ -55,7 +57,10 @@ type UpdateStatus struct {
 	UpdateAvailable   bool   `json:"update_available"`
 	IsRequired        bool   `json:"is_required"`
 	ReleaseNotes      string `json:"release_notes"`
+	ReleaseDate       string `json:"release_date"`
+	CommitHash        string `json:"commit_hash"`
 	DownloadURL       string `json:"download_url"`
+	SHA256            string `json:"sha256"`
 	SizeMB            int    `json:"size_mb"`
 	Checking          bool   `json:"checking"`
 	Error             string `json:"error"`
@@ -73,8 +78,46 @@ type DownloadProgress struct {
 	Error           string  `json:"error"`
 }
 
+// GitHubRelease represents a GitHub release
+type GitHubRelease struct {
+	TagName     string `json:"tag_name"`
+	Name        string `json:"name"`
+	Body        string `json:"body"`
+	PublishedAt string `json:"published_at"`
+	HTMLURL     string `json:"html_url"`
+	Assets      []struct {
+		Name               string `json:"name"`
+		BrowserDownloadURL string `json:"browser_download_url"`
+		Size               int64  `json:"size"`
+	} `json:"assets"`
+}
+
+// GitHubCommit represents a GitHub commit
+type GitHubCommit struct {
+	SHA    string `json:"sha"`
+	Commit struct {
+		Message string `json:"message"`
+		Author  struct {
+			Name string `json:"name"`
+			Date string `json:"date"`
+		} `json:"author"`
+	} `json:"commit"`
+	HTMLURL string `json:"html_url"`
+}
+
+// ReleaseInfo contains combined release information for frontend
+type ReleaseInfo struct {
+	Version      string   `json:"version"`
+	ReleaseDate  string   `json:"release_date"`
+	ReleaseNotes string   `json:"release_notes"`
+	CommitHash   string   `json:"commit_hash"`
+	CommitMsg    string   `json:"commit_msg"`
+	ChangelogURL string   `json:"changelog_url"`
+	Changes      []string `json:"changes"`
+}
+
 const (
-	LauncherVersion      = "1.0.0"
+	LauncherVersion      = "1.0.2"
 	LauncherBuildDate    = "2025-12-30"
 
 	GitHubOwner          = "nash87"
@@ -83,6 +126,8 @@ const (
 
 	AppVersionURL        = "https://raw.githubusercontent.com/" + GitHubOwner + "/" + GitHubRepo + "/" + GitHubBranch + "/version.json"
 	LauncherVersionURL   = "https://raw.githubusercontent.com/" + GitHubOwner + "/" + GitHubRepo + "/" + GitHubBranch + "/launcher-version.json"
+	GitHubReleasesAPI    = "https://api.github.com/repos/" + GitHubOwner + "/" + GitHubRepo + "/releases"
+	GitHubCommitsAPI     = "https://api.github.com/repos/" + GitHubOwner + "/" + GitHubRepo + "/commits"
 
 	MainAppExecutable    = "cv-manager-pro.exe"
 	LauncherExecutable   = "cv-manager-launcher.exe"
@@ -93,6 +138,21 @@ const (
 func NewLauncher() *Launcher {
 	exePath, _ := os.Executable()
 	exeDir := filepath.Dir(exePath)
+
+	// Setup logging to file
+	logPath := filepath.Join(exeDir, "launcher.log")
+	logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err == nil {
+		// Write to both stdout and file
+		multiWriter := io.MultiWriter(os.Stdout, logFile)
+		log.SetOutput(multiWriter)
+		log.SetFlags(log.LstdFlags | log.Lshortfile)
+	}
+
+	log.Printf("[Launcher] CV Manager Pro Launcher v%s\n", LauncherVersion)
+	log.Printf("[Launcher] Log file: %s\n", logPath)
+	log.Printf("[Launcher] Executable: %s\n", exePath)
+	log.Printf("[Launcher] Working directory: %s\n", exeDir)
 
 	return &Launcher{
 		launcherPath: exePath,
@@ -275,49 +335,63 @@ func (l *Launcher) CheckForUpdates() (map[string]*UpdateStatus, error) {
 
 // checkComponentUpdate checks for a single component update
 func (l *Launcher) checkComponentUpdate(component, versionURL, currentVersion string) (*UpdateStatus, error) {
+	fmt.Printf("[Launcher] Checking %s update from: %s\n", component, versionURL)
+
 	status := &UpdateStatus{
 		Component:      component,
 		CurrentVersion: currentVersion,
 		Checking:       true,
 	}
 
-	// Fetch version info from GitHub
-	client := &http.Client{Timeout: 10 * time.Second}
+	// Fetch version info from GitHub with shorter timeout (5s to avoid UI hanging)
+	client := &http.Client{Timeout: 5 * time.Second}
+	fmt.Printf("[Launcher] Sending HTTP GET request...\n")
+
 	resp, err := client.Get(versionURL)
 	if err != nil {
+		fmt.Printf("[Launcher] HTTP GET failed: %v\n", err)
 		status.Checking = false
-		status.Error = fmt.Sprintf("Failed to fetch update info: %v", err)
+		status.Error = fmt.Sprintf("Netzwerkfehler: %v", err)
 		return status, err
 	}
 	defer resp.Body.Close()
 
+	fmt.Printf("[Launcher] HTTP response status: %d\n", resp.StatusCode)
+
 	if resp.StatusCode != http.StatusOK {
 		status.Checking = false
-		status.Error = fmt.Sprintf("Server returned status %d", resp.StatusCode)
+		status.Error = fmt.Sprintf("Server-Fehler (Status %d)", resp.StatusCode)
 		return status, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
+	fmt.Printf("[Launcher] Parsing JSON response...\n")
 	var updateInfo UpdateInfo
 	if err := json.NewDecoder(resp.Body).Decode(&updateInfo); err != nil {
+		fmt.Printf("[Launcher] JSON parsing failed: %v\n", err)
 		status.Checking = false
-		status.Error = fmt.Sprintf("Failed to parse update info: %v", err)
+		status.Error = fmt.Sprintf("Fehler beim Lesen der Update-Info: %v", err)
 		return status, err
 	}
+
+	fmt.Printf("[Launcher] Update info parsed successfully: v%s\n", updateInfo.LatestVersion)
 
 	status.Checking = false
 	status.LatestVersion = updateInfo.LatestVersion
 	status.ReleaseNotes = updateInfo.ReleaseNotes
+	status.ReleaseDate = updateInfo.ReleaseDate
+	status.CommitHash = updateInfo.CommitHash
 	status.DownloadURL = updateInfo.DownloadURL
+	status.SHA256 = updateInfo.SHA256
 	status.SizeMB = updateInfo.SizeMB
 	status.IsRequired = updateInfo.IsRequired
 
 	// Compare versions
 	if updateInfo.LatestVersion != currentVersion {
 		status.UpdateAvailable = true
-		fmt.Printf("[Launcher] Update available for %s: %s -> %s\n", component, currentVersion, updateInfo.LatestVersion)
+		fmt.Printf("[Launcher] ✅ Update available for %s: %s -> %s\n", component, currentVersion, updateInfo.LatestVersion)
 	} else {
 		status.UpdateAvailable = false
-		fmt.Printf("[Launcher] %s is up to date: %s\n", component, currentVersion)
+		fmt.Printf("[Launcher] ✅ %s is up to date: %s\n", component, currentVersion)
 	}
 
 	return status, nil
@@ -509,4 +583,135 @@ func copyFile(src, dst string) error {
 
 	_, err = io.Copy(destFile, sourceFile)
 	return err
+}
+
+// GetLatestRelease fetches the latest release info from GitHub API
+func (l *Launcher) GetLatestRelease() (*ReleaseInfo, error) {
+	fmt.Println("[Launcher] Fetching latest release from GitHub...")
+
+	client := &http.Client{Timeout: 5 * time.Second}
+
+	// Fetch latest release
+	resp, err := client.Get(GitHubReleasesAPI + "/latest")
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch release: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("GitHub API returned status %d", resp.StatusCode)
+	}
+
+	var release GitHubRelease
+	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+		return nil, fmt.Errorf("failed to parse release: %v", err)
+	}
+
+	// Parse release notes into changes list
+	changes := parseReleaseNotes(release.Body)
+
+	info := &ReleaseInfo{
+		Version:      release.TagName,
+		ReleaseDate:  release.PublishedAt,
+		ReleaseNotes: release.Body,
+		ChangelogURL: release.HTMLURL,
+		Changes:      changes,
+	}
+
+	fmt.Printf("[Launcher] Latest release: %s\n", release.TagName)
+	return info, nil
+}
+
+// GetRecentCommits fetches recent commits from GitHub
+func (l *Launcher) GetRecentCommits(limit int) ([]GitHubCommit, error) {
+	fmt.Printf("[Launcher] Fetching last %d commits from GitHub...\n", limit)
+
+	client := &http.Client{Timeout: 5 * time.Second}
+
+	url := fmt.Sprintf("%s?per_page=%d", GitHubCommitsAPI, limit)
+	resp, err := client.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch commits: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("GitHub API returned status %d", resp.StatusCode)
+	}
+
+	var commits []GitHubCommit
+	if err := json.NewDecoder(resp.Body).Decode(&commits); err != nil {
+		return nil, fmt.Errorf("failed to parse commits: %v", err)
+	}
+
+	fmt.Printf("[Launcher] Fetched %d commits\n", len(commits))
+	return commits, nil
+}
+
+// GetGitHubStatus returns the current connection status to GitHub
+func (l *Launcher) GetGitHubStatus() map[string]interface{} {
+	result := map[string]interface{}{
+		"connected":   false,
+		"repo":        GitHubOwner + "/" + GitHubRepo,
+		"branch":      GitHubBranch,
+		"releases_url": "https://github.com/" + GitHubOwner + "/" + GitHubRepo + "/releases",
+	}
+
+	// Quick ping to check connectivity
+	client := &http.Client{Timeout: 3 * time.Second}
+	resp, err := client.Head("https://api.github.com")
+	if err == nil && resp.StatusCode == http.StatusOK {
+		result["connected"] = true
+	}
+
+	return result
+}
+
+// parseReleaseNotes splits release notes into individual changes
+func parseReleaseNotes(body string) []string {
+	var changes []string
+	lines := splitLines(body)
+
+	for _, line := range lines {
+		line = trimSpace(line)
+		if len(line) < 2 {
+			continue
+		}
+		// Look for bullet points or numbered items
+		runes := []rune(line)
+		if runes[0] == '-' || runes[0] == '*' || runes[0] == '•' {
+			changes = append(changes, trimSpace(string(runes[1:])))
+		}
+	}
+
+	return changes
+}
+
+// splitLines splits a string into lines
+func splitLines(s string) []string {
+	var lines []string
+	start := 0
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\n' {
+			lines = append(lines, s[start:i])
+			start = i + 1
+		}
+	}
+	if start < len(s) {
+		lines = append(lines, s[start:])
+	}
+	return lines
+}
+
+// trimSpace trims whitespace from a string
+func trimSpace(s string) string {
+	start := 0
+	end := len(s)
+	for start < end && (s[start] == ' ' || s[start] == '\t' || s[start] == '\r') {
+		start++
+	}
+	for end > start && (s[end-1] == ' ' || s[end-1] == '\t' || s[end-1] == '\r') {
+		end--
+	}
+	return s[start:end]
 }

@@ -1,11 +1,11 @@
 {
-  "latest_version": "1.2.0",
-  "release_date": "2025-12-30",
-  "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.2.0/cv-manager-pro.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.2.0",
-  "release_notes": "Comprehensive Audit System & UI Enhancements - Complete Audit Log system, UnoCSS framework, Phosphor icons, Extended i18n support",
-  "sha256": "",
-  "size_mb": 45,
+  "latest_version": "1.2.1",
+  "release_date": "2026-01-02",
+  "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.2.1/cv-manager-pro.exe",
+  "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.2.1",
+  "release_notes": "Onboarding in Launcher verschoben - App startet jetzt direkt",
+  "sha256": "74617ca7bff682b83cb9c93ada40a86ac137ba69862fcff03cd0392ae830fd15",
+  "size_mb": 16,
   "is_required": false,
   "commit_hash": ""
 }

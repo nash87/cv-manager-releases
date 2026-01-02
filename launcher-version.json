@@ -1,11 +1,11 @@
 {
-  "latest_version": "1.2.0",
+  "latest_version": "1.3.0",
   "release_date": "2026-01-02",
-  "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.2.0/cv-manager-launcher.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.2.0",
-  "release_notes": "Obsidian Dark Theme - Ultra modern UI with glow effects, version tracking fix",
-  "sha256": "c35a469ccf467315f741a459265376cc045a2689f62f67cce982b5a43b802c4a",
-  "size_mb": 12,
+  "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.3.0/cv-manager-launcher.exe",
+  "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.3.0",
+  "release_notes": "Onboarding Wizard im Launcher, Settings-View mit Reset, Skip-Funktion",
+  "sha256": "694c3a1ac713d848cf57f231cab0296e886e02d1644cba53fc11871a59fddf3d",
+  "size_mb": 10,
   "is_required": false,
   "commit_hash": ""
 }

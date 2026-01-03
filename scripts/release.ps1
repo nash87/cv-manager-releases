@@ -1,5 +1,13 @@
 # CV Manager Release Script for Windows
 # Usage: .\scripts\release.ps1 -BumpType <major|minor|patch>
+#
+# This script:
+# 1. Bumps version in version.go and wails.json
+# 2. Builds the Windows executable locally
+# 3. Updates version.json with SHA256
+# 4. Commits everything including the EXE
+# 5. Tags and pushes to Gitea
+# 6. Gitea Action then pushes release to GitHub
 
 param(
     [Parameter(Mandatory=$true)]
@@ -75,24 +83,30 @@ function Update-VersionJson {
     $sha256 = (Get-FileHash $ExePath -Algorithm SHA256).Hash.ToLower()
     $sizeMb = [math]::Round((Get-Item $ExePath).Length / 1MB)
 
+    # Get last commit message for release notes
+    $lastCommit = git log -1 --pretty=format:"%s" 2>$null
+    if (-not $lastCommit) {
+        $lastCommit = "CV Manager v$Version"
+    }
+
     $versionJson = @{
         latest_version = $Version
         release_date = $date
         download_url = "https://github.com/nash87/cv-manager-releases/releases/download/v$Version/cv-manager.exe"
         changelog_url = "https://github.com/nash87/cv-manager-releases/releases/tag/v$Version"
-        release_notes = "CV Manager v$Version"
+        release_notes = $lastCommit
         sha256 = $sha256
         size_mb = $sizeMb
         is_required = $false
     }
 
     $versionJson | ConvertTo-Json | Set-Content "version.json"
-    Write-Host "version.json updated" -ForegroundColor Green
+    Write-Host "version.json updated with SHA256: $sha256" -ForegroundColor Green
 }
 
 # Main
 Write-Host "============================================" -ForegroundColor Green
-Write-Host "  CV Manager Release" -ForegroundColor Green
+Write-Host "  CV Manager Release Pipeline" -ForegroundColor Green
 Write-Host "============================================" -ForegroundColor Green
 Write-Host ""
 
@@ -115,28 +129,50 @@ if ($confirm -ne "y") {
 Update-VersionFiles -Version $newVersion
 
 # Build
-Write-Host "Building..." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Building cv-manager.exe..." -ForegroundColor Yellow
 wails build -platform windows/amd64
 
 $exePath = "build\bin\cv-manager.exe"
-if (Test-Path $exePath) {
-    # Update version.json with SHA256
-    Update-VersionJson -Version $newVersion -ExePath $exePath
-
-    Write-Host ""
-    Write-Host "============================================" -ForegroundColor Green
-    Write-Host "  Release v$newVersion prepared!" -ForegroundColor Green
-    Write-Host "============================================" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Build output: $exePath"
-    Write-Host ""
-    Write-Host "Next steps:" -ForegroundColor Cyan
-    Write-Host "  1. Test the build locally"
-    Write-Host "  2. Commit: git add . && git commit -m 'Release v$newVersion'"
-    Write-Host "  3. Tag: git tag -a v$newVersion -m 'Release v$newVersion'"
-    Write-Host "  4. Push to Gitea: git push origin main --tags"
-    Write-Host ""
-} else {
+if (-not (Test-Path $exePath)) {
     Write-Host "Build failed - executable not found" -ForegroundColor Red
     exit 1
 }
+
+Write-Host "Build successful!" -ForegroundColor Green
+
+# Update version.json with SHA256
+Update-VersionJson -Version $newVersion -ExePath $exePath
+
+# Update .gitignore to allow build artifacts for release
+$gitignore = Get-Content ".gitignore" -Raw
+if ($gitignore -notmatch "!build/bin/cv-manager.exe") {
+    Add-Content ".gitignore" "`n# Allow release executable`n!build/bin/cv-manager.exe"
+    Write-Host "Updated .gitignore to include cv-manager.exe" -ForegroundColor Yellow
+}
+
+# Git operations
+Write-Host ""
+Write-Host "Committing release..." -ForegroundColor Yellow
+
+git add version.go wails.json version.json build/bin/cv-manager.exe .gitignore
+git add -u  # Stage modified files
+
+$commitMsg = "Release v$newVersion"
+git commit -m $commitMsg
+
+Write-Host "Creating tag v$newVersion..." -ForegroundColor Yellow
+git tag -a "v$newVersion" -m "Release v$newVersion"
+
+Write-Host ""
+Write-Host "Pushing to Gitea..." -ForegroundColor Yellow
+git push origin master --tags
+
+Write-Host ""
+Write-Host "============================================" -ForegroundColor Green
+Write-Host "  Release v$newVersion Complete!" -ForegroundColor Green
+Write-Host "============================================" -ForegroundColor Green
+Write-Host ""
+Write-Host "Gitea Action will now push the release to GitHub:" -ForegroundColor Cyan
+Write-Host "  https://github.com/nash87/cv-manager-releases/releases" -ForegroundColor Cyan
+Write-Host ""

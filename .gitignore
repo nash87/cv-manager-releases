@@ -1,6 +1,8 @@
-# Build outputs (except github-releases/)
+# Build outputs
 build/bin/
 !build/bin/.gitkeep
+# Allow release executable for Gitea Action
+!build/bin/cv-manager.exe
 
 # CV Manager Data - NEVER commit user data or encrypted databases!
 cv-data/

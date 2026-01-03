@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
 
       - name: Extract version from tag
         id: version
@@ -24,9 +26,7 @@ jobs:
           echo "Releasing version: $VERSION"
 
       - name: Get Release Notes from Commits
-        id: notes
         run: |
-          # Get last 10 commit messages for release notes
           echo "## CV Manager v${{ steps.version.outputs.VERSION }}" > release_notes.md
           echo "" >> release_notes.md
           echo "### Changes" >> release_notes.md
@@ -45,22 +45,30 @@ jobs:
             exit 1
           fi
           echo "Build artifacts found:"
-          ls -la build/bin/cv-manager.exe
+          ls -lh build/bin/cv-manager.exe
           cat version.json
 
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y gh
+
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          repository: ${{ env.GITHUB_REPO }}
-          token: ${{ env.GH_TOKEN }}
-          tag_name: v${{ steps.version.outputs.VERSION }}
-          name: CV Manager v${{ steps.version.outputs.VERSION }}
-          body_path: release_notes.md
-          files: |
-            build/bin/cv-manager.exe
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+
+          # Delete existing release if exists
+          gh release delete "v$VERSION" --repo $GITHUB_REPO --yes 2>/dev/null || true
+
+          # Create new release with assets
+          gh release create "v$VERSION" \
+            --repo $GITHUB_REPO \
+            --title "CV Manager v$VERSION" \
+            --notes-file release_notes.md \
+            build/bin/cv-manager.exe \
             version.json
-          draft: false
-          prerelease: false
 
       - name: Update version.json in release repo
         run: |
@@ -71,5 +79,5 @@ jobs:
           git config user.name "Gitea Actions"
           git config user.email "actions@gitea.local"
           git add version.json
-          git commit -m "Release v$VERSION - $(head -1 ../release_notes.md)" || echo "No changes"
+          git commit -m "Release v$VERSION" || echo "No changes"
           git push origin main

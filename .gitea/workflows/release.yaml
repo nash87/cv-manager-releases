@@ -26,6 +26,7 @@ jobs:
           echo "Releasing version: $VERSION"
 
       - name: Get Release Notes from Commits
+        id: notes
         run: |
           echo "## CV Manager v${{ steps.version.outputs.VERSION }}" > release_notes.md
           echo "" >> release_notes.md
@@ -33,6 +34,9 @@ jobs:
           git log --oneline -10 --pretty=format:"- %s" >> release_notes.md
           echo "" >> release_notes.md
           cat release_notes.md
+          # Store as output for API
+          NOTES=$(cat release_notes.md | jq -Rs .)
+          echo "NOTES=$NOTES" >> $GITHUB_OUTPUT
 
       - name: Verify build artifacts exist
         run: |
@@ -40,40 +44,71 @@ jobs:
             echo "ERROR: cv-manager.exe not found! Build locally first."
             exit 1
           fi
-          if [ ! -f "version.json" ]; then
-            echo "ERROR: version.json not found!"
-            exit 1
-          fi
-          echo "Build artifacts found:"
           ls -lh build/bin/cv-manager.exe
           cat version.json
 
-      - name: Install GitHub CLI
-        run: |
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt-get update
-          sudo apt-get install -y gh
-
-      - name: Create GitHub Release
+      - name: Create GitHub Release via API
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
 
           # Delete existing release if exists
-          gh release delete "v$VERSION" --repo $GITHUB_REPO --yes 2>/dev/null || true
+          RELEASE_ID=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$GITHUB_REPO/releases/tags/v$VERSION" | jq -r '.id // empty')
 
-          # Create new release with assets
-          gh release create "v$VERSION" \
-            --repo $GITHUB_REPO \
-            --title "CV Manager v$VERSION" \
-            --notes-file release_notes.md \
-            build/bin/cv-manager.exe \
-            version.json
+          if [ -n "$RELEASE_ID" ]; then
+            echo "Deleting existing release $RELEASE_ID..."
+            curl -s -X DELETE -H "Authorization: token $GH_TOKEN" \
+              "https://api.github.com/repos/$GITHUB_REPO/releases/$RELEASE_ID"
+          fi
+
+          # Delete tag if exists
+          curl -s -X DELETE -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$GITHUB_REPO/git/refs/tags/v$VERSION" 2>/dev/null || true
+
+          # Read release notes
+          NOTES=$(cat release_notes.md)
+
+          # Create release
+          RESPONSE=$(curl -s -X POST -H "Authorization: token $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/$GITHUB_REPO/releases" \
+            -d @- <<EOF
+          {
+            "tag_name": "v$VERSION",
+            "name": "CV Manager v$VERSION",
+            "body": $(echo "$NOTES" | jq -Rs .),
+            "draft": false,
+            "prerelease": false
+          }
+          EOF
+          )
+
+          RELEASE_ID=$(echo "$RESPONSE" | jq -r '.id')
+          UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.upload_url' | sed 's/{.*}//')
+
+          echo "Created release ID: $RELEASE_ID"
+          echo "Upload URL: $UPLOAD_URL"
+
+          # Upload cv-manager.exe
+          echo "Uploading cv-manager.exe..."
+          curl -s -X POST -H "Authorization: token $GH_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            "${UPLOAD_URL}?name=cv-manager.exe" \
+            --data-binary @build/bin/cv-manager.exe
+
+          # Upload version.json
+          echo "Uploading version.json..."
+          curl -s -X POST -H "Authorization: token $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            "${UPLOAD_URL}?name=version.json" \
+            --data-binary @version.json
+
+          echo "Release v$VERSION created successfully!"
 
       - name: Update version.json in release repo
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
-          git clone https://x-access-token:${{ env.GH_TOKEN }}@github.com/${{ env.GITHUB_REPO }}.git releases-repo
+          git clone https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPO.git releases-repo
           cd releases-repo
           cp ../version.json .
           git config user.name "Gitea Actions"

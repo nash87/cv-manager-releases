@@ -9,7 +9,7 @@ import (
 const (
 	MajorVersion = 1
 	MinorVersion = 3
-	PatchVersion = 0
+	PatchVersion = 1
 )
 
 // BuildInfo contains build-time information

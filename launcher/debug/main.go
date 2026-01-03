@@ -12,7 +12,7 @@ import (
 
 const (
 	GitHubOwner        = "nash87"
-	GitHubRepo         = "cv-manager-pro-releases"
+	GitHubRepo         = "cv-manager-releases"
 	GitHubBranch       = "main"
 	AppVersionURL      = "https://raw.githubusercontent.com/" + GitHubOwner + "/" + GitHubRepo + "/" + GitHubBranch + "/version.json"
 	LauncherVersionURL = "https://raw.githubusercontent.com/" + GitHubOwner + "/" + GitHubRepo + "/" + GitHubBranch + "/launcher-version.json"

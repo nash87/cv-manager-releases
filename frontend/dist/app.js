@@ -434,16 +434,26 @@ function createCVCard(cv) {
         }
     }
 
+    // Sanitize user input to prevent XSS
+    const s = sanitizeString;
+    const safeFirstname = s(cv.firstname || '');
+    const safeLastname = s(cv.lastname || '');
+    const safeJobTitle = s(cv.job_title || 'Kein Titel');
+    const safeTargetJob = s(cv.target_job || '');
+    const safeEmail = s(cv.email || '');
+    const safeTemplate = s(cv.template || 'modern');
+    const safeId = s(cv.id || '');
+
     return `
-        <div class="cv-card" data-cv-id="${cv.id}">
+        <div class="cv-card" data-cv-id="${safeId}">
             <div class="cv-card-header">
                 <span class="status-badge ${statusClass}">${statusText}</span>
-                <span class="cv-template-badge">${cv.template || 'modern'}</span>
+                <span class="cv-template-badge">${safeTemplate}</span>
             </div>
-            <h3 class="cv-card-name">${cv.firstname || ''} ${cv.lastname || ''}</h3>
-            <p class="cv-card-job">${cv.job_title || 'Kein Titel'}</p>
-            ${cv.target_job ? `<p class="cv-card-target">Ziel: ${cv.target_job}</p>` : ''}
-            ${cv.email ? `<p class="cv-card-email">${cv.email}</p>` : ''}
+            <h3 class="cv-card-name">${safeFirstname} ${safeLastname}</h3>
+            <p class="cv-card-job">${safeJobTitle}</p>
+            ${cv.target_job ? `<p class="cv-card-target">Ziel: ${safeTargetJob}</p>` : ''}
+            ${cv.email ? `<p class="cv-card-email">${safeEmail}</p>` : ''}
 
             <div class="cv-card-stats">
                 <div class="stat-item" title="Berufserfahrung">
@@ -471,19 +481,19 @@ function createCVCard(cv) {
 
             ${tagsArray.length > 0 ? `
                 <div class="cv-card-tags">
-                    ${tagsArray.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    ${tagsArray.map(tag => `<span class="tag">${s(tag)}</span>`).join('')}
                 </div>
             ` : ''}
 
             <div class="cv-card-actions">
-                <button class="btn-small btn-edit" onclick="editCV('${cv.id}')" title="Bearbeiten">
+                <button class="btn-small btn-edit" onclick="editCV('${safeId}')" title="Bearbeiten">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                     Bearbeiten
                 </button>
-                <button class="btn-small btn-export" onclick="exportCVToPDF('${cv.id}')" title="PDF Export">
+                <button class="btn-small btn-export" onclick="exportCVToPDF('${safeId}')" title="PDF Export">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
@@ -491,14 +501,14 @@ function createCVCard(cv) {
                     </svg>
                     PDF
                 </button>
-                <button class="btn-small btn-duplicate" onclick="duplicateCV('${cv.id}')" title="Duplizieren">
+                <button class="btn-small btn-duplicate" onclick="duplicateCV('${safeId}')" title="Duplizieren">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                     Kopie
                 </button>
-                <button class="btn-small btn-delete" onclick="deleteCV('${cv.id}')" title="Löschen">
+                <button class="btn-small btn-delete" onclick="deleteCV('${safeId}')" title="Löschen">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -2275,18 +2285,19 @@ function renderSkillsWithStyle(style) {
     skills.forEach(skill => {
         const skillEl = document.createElement('div');
         skillEl.className = 'skill-item';
+        const safeName = sanitizeString(skill.name || '');
+        const level = Math.min(100, Math.max(0, parseInt(skill.level) || 80));
 
         switch (style) {
             case 'tags':
                 skillEl.className = 'skill-tag';
-                skillEl.innerHTML = `<span class="skill-name">${skill.name}</span>`;
+                skillEl.innerHTML = `<span class="skill-name">${safeName}</span>`;
                 break;
 
             case 'bars':
-                const level = skill.level || 80;
                 skillEl.innerHTML = `
                     <div class="skill-header">
-                        <span class="skill-name">${skill.name}</span>
+                        <span class="skill-name">${safeName}</span>
                         <span class="skill-level">${level}%</span>
                     </div>
                     <div class="skill-bar">
@@ -2296,35 +2307,34 @@ function renderSkillsWithStyle(style) {
                 break;
 
             case 'dots':
-                const dotLevel = Math.round((skill.level || 80) / 20);
+                const dotLevel = Math.round(level / 20);
                 let dots = '';
                 for (let i = 1; i <= 5; i++) {
                     dots += `<span class="skill-dot ${i <= dotLevel ? 'filled' : ''}"></span>`;
                 }
                 skillEl.innerHTML = `
-                    <span class="skill-name">${skill.name}</span>
+                    <span class="skill-name">${safeName}</span>
                     <div class="skill-dots">${dots}</div>
                 `;
                 break;
 
             case 'percentage':
-                const pctLevel = skill.level || 80;
                 skillEl.innerHTML = `
-                    <div class="skill-circle" style="--percentage: ${pctLevel}">
+                    <div class="skill-circle" style="--percentage: ${level}">
                         <svg viewBox="0 0 36 36">
                             <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                            <path class="circle-fill" stroke-dasharray="${pctLevel}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="circle-fill" stroke-dasharray="${level}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
                         </svg>
-                        <span class="skill-pct">${pctLevel}%</span>
+                        <span class="skill-pct">${level}%</span>
                     </div>
-                    <span class="skill-name">${skill.name}</span>
+                    <span class="skill-name">${safeName}</span>
                 `;
                 break;
 
             case 'list':
                 skillEl.innerHTML = `
                     <span class="skill-bullet">•</span>
-                    <span class="skill-name">${skill.name}</span>
+                    <span class="skill-name">${safeName}</span>
                 `;
                 break;
         }
@@ -2403,15 +2413,16 @@ function renderLanguagesWithStyle(style) {
     languages.forEach(lang => {
         const langEl = document.createElement('div');
         langEl.className = 'lang-item';
-        const level = lang.level || 80;
-        const levelText = levelNames[level] || lang.proficiency || `${level}%`;
+        const level = Math.min(100, Math.max(0, parseInt(lang.level) || 80));
+        const safeName = sanitizeString(lang.name || '');
+        const safeLevelText = sanitizeString(levelNames[level] || lang.proficiency || `${level}%`);
 
         switch (style) {
             case 'bars':
                 langEl.innerHTML = `
                     <div class="lang-header">
-                        <span class="lang-name">${lang.name}</span>
-                        <span class="lang-level">${levelText}</span>
+                        <span class="lang-name">${safeName}</span>
+                        <span class="lang-level">${safeLevelText}</span>
                     </div>
                     <div class="lang-bar">
                         <div class="lang-bar-fill" style="width: ${level}%"></div>
@@ -2426,17 +2437,17 @@ function renderLanguagesWithStyle(style) {
                     circles += `<span class="lang-circle ${i <= circleLevel ? 'filled' : ''}"></span>`;
                 }
                 langEl.innerHTML = `
-                    <span class="lang-name">${lang.name}</span>
+                    <span class="lang-name">${safeName}</span>
                     <div class="lang-circles">${circles}</div>
-                    <span class="lang-level-text">${levelText}</span>
+                    <span class="lang-level-text">${safeLevelText}</span>
                 `;
                 break;
 
             case 'text':
                 langEl.innerHTML = `
-                    <span class="lang-name">${lang.name}</span>
+                    <span class="lang-name">${safeName}</span>
                     <span class="lang-separator">—</span>
-                    <span class="lang-level-text">${levelText}</span>
+                    <span class="lang-level-text">${safeLevelText}</span>
                 `;
                 break;
 
@@ -2444,8 +2455,8 @@ function renderLanguagesWithStyle(style) {
                 const flag = flagEmojis[lang.name] || '🌐';
                 langEl.innerHTML = `
                     <span class="lang-flag">${flag}</span>
-                    <span class="lang-name">${lang.name}</span>
-                    <span class="lang-level-text">${levelText}</span>
+                    <span class="lang-name">${safeName}</span>
+                    <span class="lang-level-text">${safeLevelText}</span>
                 `;
                 break;
         }

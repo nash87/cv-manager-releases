@@ -23,7 +23,7 @@ func TestFullLauncherFlow(t *testing.T) {
 	launcher := &Launcher{
 		ctx:          context.Background(),
 		launcherPath: filepath.Join(tempDir, "cv-manager-launcher.exe"),
-		mainAppPath:  filepath.Join(tempDir, "cv-manager-pro.exe"),
+		mainAppPath:  filepath.Join(tempDir, "cv-manager.exe"),
 		configPath:   configPath,
 		config: &LauncherConfig{
 			DataLocation:    tempDir,

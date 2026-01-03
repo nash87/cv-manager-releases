@@ -159,7 +159,7 @@ func TestUseDefaultDataLocation(t *testing.T) {
 // Test getInstalledAppVersion
 func TestGetInstalledAppVersion(t *testing.T) {
 	tempDir := t.TempDir()
-	mainAppPath := filepath.Join(tempDir, "cv-manager-pro.exe")
+	mainAppPath := filepath.Join(tempDir, "cv-manager.exe")
 
 	launcher := &Launcher{
 		mainAppPath: mainAppPath,
@@ -224,7 +224,7 @@ func TestApplyUpdate(t *testing.T) {
 	updatesDir := filepath.Join(exeDir, "updates")
 	os.MkdirAll(updatesDir, 0755)
 
-	appExe := filepath.Join(exeDir, "cv-manager-pro.exe")
+	appExe := filepath.Join(exeDir, "cv-manager.exe")
 	updateFile := filepath.Join(updatesDir, "app-update.exe")
 
 	// Create fake files

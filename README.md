@@ -2,18 +2,21 @@
 
 A native desktop application for managing CVs/Resumes with military-grade encryption and full GDPR/DSGVO compliance.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.3.1-blue)
 ![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go)
-![Wails](https://img.shields.io/badge/Wails-2.8.0-red)
+![Wails](https://img.shields.io/badge/Wails-2.11.0-red)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Tests](https://img.shields.io/badge/tests-89.6%25-brightgreen)
 
 ## ✨ Features
 
 ### 🔐 Security & Privacy
 - **AES-256 Encryption**: All data encrypted at rest using BadgerDB
 - **PBKDF2 Key Derivation**: 100,000 iterations with SHA-256
+- **Machine-Specific Keys**: Unique encryption key per installation
 - **Local Storage Only**: No cloud, no servers, 100% offline
 - **Auto Key Rotation**: Encryption keys rotated every 30 days
+- **XSS Protection**: All user inputs sanitized
 - **Zero Telemetry**: No tracking, no analytics, complete privacy
 
 ### 📜 GDPR/DSGVO Compliance
@@ -147,21 +150,35 @@ wails build
 ### Project Structure
 
 ```
-c:\temp\cv-manager-go\
+cv-manager-go/
 ├── go.mod                  # Go dependencies
 ├── wails.json              # Wails configuration
 ├── main.go                 # Application entry point
 ├── app.go                  # Wails app + API methods
 ├── models.go               # CV data structures
+├── machine_key.go          # Machine-specific key generation
 ├── encrypted_storage.go    # BadgerDB + Encryption + GDPR
+├── audit.go                # Audit logging system
 ├── pdf.go                  # PDF generation
-├── frontend\
-│   └── dist\
-│       ├── index.html      # UI structure (all views)
-│       ├── style.css       # Obsidian-inspired CSS (~1300 lines)
-│       └── app.js          # Complete frontend logic (~960 lines)
+├── version.go              # Version management
+├── updater.go              # Auto-update system
+├── frontend/
+│   └── dist/
+│       ├── index.html      # UI structure
+│       ├── style.css       # Obsidian-inspired CSS
+│       ├── app.js          # Frontend logic (~4800 lines)
+│       ├── utils.js        # Utility functions
+│       └── i18n/           # Internationalization (DE/EN)
+├── launcher/               # Auto-update launcher
+│   ├── main.go
+│   ├── app.go
+│   └── *_test.go           # Unit & Integration tests
+├── docs/                   # Documentation
+│   ├── ARCHITECTURE.md     # Technical architecture
+│   ├── DEVELOPMENT.md      # Developer guide
+│   ├── LAUNCHER.md         # Launcher documentation
+│   └── archive/            # Historical docs
 ├── BUILD.md                # Build instructions
-├── IMPLEMENTATION.md       # Technical documentation
 └── README.md               # This file
 ```
 
@@ -293,6 +310,13 @@ This software is provided "as is" without warranty of any kind. While we impleme
 
 ---
 
-**Made with ❤️ and 🔒 by the CV Manager Pro Team**
+**Made with Go and Security in Mind**
 
-**Version**: 1.0.0 | **Build**: 2025-12-25 | **Status**: Production Ready
+**Version**: 1.3.1 | **Build**: 2026-01-03 | **Status**: Production Ready
+
+## Documentation
+
+- [BUILD.md](BUILD.md) - Build and deployment instructions
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical architecture
+- [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) - Developer guide
+- [docs/LAUNCHER.md](docs/LAUNCHER.md) - Auto-update launcher

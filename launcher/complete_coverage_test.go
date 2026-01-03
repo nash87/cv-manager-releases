@@ -139,7 +139,7 @@ func TestCheckForUpdates_BothErrors(t *testing.T) {
 // Test getInstalledAppVersion with config version
 func TestGetInstalledAppVersion_FromConfig(t *testing.T) {
 	tempDir := t.TempDir()
-	appPath := filepath.Join(tempDir, "cv-manager-pro.exe")
+	appPath := filepath.Join(tempDir, "cv-manager.exe")
 
 	// Create fake app
 	os.WriteFile(appPath, []byte("fake app"), 0644)
@@ -162,7 +162,7 @@ func TestGetInstalledAppVersion_FromConfig(t *testing.T) {
 // Test getInstalledAppVersion with no config
 func TestGetInstalledAppVersion_NoConfig(t *testing.T) {
 	tempDir := t.TempDir()
-	appPath := filepath.Join(tempDir, "cv-manager-pro.exe")
+	appPath := filepath.Join(tempDir, "cv-manager.exe")
 
 	// Create fake app
 	os.WriteFile(appPath, []byte("fake app"), 0644)

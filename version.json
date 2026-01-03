@@ -1,10 +1,10 @@
 {
-  "latest_version": "1.3.0",
+  "latest_version": "1.3.1",
   "release_date": "2026-01-03",
-  "download_url": "https://github.com/nash87/cv-manager-releases/releases/download/v1.3.0/cv-manager.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.3.0",
-  "release_notes": "WYSIWYG Editor - 9 Templates, editierbare Ueberschriften, Skills/Sprachen Visualisierung, i18n DE/EN, Responsive Design",
-  "sha256": "29ffb2e2e7574a7843b80f6bd5915f391ab7cf19a8c721090f12e9bc31e69f3d",
+  "download_url": "https://github.com/nash87/cv-manager-releases/releases/download/v1.3.1/cv-manager.exe",
+  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.3.1",
+  "release_notes": "Security: Machine-specific encryption keys, XSS protection, improved error handling, documentation cleanup",
+  "sha256": "cd0e6ede86dc7ccef45b0956b2c2f3266be926965693d3ad148a40120a12216c",
   "size_mb": 16,
   "is_required": false
 }

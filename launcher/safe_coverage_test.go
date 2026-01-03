@@ -488,7 +488,7 @@ func TestCheckComponentUpdate_InvalidJSON_Safe(t *testing.T) {
 // Test getInstalledAppVersion - from config
 func TestGetInstalledAppVersion_FromConfig_Safe(t *testing.T) {
 	tempDir := t.TempDir()
-	appPath := filepath.Join(tempDir, "cv-manager-pro.exe")
+	appPath := filepath.Join(tempDir, "cv-manager.exe")
 	os.WriteFile(appPath, []byte("fake"), 0644)
 
 	launcher := &Launcher{
@@ -509,7 +509,7 @@ func TestGetInstalledAppVersion_FromConfig_Safe(t *testing.T) {
 // Test getInstalledAppVersion - unknown
 func TestGetInstalledAppVersion_Unknown(t *testing.T) {
 	tempDir := t.TempDir()
-	appPath := filepath.Join(tempDir, "cv-manager-pro.exe")
+	appPath := filepath.Join(tempDir, "cv-manager.exe")
 	os.WriteFile(appPath, []byte("fake"), 0644)
 
 	launcher := &Launcher{
@@ -697,7 +697,7 @@ func TestApplyUpdate_Success(t *testing.T) {
 	updatesDir := filepath.Join(tempDir, "updates")
 	os.MkdirAll(updatesDir, 0755)
 
-	appPath := filepath.Join(tempDir, "cv-manager-pro.exe")
+	appPath := filepath.Join(tempDir, "cv-manager.exe")
 	updateFile := filepath.Join(updatesDir, "app-update.exe")
 
 	// Create existing app

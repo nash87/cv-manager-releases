@@ -38,9 +38,9 @@ func (a *App) startup(ctx context.Context) {
 	// Create encrypted storage next to EXE
 	storageDir := filepath.Join(exeDir, "cv-data")
 
-	// Use machine-specific master password (in production, user should set this)
-	// For now, we use a default that's better than nothing
-	masterPassword := "cv-manager-pro-default-key-change-in-production"
+	// Use secure machine-specific master password
+	// Priority: ENV variable > stored key > generated machine key
+	masterPassword := GetMasterPassword(storageDir)
 
 	storage, err := NewEncryptedStorage(storageDir, masterPassword)
 	if err != nil {
@@ -149,21 +149,37 @@ func (a *App) GetComplianceLog() []ComplianceEntry {
 
 // ExportAllDataGDPR exports all user data (Art. 20 GDPR)
 func (a *App) ExportAllDataGDPR() (string, error) {
-	return a.encryptedStore.ExportAllData()
+	if a.encryptedStore == nil {
+		return "", fmt.Errorf("storage not initialized")
+	}
+	data, err := a.encryptedStore.ExportAllData()
+	if err != nil {
+		return "", fmt.Errorf("GDPR export failed: %w", err)
+	}
+	return data, nil
 }
 
 // DeleteAllDataGDPR deletes all user data (Art. 17 GDPR)
 func (a *App) DeleteAllDataGDPR() error {
-	return a.encryptedStore.DeleteAllData()
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
+	if err := a.encryptedStore.DeleteAllData(); err != nil {
+		return fmt.Errorf("GDPR deletion failed: %w", err)
+	}
+	return nil
 }
 
 // ========== CV Management Methods ==========
 
 // GetAllCVs returns all CV summaries for dashboard
 func (a *App) GetAllCVs() ([]CVSummary, error) {
+	if a.encryptedStore == nil {
+		return nil, fmt.Errorf("storage not initialized")
+	}
 	cvs, err := a.encryptedStore.GetAllCVs()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get CVs: %w", err)
 	}
 
 	summaries := make([]CVSummary, len(cvs))
@@ -175,9 +191,15 @@ func (a *App) GetAllCVs() ([]CVSummary, error) {
 
 // GetCV returns a full CV by ID
 func (a *App) GetCV(id string) (*CV, error) {
+	if a.encryptedStore == nil {
+		return nil, fmt.Errorf("storage not initialized")
+	}
+	if id == "" {
+		return nil, fmt.Errorf("CV ID is required")
+	}
 	cv, err := a.encryptedStore.GetCV(id)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get CV %s: %w", id, err)
 	}
 
 	// Update analytics
@@ -191,17 +213,42 @@ func (a *App) GetCV(id string) (*CV, error) {
 
 // CreateCV creates a new CV
 func (a *App) CreateCV() (*CV, error) {
-	return a.encryptedStore.CreateCV()
+	if a.encryptedStore == nil {
+		return nil, fmt.Errorf("storage not initialized")
+	}
+	cv, err := a.encryptedStore.CreateCV()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create CV: %w", err)
+	}
+	return cv, nil
 }
 
 // SaveCV saves a CV
 func (a *App) SaveCV(cv *CV) error {
-	return a.encryptedStore.SaveCV(cv)
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
+	if cv == nil {
+		return fmt.Errorf("CV is nil")
+	}
+	if err := a.encryptedStore.SaveCV(cv); err != nil {
+		return fmt.Errorf("failed to save CV: %w", err)
+	}
+	return nil
 }
 
 // DeleteCV deletes a CV
 func (a *App) DeleteCV(id string) error {
-	return a.encryptedStore.DeleteCV(id)
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
+	if id == "" {
+		return fmt.Errorf("CV ID is required")
+	}
+	if err := a.encryptedStore.DeleteCV(id); err != nil {
+		return fmt.Errorf("failed to delete CV %s: %w", id, err)
+	}
+	return nil
 }
 
 // BulkDeleteCVs deletes multiple CVs at once
@@ -263,9 +310,12 @@ func (a *App) GetFavoriteCVs() ([]CVSummary, error) {
 
 // SearchCVs searches CVs
 func (a *App) SearchCVs(query string) ([]CVSummary, error) {
+	if a.encryptedStore == nil {
+		return nil, fmt.Errorf("storage not initialized")
+	}
 	cvs, err := a.encryptedStore.SearchCVs(query)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("search failed: %w", err)
 	}
 
 	summaries := make([]CVSummary, len(cvs))
@@ -277,16 +327,29 @@ func (a *App) SearchCVs(query string) ([]CVSummary, error) {
 
 // GetStatistics returns CV statistics
 func (a *App) GetStatistics() (*Statistics, error) {
-	return a.encryptedStore.GetStatistics()
+	if a.encryptedStore == nil {
+		return nil, fmt.Errorf("storage not initialized")
+	}
+	stats, err := a.encryptedStore.GetStatistics()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get statistics: %w", err)
+	}
+	return stats, nil
 }
 
 // ========== Export Methods ==========
 
 // ExportPDF exports CV to PDF
 func (a *App) ExportPDF(id string) (string, error) {
+	if a.encryptedStore == nil {
+		return "", fmt.Errorf("storage not initialized")
+	}
+	if id == "" {
+		return "", fmt.Errorf("CV ID is required")
+	}
 	cv, err := a.encryptedStore.GetCV(id)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get CV for export: %w", err)
 	}
 
 	// Update export analytics
@@ -296,7 +359,11 @@ func (a *App) ExportPDF(id string) (string, error) {
 	a.encryptedStore.SaveCV(cv)
 
 	// Generate PDF
-	return ExportToPDF(cv)
+	pdfPath, err := ExportToPDF(cv)
+	if err != nil {
+		return "", fmt.Errorf("PDF generation failed: %w", err)
+	}
+	return pdfPath, nil
 }
 
 // Helper function to get current time
@@ -308,22 +375,56 @@ func Now() time.Time {
 
 // GetSealStatus returns the current seal status
 func (a *App) GetSealStatus() (*StorageSealConfig, error) {
-	return a.encryptedStore.GetSealStatus()
+	if a.encryptedStore == nil {
+		return nil, fmt.Errorf("storage not initialized")
+	}
+	status, err := a.encryptedStore.GetSealStatus()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get seal status: %w", err)
+	}
+	return status, nil
 }
 
 // SealStorage seals the storage with a master password
 func (a *App) SealStorage(masterPassword string) error {
-	return a.encryptedStore.SealStorage(masterPassword)
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
+	if masterPassword == "" {
+		return fmt.Errorf("master password is required")
+	}
+	if err := a.encryptedStore.SealStorage(masterPassword); err != nil {
+		return fmt.Errorf("failed to seal storage: %w", err)
+	}
+	return nil
 }
 
 // UnsealStorage unseals the storage with the master password
 func (a *App) UnsealStorage(masterPassword string) error {
-	return a.encryptedStore.UnsealStorage(masterPassword)
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
+	if masterPassword == "" {
+		return fmt.Errorf("master password is required")
+	}
+	if err := a.encryptedStore.UnsealStorage(masterPassword); err != nil {
+		return fmt.Errorf("failed to unseal storage: %w", err)
+	}
+	return nil
 }
 
 // RemoveSeal removes the seal entirely
 func (a *App) RemoveSeal(masterPassword string) error {
-	return a.encryptedStore.RemoveSeal(masterPassword)
+	if a.encryptedStore == nil {
+		return fmt.Errorf("storage not initialized")
+	}
+	if masterPassword == "" {
+		return fmt.Errorf("master password is required")
+	}
+	if err := a.encryptedStore.RemoveSeal(masterPassword); err != nil {
+		return fmt.Errorf("failed to remove seal: %w", err)
+	}
+	return nil
 }
 
 // ========== App Configuration Methods ==========

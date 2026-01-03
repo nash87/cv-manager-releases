@@ -216,7 +216,7 @@ func TestApplyUpdate_AppWithBackup(t *testing.T) {
 	os.MkdirAll(updatesDir, 0755)
 
 	// Create fake app
-	appPath := filepath.Join(tempDir, "cv-manager-pro.exe")
+	appPath := filepath.Join(tempDir, "cv-manager.exe")
 	os.WriteFile(appPath, []byte("old version"), 0644)
 
 	// Create update file
@@ -262,7 +262,7 @@ func TestApplyUpdate_CopyFailureRestore(t *testing.T) {
 	os.MkdirAll(updatesDir, 0755)
 
 	// Create a directory where the app should be (will cause copy to fail)
-	appPath := filepath.Join(tempDir, "cv-manager-pro.exe")
+	appPath := filepath.Join(tempDir, "cv-manager.exe")
 	os.WriteFile(appPath, []byte("original"), 0644)
 
 	// Create empty update file
@@ -324,7 +324,7 @@ func TestConstants_Values(t *testing.T) {
 		t.Errorf("AppVersionURL doesn't contain expected path: %s", AppVersionURL)
 	}
 
-	if MainAppExecutable != "cv-manager-pro.exe" {
+	if MainAppExecutable != "cv-manager.exe" {
 		t.Errorf("MainAppExecutable wrong: %s", MainAppExecutable)
 	}
 

@@ -129,10 +129,10 @@ type ReleaseInfo struct {
 
 const (
 	LauncherVersion      = "1.3.0"
-	LauncherBuildDate    = "2026-01-02"
+	LauncherBuildDate    = "2026-01-03"
 
 	GitHubOwner          = "nash87"
-	GitHubRepo           = "cv-manager-pro-releases"
+	GitHubRepo           = "cv-manager-releases"
 	GitHubBranch         = "main"
 
 	AppVersionURL        = "https://raw.githubusercontent.com/" + GitHubOwner + "/" + GitHubRepo + "/" + GitHubBranch + "/version.json"
@@ -140,7 +140,7 @@ const (
 	GitHubReleasesAPI    = "https://api.github.com/repos/" + GitHubOwner + "/" + GitHubRepo + "/releases"
 	GitHubCommitsAPI     = "https://api.github.com/repos/" + GitHubOwner + "/" + GitHubRepo + "/commits"
 
-	MainAppExecutable    = "cv-manager-pro.exe"
+	MainAppExecutable    = "cv-manager.exe"
 	LauncherExecutable   = "cv-manager-launcher.exe"
 	ConfigFile           = "launcher-config.json"
 )

@@ -1,11 +1,11 @@
 {
-  "latest_version": "1.1.0",
-  "release_date": "2026-01-02",
-  "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.1.0/cv-manager-launcher.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.1.0",
-  "release_notes": "Seamless launcher design with live GitHub release info - No header, modern UI, real-time version display",
+  "latest_version": "1.3.0",
+  "release_date": "2026-01-03",
+  "download_url": "https://github.com/nash87/cv-manager-releases/releases/download/v1.3.0/cv-manager-launcher.exe",
+  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.3.0",
+  "release_notes": "Launcher v1.3.0 - GitHub Releases Integration, Rebranding zu CV Manager",
   "sha256": "",
-  "size_mb": 12,
+  "size_mb": 8,
   "is_required": false,
   "commit_hash": ""
 }

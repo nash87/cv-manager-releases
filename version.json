@@ -1,10 +1,10 @@
 {
-  "latest_version": "1.4.0",
+  "latest_version": "1.4.1",
   "release_date": "2026-01-03",
   "download_url": "https://github.com/nash87/cv-manager-releases/raw/main/cv-manager.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.4.0",
-  "release_notes": "UX-Redesign: CV Studio, Bewerbungs-Zentrale, Guided Flow Wizard, Karriere-Tipps",
-  "sha256": "392ab1d1f2e51af6c79a87825dc260d541b505068276725cf85a93658373c4d2",
+  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.4.1",
+  "release_notes": "CV Studio - Website-Baukasten Upgrade mit Block-Bibliothek, Drag & Drop, Ebenen-Panel",
+  "sha256": "b46bf052e069d5fceb10cb463a0c95c575178d2014128d1d395fe312a2e5c061",
   "size_mb": 16,
   "is_required": false,
   "commit_hash": ""

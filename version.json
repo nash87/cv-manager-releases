@@ -1,10 +1,10 @@
 {
-  "latest_version": "1.4.3",
+  "latest_version": "1.4.4",
   "release_date": "2026-01-03",
   "download_url": "https://github.com/nash87/cv-manager-releases/raw/main/cv-manager.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.4.3",
-  "release_notes": "Database Migration & Startup Fix - Automatische Migration von alten Datenbanken",
-  "sha256": "136c455a5e481da1248acb085b4897ad349bf949dca48d0966b73f2931873ee7",
+  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.4.4",
+  "release_notes": "Startup Fix - Timeout-basierte DB-Öffnung, kein CMD-Fenster mehr",
+  "sha256": "c2faf7dc7879d3a7e07b379489b40b5c651ddf3907f94045713fd1ff48b59d89",
   "size_mb": 16,
   "is_required": true,
   "commit_hash": ""

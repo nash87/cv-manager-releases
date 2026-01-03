@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -128,15 +129,16 @@ type ReleaseInfo struct {
 }
 
 const (
-	LauncherVersion      = "1.3.0"
+	LauncherVersion      = "1.3.1"
 	LauncherBuildDate    = "2026-01-03"
 
 	GitHubOwner          = "nash87"
 	GitHubRepo           = "cv-manager-releases"
 	GitHubBranch         = "main"
 
-	AppVersionURL        = "https://raw.githubusercontent.com/" + GitHubOwner + "/" + GitHubRepo + "/" + GitHubBranch + "/version.json"
-	LauncherVersionURL   = "https://raw.githubusercontent.com/" + GitHubOwner + "/" + GitHubRepo + "/" + GitHubBranch + "/launcher-version.json"
+	// Use GitHub API for version checks (no caching issues unlike raw.githubusercontent.com)
+	AppVersionURL        = "https://api.github.com/repos/" + GitHubOwner + "/" + GitHubRepo + "/contents/version.json?ref=" + GitHubBranch
+	LauncherVersionURL   = "https://api.github.com/repos/" + GitHubOwner + "/" + GitHubRepo + "/contents/launcher-version.json?ref=" + GitHubBranch
 	GitHubReleasesAPI    = "https://api.github.com/repos/" + GitHubOwner + "/" + GitHubRepo + "/releases"
 	GitHubCommitsAPI     = "https://api.github.com/repos/" + GitHubOwner + "/" + GitHubRepo + "/commits"
 
@@ -404,6 +406,12 @@ func (l *Launcher) CheckForUpdates() (map[string]*UpdateStatus, error) {
 	return results, nil
 }
 
+// GitHubContentResponse represents the GitHub API response for file contents
+type GitHubContentResponse struct {
+	Content  string `json:"content"`
+	Encoding string `json:"encoding"`
+}
+
 // checkComponentUpdate checks for a single component update
 func (l *Launcher) checkComponentUpdate(component, versionURL, currentVersion string) (*UpdateStatus, error) {
 	fmt.Printf("[Launcher] Checking %s update from: %s\n", component, versionURL)
@@ -436,9 +444,29 @@ func (l *Launcher) checkComponentUpdate(component, versionURL, currentVersion st
 	}
 
 	fmt.Printf("[Launcher] Parsing JSON response...\n")
-	var updateInfo UpdateInfo
-	if err := json.NewDecoder(resp.Body).Decode(&updateInfo); err != nil {
+
+	// Parse GitHub API response (base64-encoded content)
+	var ghContent GitHubContentResponse
+	if err := json.NewDecoder(resp.Body).Decode(&ghContent); err != nil {
 		fmt.Printf("[Launcher] JSON parsing failed: %v\n", err)
+		status.Checking = false
+		status.Error = fmt.Sprintf("Fehler beim Lesen der API-Antwort: %v", err)
+		return status, err
+	}
+
+	// Decode base64 content
+	decodedContent, err := base64.StdEncoding.DecodeString(ghContent.Content)
+	if err != nil {
+		fmt.Printf("[Launcher] Base64 decoding failed: %v\n", err)
+		status.Checking = false
+		status.Error = fmt.Sprintf("Fehler beim Dekodieren: %v", err)
+		return status, err
+	}
+
+	// Parse the actual version info
+	var updateInfo UpdateInfo
+	if err := json.Unmarshal(decodedContent, &updateInfo); err != nil {
+		fmt.Printf("[Launcher] Version JSON parsing failed: %v\n", err)
 		status.Checking = false
 		status.Error = fmt.Sprintf("Fehler beim Lesen der Update-Info: %v", err)
 		return status, err

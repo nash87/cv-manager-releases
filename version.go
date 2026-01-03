@@ -57,6 +57,21 @@ func GetBuildInfo() BuildInfo {
 func GetChangeLog() []ChangeLogEntry {
 	return []ChangeLogEntry{
 		{
+			Version:     "1.3.1",
+			Date:        "2026-01-03",
+			Description: "Security & Documentation Update",
+			Changes: []string{
+				"🔐 SECURITY: Machine-specific encryption keys (replaces hardcoded password)",
+				"🛡️ SECURITY: XSS protection in CV card rendering",
+				"🛡️ SECURITY: XSS protection in skills/language display",
+				"⚠️ IMPROVED: Error handling with context throughout app.go",
+				"📁 IMPROVED: Consolidated docs/ directory structure",
+				"🗂️ CLEANUP: Moved legacy files to docs/archive/",
+				"📝 UPDATED: README with version 1.3.1 and new structure",
+				"🧹 CLEANUP: Removed 2GB+ database files from git history",
+			},
+		},
+		{
 			Version:     "1.3.0",
 			Date:        "2026-01-03",
 			Description: "WYSIWYG Editor - Erweiterte Funktionen & Rebranding",

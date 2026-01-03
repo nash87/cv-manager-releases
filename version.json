@@ -4,7 +4,7 @@
   "download_url": "https://github.com/nash87/cv-manager-releases/releases/download/v1.3.1/cv-manager.exe",
   "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.3.1",
   "release_notes": "Security: Machine-specific encryption keys, XSS protection, improved error handling, documentation cleanup",
-  "sha256": "cd0e6ede86dc7ccef45b0956b2c2f3266be926965693d3ad148a40120a12216c",
+  "sha256": "b08a743854ef716024b000ba851013d6c74f32b252db8bd206da9551e123f4c2",
   "size_mb": 16,
   "is_required": false
 }

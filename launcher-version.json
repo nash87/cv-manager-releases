@@ -1,7 +1,7 @@
 {
   "latest_version": "1.3.2",
   "release_date": "2026-01-03",
-  "download_url": "https://github.com/nash87/cv-manager-releases/releases/download/v1.3.2/cv-manager-launcher.exe",
+  "download_url": "https://github.com/nash87/cv-manager-releases/raw/main/cv-manager-launcher.exe",
   "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.3.2",
   "release_notes": "Path-Bug Fix, GitHub API Update-Checks",
   "sha256": "5e2a3dfe97a6fdaa08d279fe40324019aa984458c9f73291861b484499de5723",

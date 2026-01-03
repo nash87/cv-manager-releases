@@ -18,6 +18,9 @@ jobs:
         with:
           fetch-depth: 20
 
+      - name: Install jq
+        run: apt-get update && apt-get install -y jq
+
       - name: Extract version from tag
         id: version
         run: |
@@ -26,7 +29,6 @@ jobs:
           echo "Releasing version: $VERSION"
 
       - name: Get Release Notes from Commits
-        id: notes
         run: |
           echo "## CV Manager v${{ steps.version.outputs.VERSION }}" > release_notes.md
           echo "" >> release_notes.md
@@ -34,9 +36,6 @@ jobs:
           git log --oneline -10 --pretty=format:"- %s" >> release_notes.md
           echo "" >> release_notes.md
           cat release_notes.md
-          # Store as output for API
-          NOTES=$(cat release_notes.md | jq -Rs .)
-          echo "NOTES=$NOTES" >> $GITHUB_OUTPUT
 
       - name: Verify build artifacts exist
         run: |
@@ -65,29 +64,27 @@ jobs:
           curl -s -X DELETE -H "Authorization: token $GH_TOKEN" \
             "https://api.github.com/repos/$GITHUB_REPO/git/refs/tags/v$VERSION" 2>/dev/null || true
 
-          # Read release notes
-          NOTES=$(cat release_notes.md)
+          # Read release notes and escape for JSON
+          NOTES=$(cat release_notes.md | jq -Rs .)
 
           # Create release
           RESPONSE=$(curl -s -X POST -H "Authorization: token $GH_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.github.com/repos/$GITHUB_REPO/releases" \
-            -d @- <<EOF
-          {
-            "tag_name": "v$VERSION",
-            "name": "CV Manager v$VERSION",
-            "body": $(echo "$NOTES" | jq -Rs .),
-            "draft": false,
-            "prerelease": false
-          }
-          EOF
-          )
+            -d "{\"tag_name\": \"v$VERSION\", \"name\": \"CV Manager v$VERSION\", \"body\": $NOTES, \"draft\": false, \"prerelease\": false}")
+
+          echo "API Response: $RESPONSE"
 
           RELEASE_ID=$(echo "$RESPONSE" | jq -r '.id')
           UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.upload_url' | sed 's/{.*}//')
 
           echo "Created release ID: $RELEASE_ID"
           echo "Upload URL: $UPLOAD_URL"
+
+          if [ "$RELEASE_ID" = "null" ] || [ -z "$RELEASE_ID" ]; then
+            echo "ERROR: Failed to create release"
+            exit 1
+          fi
 
           # Upload cv-manager.exe
           echo "Uploading cv-manager.exe..."

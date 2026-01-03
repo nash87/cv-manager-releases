@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_RELEASE_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
   GITHUB_REPO: nash87/cv-manager-releases
 
 jobs:
@@ -97,7 +97,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           repository: ${{ env.GITHUB_REPO }}
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ env.GH_TOKEN }}
           tag_name: v${{ steps.version.outputs.VERSION }}
           name: CV Manager v${{ steps.version.outputs.VERSION }}
           body_path: release_notes.md
@@ -111,7 +111,7 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
           # Clone the releases repo
-          git clone https://x-access-token:${{ env.GITHUB_TOKEN }}@github.com/${{ env.GITHUB_REPO }}.git releases-repo
+          git clone https://x-access-token:${{ env.GH_TOKEN }}@github.com/${{ env.GITHUB_REPO }}.git releases-repo
           cd releases-repo
           cp ../version.json .
           git config user.name "Gitea Actions"

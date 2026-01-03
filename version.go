@@ -91,6 +91,18 @@ func GetChangeLog() []ChangeLogEntry {
 			},
 		},
 		{
+			Version:     "1.2.1",
+			Date:        "2026-01-02",
+			Description: "Onboarding Migration to Launcher",
+			Changes: []string{
+				"🚀 REMOVED: Onboarding wizard from main app (moved to Launcher)",
+				"⚡ IMPROVED: Direct app start without onboarding dialog",
+				"🔗 INTEGRATED: Launcher now handles onboarding (v1.3.0+)",
+				"📦 REDUCED: App size from ~45MB to ~16MB",
+				"🧹 CLEANUP: Removed ~520 lines of onboarding code",
+			},
+		},
+		{
 			Version:     "1.2.0",
 			Date:        "2025-12-30",
 			Description: "Comprehensive Audit System & UI Enhancements",

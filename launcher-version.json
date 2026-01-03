@@ -1,11 +1,11 @@
 {
-  "latest_version": "1.3.0",
-  "release_date": "2026-01-02",
-  "download_url": "https://github.com/nash87/cv-manager-pro-releases/releases/download/v1.3.0/cv-manager-launcher.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-pro-releases/releases/tag/v1.3.0",
-  "release_notes": "Onboarding Wizard im Launcher, Settings-View mit Reset, Skip-Funktion",
-  "sha256": "694c3a1ac713d848cf57f231cab0296e886e02d1644cba53fc11871a59fddf3d",
-  "size_mb": 10,
+  "latest_version": "1.3.2",
+  "release_date": "2026-01-03",
+  "download_url": "https://github.com/nash87/cv-manager-releases/releases/download/v1.3.2/cv-manager-launcher.exe",
+  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.3.2",
+  "release_notes": "Path-Bug Fix, GitHub API Update-Checks",
+  "sha256": "e142d5f05c0e0bbb8ec06b6fbf64107b6de2d8f398a2a4dfa9e345f03dbc0ab2",
+  "size_mb": 4,
   "is_required": false,
   "commit_hash": ""
 }

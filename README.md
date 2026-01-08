@@ -8,14 +8,15 @@ Dieses Repository enthält die kompilierten Binaries für CV Manager.
 
 | Komponente | Version | Datum | Download |
 |------------|---------|-------|----------|
-| **App** | v1.4.8 | 2026-01-08 | [cv-manager.exe](https://github.com/nash87/cv-manager-releases/raw/main/cv-manager.exe) (17 MB) |
+| **App** | v1.4.9 | 2026-01-08 | [cv-manager.exe](https://github.com/nash87/cv-manager-releases/raw/main/cv-manager.exe) (17 MB) |
 | **Launcher** | v1.3.3 | 2026-01-08 | [cv-manager-launcher.exe](https://github.com/nash87/cv-manager-releases/raw/main/cv-manager-launcher.exe) (10 MB) |
 
 ---
 
-## 🚀 Latest Release: v1.4.8 (2026-01-08)
+## 🚀 Latest Release: v1.4.9 (2026-01-08)
 
-### App v1.4.8 - Portable Fix & Debug Logging
+### App v1.4.9 - BadgerDB Fix & Debug Logging
+- 🐛 **FIX:** BadgerDB Compactor-Fehler behoben (min. 2 Compactors)
 - 🐛 **FIX:** Kritischer Bug behoben - DB wurde bei jedem Start gelöscht
 - 🐛 **FIX:** Datenbank-Initialisierung hängt nicht mehr
 - 📝 **NEW:** Umfassendes Debug-Logging-System für Fehleranalyse

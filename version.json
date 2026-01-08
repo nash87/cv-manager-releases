@@ -1,11 +1,11 @@
 {
-  "latest_version": "1.4.7",
-  "release_date": "2026-01-03",
+  "latest_version": "1.4.8",
+  "release_date": "2026-01-08",
   "download_url": "https://github.com/nash87/cv-manager-releases/raw/main/cv-manager.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.4.7",
-  "release_notes": "Schnellstart Fix - 1000 PBKDF2 Iterationen, 2s Timeout, automatische DB-Neuerstattung",
-  "sha256": "1597887d58d00b6a87c1f8954d5670746119f412ff258abe86a2f712668c3da7",
-  "size_mb": 16,
+  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.4.8",
+  "release_notes": "Portable Fix & Debug Logging - DB-Initialisierung behoben, Debug-Modus hinzugefügt",
+  "sha256": "b969024629bf15aa84ec7bf1d76227d60ed6878a7e1ff5661dc55e56205a9e6c",
+  "size_mb": 17,
   "is_required": true,
   "commit_hash": ""
 }

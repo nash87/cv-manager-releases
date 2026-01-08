@@ -1,10 +1,10 @@
 {
-  "latest_version": "1.3.2",
-  "release_date": "2026-01-03",
+  "latest_version": "1.3.3",
+  "release_date": "2026-01-08",
   "download_url": "https://github.com/nash87/cv-manager-releases/raw/main/cv-manager-launcher.exe",
-  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.3.2",
-  "release_notes": "Path-Bug Fix, GitHub API Update-Checks",
-  "sha256": "5e2a3dfe97a6fdaa08d279fe40324019aa984458c9f73291861b484499de5723",
+  "changelog_url": "https://github.com/nash87/cv-manager-releases/releases/tag/v1.3.3",
+  "release_notes": "Debug-Modus Support - App kann jetzt mit Debug-Logging gestartet werden",
+  "sha256": "719aedeb1bb51340b2d4ad8b242e46eab810fe4d620a328c3da0723c18c72cef",
   "size_mb": 10,
   "is_required": false,
   "commit_hash": ""
